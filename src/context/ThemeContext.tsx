@@ -41,7 +41,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Convenience hook — throws if used outside ThemeProvider
+// Convenience hook -- throws if used outside ThemeProvider
 export const useTheme = (): ThemeContextValue => {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error("useTheme must be used within <ThemeProvider>");
