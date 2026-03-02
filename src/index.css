@@ -1,0 +1,70 @@
+/* ?? Design tokens — light theme (default) ?????????????? */
+
+:root {
+  --text: #031516;
+  --background: #f6fdfe;
+  --primary: #1ce3e3;
+  --secondary: #889ff1;
+  --accent: #5763ea;
+
+  /* Glass card surfaces */
+  --card-bg: rgba(255, 255, 255, 0.75);
+  --card-border: rgba(255, 255, 255, 0.65);
+  --card-shadow: rgba(3, 21, 22, 0.08);
+
+  /* Input border */
+  --input-border: rgba(3, 21, 22, 0.12);
+
+  font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: var(--text);
+  background-color: var(--background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ?? Design tokens — dark theme ????????????????????????? */
+
+[data-theme="dark"] {
+  --text: #e9fbfc;
+  --background: #010809;
+  --primary: #1ce3e3;
+  --secondary: #0e2577;
+  --accent: #1521a8;
+
+  /* Glass card surfaces */
+  --card-bg: rgba(1, 8, 9, 0.65);
+  --card-border: rgba(233, 251, 252, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.45);
+
+  /* Input border */
+  --input-border: rgba(233, 251, 252, 0.12);
+
+  color-scheme: dark;
+  color: var(--text);
+  background-color: var(--background);
+}
+
+/* ?? Reset ?????????????????????????????????????????????? */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  /* Smooth color transitions when theme changes */
+  transition: background-color 0.3s ease, color 0.25s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+

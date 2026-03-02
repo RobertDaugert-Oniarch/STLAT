@@ -1,0 +1,204 @@
+/* ?? Login page layout ?????????????????????????????????? */
+
+.login-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--background);
+}
+
+/* ?? Decorative floating shapes ???????????????????????? */
+
+.login-bg-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.login-bg-shape--1 {
+  width: 420px;
+  height: 420px;
+  background: var(--primary);
+  top: -120px;
+  left: -100px;
+}
+
+.login-bg-shape--2 {
+  width: 320px;
+  height: 320px;
+  background: var(--secondary);
+  bottom: -80px;
+  right: -60px;
+}
+
+.login-bg-shape--3 {
+  width: 200px;
+  height: 200px;
+  background: var(--accent);
+  top: 50%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+}
+
+/* ?? Card ?????????????????????????????????????????????? */
+
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  margin: 1rem;
+  padding: 2.5rem 2rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+}
+
+/* ?? Header ???????????????????????????????????????????? */
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.4rem;
+}
+
+.login-subtitle {
+  font-size: 0.95rem;
+  color: var(--text);
+  opacity: 0.6;
+  margin: 0;
+}
+
+/* ?? Form fields ??????????????????????????????????????? */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.login-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.login-input {
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--background);
+  border: 1.5px solid var(--input-border);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-input::placeholder {
+  color: var(--text);
+  opacity: 0.35;
+}
+
+.login-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(28, 227, 227, 0.18);
+}
+
+/* ?? Error message ????????????????????????????????????? */
+
+.login-error {
+  font-size: 0.85rem;
+  color: #e04848;
+  background: rgba(224, 72, 72, 0.08);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin: 0;
+}
+
+/* ?? Submit button ????????????????????????????????????? */
+
+.login-button {
+  padding: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.login-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ?? Toggle sign-in / sign-up ?????????????????????????? */
+
+.login-toggle {
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text);
+  opacity: 0.7;
+  margin: 1.5rem 0 0;
+}
+
+.login-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-weight: 600;
+  font-size: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-toggle-btn:hover {
+  color: var(--primary);
+}
+
+/* ?? Responsive ???????????????????????????????????????? */
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.25rem;
+  }
+
+  .login-title {
+    font-size: 1.5rem;
+  }
+}
