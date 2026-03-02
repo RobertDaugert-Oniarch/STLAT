@@ -191,7 +191,7 @@
   color: var(--primary);
 }
 
-/* ?? Responsive ???????????????????????????????????????? */
+/* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 480px) {
   .login-card {
@@ -201,4 +201,52 @@
   .login-title {
     font-size: 1.5rem;
   }
+}
+
+/* ── Password requirements checklist ─────────────────── */
+
+.pwd-reqs {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.pwd-reqs li {
+  font-size: 0.8rem;
+  color: #e04848;
+  transition: color 0.2s;
+}
+
+.pwd-reqs li::before {
+  content: "✕ ";
+}
+
+.pwd-reqs li.met {
+  color: #34c759;
+}
+
+.pwd-reqs li.met::before {
+  content: "✓ ";
+}
+
+/* ── Username reveal screen ──────────────────────────── */
+
+.username-reveal {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.generated-username {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+  margin: 0.5rem 0;
+  word-break: break-word;
 }
