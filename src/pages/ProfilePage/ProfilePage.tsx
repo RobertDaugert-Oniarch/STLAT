@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
 import { getLevel, getGreetingKey, getInitials } from "../../utils/profileHelpers";
+import { generateUniqueUsername, formatUsername } from "../../utils/generateUsername";
 import SettingsMenu from "../../components/SettingsMenu/SettingsMenu";
 import "./ProfilePage.css";
 
@@ -40,8 +41,22 @@ const ProfilePage = () => {
       }
 
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) setUserData(userDoc.data() as UserData);
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        let data: UserData | null = userDoc.exists() ? (userDoc.data() as UserData) : null;
+
+        if (!data?.fullUsername?.includes("#")) {
+          const { name, tag } = await generateUniqueUsername(user.uid);
+          const full = formatUsername(name, tag);
+          await setDoc(
+            userDocRef,
+            { username: name, tag, fullUsername: full, email: data?.email ?? user.email ?? "" },
+            { merge: true },
+          );
+          data = { ...(data ?? { email: user.email ?? "" }), fullUsername: full };
+        }
+
+        setUserData(data);
 
         const resultDoc = await getDoc(doc(db, "quizResults", user.uid));
         if (resultDoc.exists()) setTestResult(resultDoc.data() as TestResult);
