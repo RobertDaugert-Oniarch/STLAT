@@ -95,9 +95,13 @@
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: 2px;
-  color: var(--primary);
+  color: #889ff1;
   padding: 0.25rem 0.85rem 0.5rem;
   text-align: center;
+}
+
+[data-theme="dark"] .sidebar-logo {
+  color: var(--text);
 }
 
 .sidebar-divider {
@@ -135,14 +139,31 @@
   transition: background 0.15s;
 }
 
+.sidebar-btn svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
 .sidebar-btn:hover {
-  background: rgba(28, 227, 227, 0.08);
+  background: rgba(136, 159, 241, 0.10);
+  color: #889ff1;
 }
 
 .sidebar-btn--active {
-  background: rgba(28, 227, 227, 0.12);
+  background: rgba(136, 159, 241, 0.15);
   font-weight: 600;
-  color: var(--primary);
+  color: #889ff1;
+}
+
+/* -- Dark theme overrides -- */
+
+[data-theme="dark"] .sidebar-btn:hover {
+  background: rgba(14, 37, 119, 0.50);
+}
+
+[data-theme="dark"] .sidebar-btn--active {
+  background: rgba(14, 37, 119, 0.65);
+  color: var(--text);
 }
 
 /* ── Center main content ── */

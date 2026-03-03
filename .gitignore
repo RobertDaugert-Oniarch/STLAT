@@ -15,10 +15,6 @@ dist-ssr
 # Environment variables
 .env
 
-# Firebase
-.firebase/
-firestore.rules
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
