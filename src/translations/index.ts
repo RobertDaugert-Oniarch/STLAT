@@ -35,6 +35,36 @@ export const translations = {
     yourUsername: "Your username",
     yourUsernameSub: "Remember it — this is how others will see you!",
     continueBtn: "Continue",
+    // Profile page -- greetings
+    greetingMorning: "Good morning",
+    greetingAfternoon: "Good afternoon",
+    greetingEvening: "Good evening",
+    greetingNight: "Night owl?",
+    // Profile page -- levels
+    level_beginner: "Beginner",
+    level_intermediate: "Intermediate",
+    level_advanced: "Advanced",
+    level_expert: "Expert",
+    // Profile page -- test result
+    lastTestResult: "Test Result",
+    score: "Score",
+    noTestResult: "No test results yet",
+    // Profile page -- learning blocks
+    learningProgress: "Learning Progress",
+    moduleGrammar: "Grammar",
+    moduleVocabulary: "Vocabulary",
+    moduleReading: "Reading",
+    moduleListening: "Listening",
+    completed: "completed",
+    // Settings menu
+    settings: "Settings",
+    theme: "Theme",
+    language: "Language",
+    signOut: "Sign Out",
+    // Sidebar navigation
+    navHome: "Home",
+    navSurvey: "Survey",
+    navLectures: "Lectures",
     // Theme toggle
     switchToLight: "Switch to light mode",
     switchToDark: "Switch to dark mode",
@@ -73,6 +103,36 @@ export const translations = {
     yourUsername: "Tavs lietot\u0101jv\u0101rds",
     yourUsernameSub: "Iegaum\u0113 to \u2014 citi tevi redz\u0113s ar \u0161o v\u0101rdu!",
     continueBtn: "Turpin\u0101t",
+    // Profile page -- greetings
+    greetingMorning: "Labr\u012Bt",
+    greetingAfternoon: "Labdien",
+    greetingEvening: "Labvakar",
+    greetingNight: "Nakts p\u016Bce?",
+    // Profile page -- levels
+    level_beginner: "Ies\u0101c\u0113js",
+    level_intermediate: "Vid\u0113jais",
+    level_advanced: "Augst\u0101kais",
+    level_expert: "Eksperts",
+    // Profile page -- test result
+    lastTestResult: "Testa rezult\u0101ts",
+    score: "Rezult\u0101ts",
+    noTestResult: "Nav testa rezult\u0101tu",
+    // Profile page -- learning blocks
+    learningProgress: "M\u0101c\u012Bbu progress",
+    moduleGrammar: "Gramatika",
+    moduleVocabulary: "V\u0101rdu kr\u0101jums",
+    moduleReading: "Las\u012B\u0161ana",
+    moduleListening: "Klaus\u012B\u0161an\u0101s",
+    completed: "pabeigts",
+    // Settings menu
+    settings: "Iestat\u012Bjumi",
+    theme: "T\u0113ma",
+    language: "Valoda",
+    signOut: "Izrakst\u012Bties",
+    // Sidebar navigation
+    navHome: "S\u0101kums",
+    navSurvey: "Aptauja",
+    navLectures: "Lekcijas",
     // Theme toggle
     switchToLight: "P\u0101rsl\u0113gt uz gai\u0161o re\u017E\u012Bmu",
     switchToDark: "P\u0101rsl\u0113gt uz tum\u0161o re\u017E\u012Bmu",

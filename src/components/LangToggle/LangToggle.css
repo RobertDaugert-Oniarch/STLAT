@@ -3,8 +3,8 @@
 .lang-toggle {
   position: fixed;
   top: 1rem;
-  /* 1rem gap + 44px ThemeToggle width + 0.5rem spacing between buttons */
-  right: calc(1rem + 44px + 0.5rem);
+  /* 1rem gap + 44px menu button + 0.5rem + 44px theme button + 0.5rem */
+  right: calc(1rem + 44px + 0.5rem + 44px + 0.5rem);
   z-index: 200;
 
   display: flex;

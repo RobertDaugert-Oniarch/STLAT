@@ -12,6 +12,7 @@ import {
   where,
   serverTimestamp,
 } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
 import {
@@ -22,10 +23,13 @@ import {
   generateUniqueUsername,
   formatUsername,
 } from "../../utils/generateUsername";
+import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
+import LangToggle from "../../components/LangToggle/LangToggle";
 import "./LoginPage.css";
 
 const LoginPage = () => {
   const { t } = useLang();
+  const navigate = useNavigate();
 
   // Shared
   const [password, setPassword] = useState("");
@@ -104,6 +108,7 @@ const LoginPage = () => {
       try {
         const resolvedEmail = await resolveLoginEmail(loginId);
         await signInWithEmailAndPassword(auth, resolvedEmail, password);
+        navigate("/profile");
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
         else setError(t.unexpectedError);
@@ -117,6 +122,8 @@ const LoginPage = () => {
   if (generatedUsername) {
     return (
       <div className="login-page">
+        <ThemeToggle />
+        <LangToggle />
         <div className="login-bg-shape login-bg-shape--1" />
         <div className="login-bg-shape login-bg-shape--2" />
         <div className="login-bg-shape login-bg-shape--3" />
@@ -127,7 +134,7 @@ const LoginPage = () => {
           <p className="login-subtitle">{t.yourUsernameSub}</p>
           <button
             className="login-button"
-            onClick={() => setGeneratedUsername(null)}
+            onClick={() => navigate("/profile")}
           >
             {t.continueBtn}
           </button>
@@ -139,6 +146,8 @@ const LoginPage = () => {
   // ── Main form ──
   return (
     <div className="login-page">
+      <ThemeToggle />
+      <LangToggle />
       <div className="login-bg-shape login-bg-shape--1" />
       <div className="login-bg-shape login-bg-shape--2" />
       <div className="login-bg-shape login-bg-shape--3" />
