@@ -1,0 +1,374 @@
+/* Profile page layout */
+
+.profile-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: var(--background);
+}
+
+.profile-loading {
+  color: var(--text);
+  opacity: 0.5;
+  text-align: center;
+  margin-top: 40vh;
+}
+
+/* Decorative background shapes */
+
+.profile-bg-shape {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.profile-bg-shape--1 {
+  width: 500px;
+  height: 500px;
+  background: var(--primary);
+  top: -180px;
+  right: -140px;
+}
+
+.profile-bg-shape--2 {
+  width: 350px;
+  height: 350px;
+  background: var(--secondary);
+  bottom: -100px;
+  left: -80px;
+}
+
+.profile-bg-shape--3 {
+  width: 220px;
+  height: 220px;
+  background: var(--accent);
+  top: 45%;
+  left: 15%;
+}
+
+/* 3-column grid layout */
+
+.profile-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 200px 1fr 200px;
+  gap: 1.25rem;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+/* Glass card (shared) */
+
+.profile-card {
+  padding: 1.5rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+}
+
+/* Section title */
+
+.profile-section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 1rem;
+}
+
+/* ── Left sidebar ── */
+
+.profile-sidebar {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+}
+
+.sidebar-logo {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--primary);
+  padding: 0.25rem 0.85rem 0.5rem;
+  text-align: center;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--card-border);
+  margin: 0.25rem 0.5rem 0.5rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+}
+
+.sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sidebar-btn:hover {
+  background: rgba(28, 227, 227, 0.08);
+}
+
+.sidebar-btn--active {
+  background: rgba(28, 227, 227, 0.12);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* ── Center main content ── */
+
+.profile-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Greeting -- text on background, no card */
+
+.profile-greeting {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0.5rem 0 0;
+}
+
+/* Level badge */
+
+.profile-level {
+  display: inline-block;
+  width: fit-content;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.profile-level--beginner {
+  background: rgba(136, 159, 241, 0.15);
+  color: #889ff1;
+}
+
+.profile-level--intermediate {
+  background: rgba(28, 227, 227, 0.15);
+  color: #1ce3e3;
+}
+
+.profile-level--advanced {
+  background: rgba(87, 99, 234, 0.15);
+  color: #5763ea;
+}
+
+.profile-level--expert {
+  background: linear-gradient(135deg, rgba(28, 227, 227, 0.2), rgba(87, 99, 234, 0.2));
+  color: var(--primary);
+}
+
+/* Test result card */
+
+.profile-test-name {
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.7;
+  margin: 0 0 0.75rem;
+}
+
+.profile-test-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.6rem;
+}
+
+.profile-test-percent {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.profile-test-score {
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.profile-test-empty-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.profile-test-empty {
+  font-size: 0.9rem;
+  color: var(--text);
+  opacity: 0.5;
+  margin: 0;
+}
+
+/* Progress bar */
+
+.profile-progress-bar {
+  width: 100%;
+  height: 10px;
+  background: var(--input-border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.profile-progress-bar--small {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.profile-progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: inherit;
+  transition: width 0.6s ease;
+}
+
+/* Learning modules */
+
+.profile-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-module {
+  padding: 1rem;
+  background: var(--background);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.profile-module-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-module-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.profile-module-pct {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.profile-module-count {
+  font-size: 0.72rem;
+  color: var(--text);
+  opacity: 0.45;
+}
+
+/* ── Right panel ── */
+
+.profile-right {
+  align-self: start;
+}
+
+.profile-topbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: space-between;
+}
+
+.profile-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.profile-username {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 860px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    padding-top: 4rem;
+  }
+
+  .profile-sidebar {
+    position: static;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .profile-right {
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    order: -1;
+  }
+
+  .profile-user-card {
+    flex-direction: row;
+  }
+}

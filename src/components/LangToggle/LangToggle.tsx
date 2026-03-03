@@ -11,8 +11,8 @@ const LangToggle = () => {
       aria-label={lang === "en" ? t.switchToLv : t.switchToEn}
       title={lang === "en" ? t.switchToLv : t.switchToEn}
     >
-      {/* Show the TARGET language so user clicks to switch to it */}
-      {lang === "en" ? "LV" : "EN"}
+      {/* Show the ACTIVE language */}
+      {lang === "en" ? "EN" : "LV"}
     </button>
   );
 };

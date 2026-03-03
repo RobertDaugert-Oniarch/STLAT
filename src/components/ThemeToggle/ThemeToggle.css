@@ -1,9 +1,10 @@
-/* -- Fixed position: top-right corner -- */
+/* -- Fixed position: top-right, immediately left of menu button -- */
 
 .theme-toggle {
   position: fixed;
   top: 1rem;
-  right: 1rem;
+  /* 1rem gap + 44px menu button + 0.5rem spacing */
+  right: calc(1rem + 44px + 0.5rem);
   z-index: 200;
 
   display: flex;

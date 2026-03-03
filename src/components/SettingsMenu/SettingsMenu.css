@@ -1,0 +1,111 @@
+/* Settings menu container -- inline by default, fixed on login */
+
+.settings-menu {
+  position: relative;
+  z-index: 300;
+}
+
+/* Trigger button */
+
+.settings-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  color: var(--text);
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid var(--card-border);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 4px 16px var(--card-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.settings-trigger:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(28, 227, 227, 0.3);
+}
+
+.settings-trigger:active {
+  transform: scale(0.93);
+}
+
+/* Dropdown panel */
+
+.settings-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 240px;
+  padding: 0.5rem;
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px var(--card-shadow);
+  animation: settings-fade-in 0.15s ease;
+}
+
+@keyframes settings-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Row button */
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.settings-row:hover {
+  background: rgba(28, 227, 227, 0.08);
+}
+
+.settings-row-icon {
+  font-size: 1.1rem;
+  width: 1.5rem;
+  text-align: center;
+}
+
+.settings-row-value {
+  margin-left: auto;
+  font-size: 0.8rem;
+  opacity: 0.5;
+}
+
+/* Danger row (sign out) */
+
+.settings-row--danger:hover {
+  background: rgba(224, 72, 72, 0.1);
+  color: #e04848;
+}
+
+/* Divider */
+
+.settings-divider {
+  height: 1px;
+  margin: 0.35rem 0.75rem;
+  background: var(--card-border);
+}
