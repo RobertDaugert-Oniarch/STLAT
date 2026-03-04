@@ -8,8 +8,8 @@ import { useTheme } from "../../context/ThemeContext";
 import "./SettingsMenu.css";
 
 const SettingsMenu = () => {
-  const { t, lang, toggleLang, applyLang } = useLang();
-  const { theme, toggleTheme, applyTheme } = useTheme();
+  const { t, lang, applyLang } = useLang();
+  const { theme, applyTheme } = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
