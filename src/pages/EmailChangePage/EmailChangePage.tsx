@@ -3,11 +3,10 @@ import {
   onAuthStateChanged,
   reauthenticateWithCredential,
   EmailAuthProvider,
-  updateEmail,
+  verifyBeforeUpdateEmail,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebase/config";
+import { auth } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
 import "./EmailChangePage.css";
 
@@ -48,9 +47,7 @@ const EmailChangePage = () => {
     try {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credential);
-      await updateEmail(user, newEmail.trim());
-      await user.getIdToken(true);
-      await setDoc(doc(db, "users", user.uid), { email: newEmail.trim() }, { merge: true });
+      await verifyBeforeUpdateEmail(user, newEmail.trim());
       setSuccess(true);
       setTimeout(() => navigate("/settings"), 1800);
     } catch (err: unknown) {
@@ -137,7 +134,7 @@ const EmailChangePage = () => {
         </div>
 
         {error && <p className="echange-error">{error}</p>}
-        {success && <p className="echange-success">{t.emailUpdated}</p>}
+        {success && <p className="echange-success">{t.emailVerificationSent}</p>}
 
         <div className="echange-actions">
           <button

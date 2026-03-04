@@ -145,6 +145,9 @@ const SettingsPage = () => {
           setUsername(data.fullUsername ?? "");
           if (data.theme === "light" || data.theme === "dark") applyTheme(data.theme);
           if (data.lang === "en" || data.lang === "lv") applyLang(data.lang);
+          if (user.email && data.email !== user.email) {
+            await setDoc(doc(db, "users", user.uid), { email: user.email }, { merge: true });
+          }
         }
       } catch {
         // Firestore read may fail
