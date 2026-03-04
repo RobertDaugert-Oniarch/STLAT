@@ -1,22 +1,133 @@
-import { useState, useEffect } from "react";
-import { onAuthStateChanged, sendPasswordResetEmail, deleteUser } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { onAuthStateChanged, deleteUser } from "firebase/auth";
+import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
 import "./SettingsPage.css";
 
+interface SettingsSelectOption {
+  value: string;
+  label: string;
+}
+
+const SettingsSelect = ({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: SettingsSelectOption[];
+}) => {
+  const [open, setOpen] = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
+  const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handle = (e: MouseEvent) => {
+      if (
+        ref.current && !ref.current.contains(e.target as Node) &&
+        menuRef.current && !menuRef.current.contains(e.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handle);
+    return () => document.removeEventListener("mousedown", handle);
+  }, []);
+
+  const handleToggle = () => {
+    if (!open && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setMenuPos({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right,
+      });
+    }
+    setOpen((v) => !v);
+  };
+
+  const selected = options.find((o) => o.value === value);
+
+  return (
+    <div className="stn-dropdown" ref={ref}>
+      <button
+        ref={triggerRef}
+        className="stn-dropdown-trigger"
+        onClick={handleToggle}
+        type="button"
+      >
+        {selected?.label}
+        <svg
+          className={`stn-dropdown-chevron${open ? " open" : ""}`}
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && createPortal(
+        <div
+          ref={menuRef}
+          className="stn-dropdown-menu"
+          style={{ position: "fixed", top: menuPos.top, right: menuPos.right }}
+        >
+          {options.map((opt) => (
+            <button
+              key={opt.value}
+              className={`stn-dropdown-item${opt.value === value ? " active" : ""}`}
+              onClick={() => {
+                onChange(opt.value);
+                setOpen(false);
+              }}
+              type="button"
+            >
+              {opt.label}
+              {opt.value === value && (
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+};
+
 const SettingsPage = () => {
-  const { t, lang, toggleLang, applyLang } = useLang();
-  const { theme, toggleTheme, applyTheme } = useTheme();
+  const { t, lang, applyLang } = useLang();
+  const { theme, applyTheme } = useTheme();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -44,36 +155,25 @@ const SettingsPage = () => {
     return () => unsub();
   }, [navigate, applyTheme, applyLang]);
 
-  const handleThemeToggle = async () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    toggleTheme();
+  const handleThemeChange = async (newTheme: "light" | "dark") => {
+    applyTheme(newTheme);
     const user = auth.currentUser;
     if (!user) return;
     try {
       await setDoc(doc(db, "users", user.uid), { theme: newTheme }, { merge: true });
-    } catch {}
+    } catch {
+      // Firestore write may fail silently
+    }
   };
 
-  const handleLangToggle = async () => {
-    const newLang = lang === "en" ? "lv" : "en";
-    toggleLang();
+  const handleLangChange = async (newLang: "en" | "lv") => {
+    applyLang(newLang);
     const user = auth.currentUser;
     if (!user) return;
     try {
       await setDoc(doc(db, "users", user.uid), { lang: newLang }, { merge: true });
-    } catch {}
-  };
-
-  const handlePasswordDelete = async () => {
-    const user = auth.currentUser;
-    if (!user?.email) return;
-    setError("");
-    try {
-      await sendPasswordResetEmail(auth, user.email);
-      setResetSent(true);
-      setTimeout(() => setResetSent(false), 5000);
     } catch {
-      setError(t.unexpectedError);
+      // Firestore write may fail silently
     }
   };
 
@@ -82,6 +182,8 @@ const SettingsPage = () => {
     if (!user) return;
     setError("");
     try {
+      await deleteDoc(doc(db, "users", user.uid));
+      await deleteDoc(doc(db, "quizResults", user.uid));
       await deleteUser(user);
       navigate("/login");
     } catch {
@@ -134,10 +236,10 @@ const SettingsPage = () => {
                 <span className="settings-field-value">{email}</span>
               </div>
               <button
-                className="settings-action-btn settings-action-btn--danger"
-                onClick={() => { setError(""); setShowDeleteConfirm(true); }}
+                className="settings-action-btn settings-action-btn--neutral"
+                onClick={() => navigate("/settings/email")}
               >
-                {t.delete}
+                {t.change}
               </button>
             </div>
 
@@ -149,11 +251,10 @@ const SettingsPage = () => {
                 <span className="settings-field-value settings-field-value--masked">••••••••••••</span>
               </div>
               <button
-                className="settings-action-btn settings-action-btn--danger"
-                onClick={handlePasswordDelete}
-                disabled={resetSent}
+                className="settings-action-btn settings-action-btn--neutral"
+                onClick={() => navigate("/settings/password")}
               >
-                {resetSent ? t.resetSent : t.delete}
+                {t.change}
               </button>
             </div>
           </div>
@@ -165,28 +266,47 @@ const SettingsPage = () => {
           <h2 className="settings-section-heading">{t.settings}</h2>
           <div className="settings-card">
             <div className="settings-field">
-              <div className="settings-field-info">
-                <span className="settings-field-label">{t.theme}</span>
-                <span className="settings-field-value">
-                  {theme === "dark" ? t.switchToLight : t.switchToDark}
-                </span>
-              </div>
-              <button className="settings-toggle-btn" onClick={handleThemeToggle}>
-                {theme === "dark" ? "☀️" : "🌙"}
-              </button>
+              <span className="settings-field-label">{t.theme}</span>
+              <SettingsSelect
+                value={theme}
+                onChange={(v) => handleThemeChange(v as "light" | "dark")}
+                options={[
+                  { value: "light", label: t.themeLight },
+                  { value: "dark", label: t.themeDark },
+                ]}
+              />
             </div>
 
             <div className="settings-field-divider" />
 
             <div className="settings-field">
+              <span className="settings-field-label">{t.language}</span>
+              <SettingsSelect
+                value={lang}
+                onChange={(v) => handleLangChange(v as "en" | "lv")}
+                options={[
+                  { value: "en", label: t.langEnglish },
+                  { value: "lv", label: t.langLatvian },
+                ]}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Other section */}
+        <section className="settings-section">
+          <h2 className="settings-section-heading">{t.other}</h2>
+          <div className="settings-card">
+            <div className="settings-field">
               <div className="settings-field-info">
-                <span className="settings-field-label">{t.language}</span>
-                <span className="settings-field-value">
-                  {lang === "en" ? "English" : "Latviešu"}
-                </span>
+                <span className="settings-danger-title">{t.accountDeletion}</span>
+                <span className="settings-field-label">{t.accountDeletionDesc}</span>
               </div>
-              <button className="settings-toggle-btn" onClick={handleLangToggle}>
-                {lang === "en" ? "LV" : "EN"}
+              <button
+                className="settings-action-btn settings-action-btn--danger"
+                onClick={() => { setError(""); setShowDeleteConfirm(true); }}
+              >
+                {t.delete}
               </button>
             </div>
           </div>

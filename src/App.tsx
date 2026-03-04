@@ -4,6 +4,8 @@ import { LangProvider } from "./context/LangContext";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
+import EmailChangePage from "./pages/EmailChangePage/EmailChangePage";
+import PasswordChangePage from "./pages/PasswordChangePage/PasswordChangePage";
 import "./App.css";
 
 function App() {
@@ -15,6 +17,8 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/settings/email" element={<EmailChangePage />} />
+            <Route path="/settings/password" element={<PasswordChangePage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
