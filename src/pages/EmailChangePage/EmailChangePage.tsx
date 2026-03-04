@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
-import { onAuthStateChanged, updateEmail } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import {
+  onAuthStateChanged,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  verifyBeforeUpdateEmail,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebase/config";
+import { auth } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
 import "./EmailChangePage.css";
 
@@ -14,6 +18,7 @@ const EmailChangePage = () => {
   const navigate = useNavigate();
 
   const [currentEmail, setCurrentEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -34,20 +39,23 @@ const EmailChangePage = () => {
 
   const handleSave = async () => {
     const user = auth.currentUser;
-    if (!user || !newEmail.trim()) return;
+    if (!user || !user.email || !newEmail.trim() || !currentPassword) return;
 
     setError("");
     setSaving(true);
 
     try {
-      await updateEmail(user, newEmail.trim());
-      await setDoc(doc(db, "users", user.uid), { email: newEmail.trim() }, { merge: true });
+      const credential = EmailAuthProvider.credential(user.email, currentPassword);
+      await reauthenticateWithCredential(user, credential);
+      await verifyBeforeUpdateEmail(user, newEmail.trim());
       setSuccess(true);
       setTimeout(() => navigate("/settings"), 1800);
     } catch (err: unknown) {
       const code = (err as { code?: string }).code ?? "";
-      if (code === "auth/requires-recent-login") {
-        setError("Please sign out and sign in again before changing your email.");
+      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
+        setError(t.wrongPassword);
+      } else if (code === "auth/requires-recent-login") {
+        setError(t.wrongPassword);
       } else if (code === "auth/email-already-in-use") {
         setError("This email address is already in use.");
       } else if (code === "auth/invalid-email") {
@@ -88,6 +96,25 @@ const EmailChangePage = () => {
 
           <div className="echange-divider" />
 
+          {/* Current password */}
+          <div className="echange-field echange-field--column">
+            <label className="echange-field-label" htmlFor="current-password">
+              {t.currentPassword}
+            </label>
+            <input
+              id="current-password"
+              type="password"
+              className="echange-input"
+              placeholder={t.currentPasswordPlaceholder}
+              value={currentPassword}
+              onChange={(e) => { setCurrentPassword(e.target.value); setError(""); }}
+              disabled={saving || success}
+              autoComplete="current-password"
+            />
+          </div>
+
+          <div className="echange-divider" />
+
           {/* New email input */}
           <div className="echange-field echange-field--column">
             <label className="echange-field-label" htmlFor="new-email">
@@ -107,7 +134,7 @@ const EmailChangePage = () => {
         </div>
 
         {error && <p className="echange-error">{error}</p>}
-        {success && <p className="echange-success">{t.emailUpdated}</p>}
+        {success && <p className="echange-success">{t.emailVerificationSent}</p>}
 
         <div className="echange-actions">
           <button
@@ -120,7 +147,7 @@ const EmailChangePage = () => {
           <button
             className="echange-btn echange-btn--save"
             onClick={handleSave}
-            disabled={saving || !isValidEmail(newEmail.trim()) || success}
+            disabled={saving || !isValidEmail(newEmail.trim()) || !currentPassword || success}
           >
             {saving ? t.loading : t.save}
           </button>

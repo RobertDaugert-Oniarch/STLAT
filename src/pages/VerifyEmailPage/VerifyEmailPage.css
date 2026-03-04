@@ -1,0 +1,49 @@
+.vep-card {
+  gap: 0.9rem;
+  text-align: center;
+}
+
+.vep-icon {
+  font-size: 2.8rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.vep-email {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+  word-break: break-all;
+  margin: 0;
+}
+
+.vep-resent {
+  font-size: 0.85rem;
+  color: #3cb97a;
+  background: rgba(60, 185, 122, 0.08);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin: 0;
+}
+
+.vep-btn--secondary {
+  background: transparent;
+  border: 1.5px solid var(--input-border);
+  color: var(--text);
+}
+
+.vep-btn--secondary:hover:not(:disabled) {
+  border-color: var(--primary);
+  opacity: 1;
+}
+
+.vep-signout {
+  margin-top: 0.5rem;
+  opacity: 0.6;
+  font-size: 0.85rem;
+}
+
+.vep-loading {
+  color: var(--text);
+  opacity: 0.6;
+}

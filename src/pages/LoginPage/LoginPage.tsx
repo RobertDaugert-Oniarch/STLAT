@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
 import {
   doc,
@@ -95,6 +96,8 @@ const LoginPage = () => {
           createdAt: serverTimestamp(),
         });
 
+        await sendEmailVerification(cred.user);
+
         setGeneratedUsername(full);
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
@@ -107,8 +110,12 @@ const LoginPage = () => {
       setLoading(true);
       try {
         const resolvedEmail = await resolveLoginEmail(loginId);
-        await signInWithEmailAndPassword(auth, resolvedEmail, password);
-        navigate("/profile");
+        const userCred = await signInWithEmailAndPassword(auth, resolvedEmail, password);
+        if (!userCred.user.emailVerified) {
+          navigate("/verify-email");
+        } else {
+          navigate("/profile");
+        }
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
         else setError(t.unexpectedError);
@@ -134,7 +141,7 @@ const LoginPage = () => {
           <p className="login-subtitle">{t.yourUsernameSub}</p>
           <button
             className="login-button"
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate("/verify-email")}
           >
             {t.continueBtn}
           </button>

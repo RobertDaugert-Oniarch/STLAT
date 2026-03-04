@@ -6,6 +6,7 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import EmailChangePage from "./pages/EmailChangePage/EmailChangePage";
 import PasswordChangePage from "./pages/PasswordChangePage/PasswordChangePage";
+import VerifyEmailPage from "./pages/VerifyEmailPage/VerifyEmailPage";
 import "./App.css";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/settings/email" element={<EmailChangePage />} />

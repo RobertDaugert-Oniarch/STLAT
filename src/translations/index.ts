@@ -93,6 +93,7 @@ export const translations = {
     newEmailPlaceholder: "Enter new email address",
     save: "Save",
     emailUpdated: "Email updated successfully!",
+    emailVerificationSent: "Verification email sent! Check your new inbox.",
     themeLight: "Light",
     themeDark: "Dark",
     langEnglish: "English",
@@ -107,6 +108,13 @@ export const translations = {
     confirmNewPasswordPlaceholder: "Repeat new password",
     passwordUpdated: "Password updated successfully!",
     wrongPassword: "Current password is incorrect.",
+    // Email verification page
+    verifyEmailTitle: "Verify Your Email",
+    verifyEmailDesc: "We've sent a verification link to:",
+    verifyEmailResend: "Resend Email",
+    verifyEmailResent: "Email sent! Check your inbox.",
+    verifyEmailCheck: "I've verified, continue",
+    verifyEmailNotVerified: "Email not verified yet. Please check your inbox and click the link.",
   },
   lv: {
     // Login page
@@ -196,7 +204,8 @@ export const translations = {
     newEmail: "Jaunais e-pasts",
     newEmailPlaceholder: "Ievadiet jauno e-pasta adresi",
     save: "Saglab\u0101t",
-    emailUpdated: "E-pasts veikm\u012Bgi atjaunin\u0101ts!",
+    emailUpdated: "E-pasts veiksmīgi atjaunināts!",
+    emailVerificationSent: "Verifikācijas e-pasts nosūtīts! Pārbaudiet jauno pastkasti.",
     themeLight: "Gai\u0161ais",
     themeDark: "Tum\u0161ais",
     langEnglish: "Ang\u013Cu",
@@ -211,6 +220,13 @@ export const translations = {
     confirmNewPasswordPlaceholder: "Atk\u0101rtojiet jauno paroli",
     passwordUpdated: "Parole veikm\u012Bgi atjaunin\u0101ta!",
     wrongPassword: "Pa\u0161reiz\u0113j\u0101 parole ir nepareiza.",
+    // Email verification page
+    verifyEmailTitle: "Verificējiet savu e-pastu",
+    verifyEmailDesc: "Mēs nosūtījām verifikācijas saiti uz:",
+    verifyEmailResend: "Nosūtīt atkārtoti",
+    verifyEmailResent: "E-pasts nosūtīts! Pārbaudiet savu pastkasti.",
+    verifyEmailCheck: "Esmu verificējis, turpināt",
+    verifyEmailNotVerified: "E-pasts vēl nav verificēts. Pārbaudiet pastkasti un noklikšķiniet uz saites.",
   },
 } as const;
 
