@@ -71,6 +71,17 @@ export const translations = {
     // Language toggle
     switchToLv: "Switch to Latvian",
     switchToEn: "Switch to English",
+    // Settings page
+    settingsPageTitle: "User Settings",
+    account: "Account",
+    username: "Username",
+    delete: "Delete",
+    resetSent: "Reset email sent",
+    confirmDeleteAccount: "Delete Account",
+    confirmDeleteDesc: "Are you sure you want to delete your account? This action cannot be undone.",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    backToProfile: "Back",
   },
   lv: {
     // Login page
@@ -139,6 +150,17 @@ export const translations = {
     // Language toggle
     switchToLv: "P\u0101rsl\u0113gt uz latvie\u0161u valodu",
     switchToEn: "P\u0101rsl\u0113gt uz ang\u013Cu valodu",
+    // Settings page
+    settingsPageTitle: "Lietot\u0101ja iestat\u012Bjumi",
+    account: "Konts",
+    username: "Lietot\u0101jv\u0101rds",
+    delete: "Dz\u0113st",
+    resetSent: "Atiestat\u012B\u0161anas e-pasts nos\u016Bts",
+    confirmDeleteAccount: "Dz\u0113st kontu",
+    confirmDeleteDesc: "Vai tie\u0161\u0101m v\u0113laties dz\u0113st savu kontu? \u0160o darb\u012Bbu nevar atcelt.",
+    cancel: "Atcelt",
+    confirm: "Apstiprin\u0101t",
+    backToProfile: "Atpaka\u013C",
   },
 } as const;
 

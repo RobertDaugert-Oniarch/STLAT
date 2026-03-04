@@ -3,6 +3,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { LangProvider } from "./context/LangContext";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>

@@ -4,6 +4,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
+import { useTheme } from "../../context/ThemeContext";
 import { getLevel, getGreetingKey, getInitials } from "../../utils/profileHelpers";
 import { generateUniqueUsername, formatUsername } from "../../utils/generateUsername";
 import SettingsMenu from "../../components/SettingsMenu/SettingsMenu";
@@ -12,6 +13,8 @@ import "./ProfilePage.css";
 interface UserData {
   fullUsername: string;
   email: string;
+  theme?: "light" | "dark";
+  lang?: "en" | "lv";
 }
 
 interface TestResult {
@@ -27,7 +30,8 @@ const MODULES = [
 ];
 
 const ProfilePage = () => {
-  const { t } = useLang();
+  const { t, applyLang } = useLang();
+  const { applyTheme } = useTheme();
   const navigate = useNavigate();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
@@ -58,6 +62,9 @@ const ProfilePage = () => {
 
         setUserData(data);
 
+        if (data.theme === "light" || data.theme === "dark") applyTheme(data.theme);
+        if (data.lang === "en" || data.lang === "lv") applyLang(data.lang);
+
         const resultDoc = await getDoc(doc(db, "quizResults", user.uid));
         if (resultDoc.exists()) setTestResult(resultDoc.data() as TestResult);
       } catch {
@@ -67,7 +74,7 @@ const ProfilePage = () => {
       }
     });
     return () => unsub();
-  }, [navigate]);
+  }, [navigate, applyTheme, applyLang]);
 
   if (loading) {
     return (
