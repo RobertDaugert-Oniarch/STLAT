@@ -49,6 +49,7 @@ const EmailChangePage = () => {
       const credential = EmailAuthProvider.credential(user.email, currentPassword);
       await reauthenticateWithCredential(user, credential);
       await updateEmail(user, newEmail.trim());
+      await user.getIdToken(true);
       await setDoc(doc(db, "users", user.uid), { email: newEmail.trim() }, { merge: true });
       setSuccess(true);
       setTimeout(() => navigate("/settings"), 1800);
