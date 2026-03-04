@@ -108,6 +108,13 @@ export const translations = {
     confirmNewPasswordPlaceholder: "Repeat new password",
     passwordUpdated: "Password updated successfully!",
     wrongPassword: "Current password is incorrect.",
+    // Email verification page
+    verifyEmailTitle: "Verify Your Email",
+    verifyEmailDesc: "We've sent a verification link to:",
+    verifyEmailResend: "Resend Email",
+    verifyEmailResent: "Email sent! Check your inbox.",
+    verifyEmailCheck: "I've verified, continue",
+    verifyEmailNotVerified: "Email not verified yet. Please check your inbox and click the link.",
   },
   lv: {
     // Login page
@@ -213,6 +220,13 @@ export const translations = {
     confirmNewPasswordPlaceholder: "Atk\u0101rtojiet jauno paroli",
     passwordUpdated: "Parole veikm\u012Bgi atjaunin\u0101ta!",
     wrongPassword: "Pa\u0161reiz\u0113j\u0101 parole ir nepareiza.",
+    // Email verification page
+    verifyEmailTitle: "Verificējiet savu e-pastu",
+    verifyEmailDesc: "Mēs nosūtījām verifikācijas saiti uz:",
+    verifyEmailResend: "Nosūtīt atkārtoti",
+    verifyEmailResent: "E-pasts nosūtīts! Pārbaudiet savu pastkasti.",
+    verifyEmailCheck: "Esmu verificējis, turpināt",
+    verifyEmailNotVerified: "E-pasts vēl nav verificēts. Pārbaudiet pastkasti un noklikšķiniet uz saites.",
   },
 } as const;
 
