@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { signOut } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase/config";
+import { auth, db } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
 import "./SettingsMenu.css";
 
 const SettingsMenu = () => {
-  const { t, lang, toggleLang } = useLang();
-  const { theme, toggleTheme } = useTheme();
+  const { t, lang, applyLang } = useLang();
+  const { theme, applyTheme } = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -23,6 +24,30 @@ const SettingsMenu = () => {
     if (open) document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, [open]);
+
+  const handleToggleTheme = async () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    applyTheme(newTheme);
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      await setDoc(doc(db, "users", user.uid), { theme: newTheme }, { merge: true });
+    } catch {
+      // silent
+    }
+  };
+
+  const handleToggleLang = async () => {
+    const newLang = lang === "en" ? "lv" : "en";
+    applyLang(newLang);
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      await setDoc(doc(db, "users", user.uid), { lang: newLang }, { merge: true });
+    } catch {
+      // silent
+    }
+  };
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -46,14 +71,14 @@ const SettingsMenu = () => {
       {open && (
         <div className="settings-dropdown">
           {/* Theme toggle */}
-          <button className="settings-row" onClick={toggleTheme}>
+          <button className="settings-row" onClick={handleToggleTheme}>
             <span className="settings-row-icon">{theme === "dark" ? "☀️" : "🌙"}</span>
             <span>{t.theme}</span>
             <span className="settings-row-value">{theme === "dark" ? t.switchToLight : t.switchToDark}</span>
           </button>
 
           {/* Language toggle */}
-          <button className="settings-row" onClick={toggleLang}>
+          <button className="settings-row" onClick={handleToggleLang}>
             <span className="settings-row-icon">🌐</span>
             <span>{t.language}</span>
             <span className="settings-row-value">{lang === "en" ? "EN" : "LV"}</span>

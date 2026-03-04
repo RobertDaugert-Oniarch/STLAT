@@ -1,19 +1,19 @@
 /* Design tokens -- light theme (default) */
 
 :root {
-  --text: #031516;
-  --background: #f6fdfe;
-  --primary: #1ce3e3;
-  --secondary: #889ff1;
-  --accent: #5763ea;
+  --text: #080b12;          /* text-950 */
+  --background: #edf2f7;    /* background-50 */
+  --primary: #3c72c3;       /* primary-500 */
+  --secondary: #326dcd;     /* secondary-500 */
+  --accent: #286ed7;        /* accent-500 */
 
   /* Glass card surfaces */
-  --card-bg: rgba(255, 255, 255, 0.75);
-  --card-border: rgba(255, 255, 255, 0.65);
-  --card-shadow: rgba(3, 21, 22, 0.08);
+  --card-bg: rgba(255, 255, 255, 0.80);
+  --card-border: rgba(60, 114, 195, 0.2);   /* primary-500 tinted */
+  --card-shadow: rgba(8, 11, 18, 0.08);
 
   /* Input border */
-  --input-border: rgba(3, 21, 22, 0.12);
+  --input-border: rgba(8, 11, 18, 0.12);
 
   font-family: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -32,19 +32,19 @@
 /* Design tokens -- dark theme */
 
 [data-theme="dark"] {
-  --text: #e9fbfc;
-  --background: #010809;
-  --primary: #1ce3e3;
-  --secondary: #0e2577;
-  --accent: #1521a8;
+  --text: #edf1f7;           /* text-50 */
+  --background: #080d12;     /* background-950 */
+  --primary: #3c72c3;        /* primary-500 */
+  --secondary: #326dcd;      /* secondary-500 */
+  --accent: #286ed7;         /* accent-500 */
 
   /* Glass card surfaces */
-  --card-bg: rgba(1, 8, 9, 0.65);
-  --card-border: rgba(233, 251, 252, 0.1);
+  --card-bg: rgba(15, 25, 36, 0.72);         /* background-900 tinted */
+  --card-border: rgba(60, 114, 195, 0.18);   /* primary-500 tinted */
   --card-shadow: rgba(0, 0, 0, 0.45);
 
   /* Input border */
-  --input-border: rgba(233, 251, 252, 0.12);
+  --input-border: rgba(237, 241, 247, 0.15);
 
   color-scheme: dark;
   color: var(--text);

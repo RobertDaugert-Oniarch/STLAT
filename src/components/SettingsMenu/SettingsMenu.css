@@ -26,7 +26,7 @@
 
 .settings-trigger:hover {
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(28, 227, 227, 0.3);
+  box-shadow: 0 6px 20px rgba(60, 114, 195, 0.3);
 }
 
 .settings-trigger:active {
@@ -80,7 +80,7 @@
 }
 
 .settings-row:hover {
-  background: rgba(28, 227, 227, 0.08);
+  background: rgba(60, 114, 195, 0.08);
 }
 
 .settings-row-icon {
