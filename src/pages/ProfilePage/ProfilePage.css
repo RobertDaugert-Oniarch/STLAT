@@ -237,6 +237,48 @@
   margin: 0;
 }
 
+/* Category breakdown in test result card */
+
+.profile-category-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--card-border);
+}
+
+.profile-cat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profile-cat-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.75;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.profile-cat-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--card-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.profile-cat-pct {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 30px;
+  text-align: right;
+}
+
 /* Progress bar */
 
 .profile-progress-bar {

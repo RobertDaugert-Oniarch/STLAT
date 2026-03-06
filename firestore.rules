@@ -16,5 +16,16 @@ service cloud.firestore {
     match /quizResults/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
+
+    // Survey questions — any authenticated user can read, no client writes
+    match /questions/{questionId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // Per-user survey history — only the owner can read/write
+    match /surveyHistory/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
   }
 }

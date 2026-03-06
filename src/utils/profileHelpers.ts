@@ -1,10 +1,13 @@
-export type Level = "beginner" | "intermediate" | "advanced" | "expert";
+export type Level = "novice" | "beginner" | "elementary" | "intermediate" | "advanced" | "expert" | "master";
 
 export function getLevel(percentage: number): Level {
-  if (percentage >= 90) return "expert";
-  if (percentage >= 75) return "advanced";
-  if (percentage >= 50) return "intermediate";
-  return "beginner";
+  if (percentage >= 90) return "master";
+  if (percentage >= 80) return "expert";
+  if (percentage >= 70) return "advanced";
+  if (percentage >= 55) return "intermediate";
+  if (percentage >= 40) return "elementary";
+  if (percentage >= 20) return "beginner";
+  return "novice";
 }
 
 export type GreetingKey =
