@@ -22,6 +22,7 @@ interface TestResult {
   score: number;
   total: number;
   percentage: number;
+  categoryResults?: Record<string, { total: number; correctCount: number; percentage: number }>;
 }
 
 // Placeholder modules until real data is available
@@ -108,7 +109,7 @@ const ProfilePage = () => {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
               <span>{t.navHome}</span>
             </button>
-            <button className="sidebar-btn">
+            <button className="sidebar-btn" onClick={() => navigate("/survey")}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
               <span>{t.navSurvey}</span>
             </button>
@@ -145,6 +146,24 @@ const ProfilePage = () => {
                     {t.score}: {testResult.score}/{testResult.total}
                   </span>
                 </div>
+                {testResult.categoryResults && (
+                  <div className="profile-category-breakdown">
+                    {Object.entries(testResult.categoryResults).map(([cat, stats]) =>
+                      stats.total > 0 ? (
+                        <div className="profile-cat-row" key={cat}>
+                          <span className="profile-cat-name">{cat}</span>
+                          <div className="profile-cat-bar">
+                            <div
+                              className="profile-progress-fill"
+                              style={{ width: `${stats.percentage}%` }}
+                            />
+                          </div>
+                          <span className="profile-cat-pct">{stats.percentage}%</span>
+                        </div>
+                      ) : null,
+                    )}
+                  </div>
+                )}
               </>
             ) : (
               <div className="profile-test-empty-wrap">
