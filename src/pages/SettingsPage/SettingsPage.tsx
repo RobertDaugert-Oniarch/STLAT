@@ -189,9 +189,12 @@ const SettingsPage = () => {
       await deleteDoc(doc(db, "quizResults", user.uid));
       await deleteUser(user);
       navigate("/login");
-    } catch {
+    } catch (err: unknown) {
       setShowDeleteConfirm(false);
-      setError(t.unexpectedError);
+      const code = (err as { code?: string }).code ?? "";
+      if (code === "auth/requires-recent-login") setError(t.errorRequiresRecentLogin);
+      else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
+      else setError(t.unexpectedError);
     }
   };
 

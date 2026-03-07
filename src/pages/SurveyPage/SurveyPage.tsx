@@ -75,6 +75,7 @@ const SurveyPage = () => {
   const [, setCategoryResults] = useState<Record<string, CategoryStats>>({});
   const [overallPercentage, setOverallPercentage] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Error
   const [error, setError] = useState<string | null>(null);
@@ -207,7 +208,7 @@ const SurveyPage = () => {
           categoryResults: catRes,
           overallPercentage: overall,
         })
-          .catch((err) => console.error("Failed to save session:", err))
+          .catch(() => setSaveError(t.surveySaveError))
           .finally(() => setSaving(false));
       }
 
@@ -215,7 +216,7 @@ const SurveyPage = () => {
     } else {
       setCurrentIndex((prev) => prev + 1);
     }
-  }, [currentIndex, queue.length, answers, uid, sessionStartedAt]);
+  }, [currentIndex, queue.length, answers, uid, sessionStartedAt, t]);
 
   // ── Retake ──
   const handleRetake = useCallback(() => {
@@ -371,6 +372,7 @@ const SurveyPage = () => {
         </div>
 
         {saving && <p className="survey-saving">{t.loading}</p>}
+        {saveError && <p className="survey-error">{saveError}</p>}
 
         <div className="survey-result-actions">
           <button className="survey-btn survey-btn--start" onClick={handleRetake}>

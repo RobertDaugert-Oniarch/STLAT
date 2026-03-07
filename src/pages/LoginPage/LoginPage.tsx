@@ -100,7 +100,11 @@ const LoginPage = () => {
 
         setGeneratedUsername(full);
       } catch (err: unknown) {
-        if (err instanceof Error) setError(err.message);
+        const code = (err as { code?: string }).code ?? "";
+        if (code === "auth/email-already-in-use") setError(t.errorEmailInUse);
+        else if (code === "auth/invalid-email") setError(t.errorInvalidEmail);
+        else if (code === "auth/too-many-requests") setError(t.errorTooManyRequests);
+        else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
         else setError(t.unexpectedError);
       } finally {
         setLoading(false);
@@ -117,7 +121,14 @@ const LoginPage = () => {
           navigate("/profile");
         }
       } catch (err: unknown) {
-        if (err instanceof Error) setError(err.message);
+        const code = (err as { code?: string }).code ?? "";
+        if (code === "auth/user-not-found") setError(t.errorUserNotFound);
+        else if (code === "auth/wrong-password") setError(t.wrongPassword);
+        else if (code === "auth/invalid-credential") setError(t.errorInvalidCredentials);
+        else if (code === "auth/invalid-email") setError(t.errorInvalidEmail);
+        else if (code === "auth/too-many-requests") setError(t.errorTooManyRequests);
+        else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
+        else if (code === "auth/user-disabled") setError(t.errorUserDisabled);
         else setError(t.unexpectedError);
       } finally {
         setLoading(false);

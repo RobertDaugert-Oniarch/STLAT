@@ -136,6 +136,16 @@ export const translations = {
     surveyLoadingAI: "AI is preparing your questions…",
     surveyNoQuestions: "No questions available. Please try again later.",
     surveyEstimate: "Estimated time: ~10 minutes",
+    // Firebase error messages
+    errorUserNotFound: "No account found with this email or username.",
+    errorInvalidCredentials: "Incorrect email or password.",
+    errorEmailInUse: "This email address is already in use.",
+    errorInvalidEmail: "Please enter a valid email address.",
+    errorTooManyRequests: "Too many attempts. Please try again later.",
+    errorNetworkFailed: "Network error. Please check your connection.",
+    errorRequiresRecentLogin: "Please sign in again to continue.",
+    errorUserDisabled: "This account has been disabled. Contact support.",
+    surveySaveError: "Your results could not be saved. Please check your connection.",
   },
   lv: {
     // Login page
@@ -269,6 +279,16 @@ export const translations = {
     surveyLoadingAI: "AI gatavo jūsu jautājumus…",
     surveyNoQuestions: "Nav pieejamu jautājumu. Mēģiniet vēlāk.",
     surveyEstimate: "Aptuvens laiks: ~10 minūtes",
+    // Firebase error messages
+    errorUserNotFound: "Nav atrasts konts ar šo e-pastu vai lietotājvārdu.",
+    errorInvalidCredentials: "Nepareizs e-pasts vai parole.",
+    errorEmailInUse: "Šī e-pasta adrese jau tiek izmantota.",
+    errorInvalidEmail: "Lūdzu, ievadiet derīgu e-pasta adresi.",
+    errorTooManyRequests: "Pārāk daudz mēģinājumu. Lūdzu, mēģiniet vēlāk.",
+    errorNetworkFailed: "Tīkla kļūda. Pārbaudiet savienojumu.",
+    errorRequiresRecentLogin: "Lūdzu, piesakieties vēlreiz, lai turpinātu.",
+    errorUserDisabled: "Šis konts ir atspējots. Sazinieties ar atbalstu.",
+    surveySaveError: "Rezultāti netika saglabāti. Pārbaudiet savienojumu.",
   },
 } as const;
 
