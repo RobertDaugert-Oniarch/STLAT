@@ -55,11 +55,15 @@ const EmailChangePage = () => {
       if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
         setError(t.wrongPassword);
       } else if (code === "auth/requires-recent-login") {
-        setError(t.wrongPassword);
+        setError(t.errorRequiresRecentLogin);
       } else if (code === "auth/email-already-in-use") {
-        setError("This email address is already in use.");
+        setError(t.errorEmailInUse);
       } else if (code === "auth/invalid-email") {
-        setError("Please enter a valid email address.");
+        setError(t.errorInvalidEmail);
+      } else if (code === "auth/too-many-requests") {
+        setError(t.errorTooManyRequests);
+      } else if (code === "auth/network-request-failed") {
+        setError(t.errorNetworkFailed);
       } else {
         setError(t.unexpectedError);
       }

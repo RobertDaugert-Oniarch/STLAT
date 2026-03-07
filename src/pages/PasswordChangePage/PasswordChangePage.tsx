@@ -61,7 +61,11 @@ const PasswordChangePage = () => {
       if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
         setError(t.wrongPassword);
       } else if (code === "auth/requires-recent-login") {
-        setError(t.wrongPassword);
+        setError(t.errorRequiresRecentLogin);
+      } else if (code === "auth/too-many-requests") {
+        setError(t.errorTooManyRequests);
+      } else if (code === "auth/network-request-failed") {
+        setError(t.errorNetworkFailed);
       } else {
         setError(t.unexpectedError);
       }
