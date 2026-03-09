@@ -6,6 +6,7 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import EmailChangePage from "./pages/EmailChangePage/EmailChangePage";
 import PasswordChangePage from "./pages/PasswordChangePage/PasswordChangePage";
+import PasswordResetPage from "./pages/PasswordResetPage/PasswordResetPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage/VerifyEmailPage";
 import SurveyPage from "./pages/SurveyPage/SurveyPage";
 import "./App.css";
@@ -17,6 +18,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/reset-password" element={<PasswordResetPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/survey" element={<SurveyPage />} />

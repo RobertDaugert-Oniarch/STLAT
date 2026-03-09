@@ -281,6 +281,18 @@ const LoginPage = () => {
           </button>
         </form>
 
+        {!isSignUp && (
+          <p className="login-toggle">
+            <button
+              type="button"
+              className="login-toggle-btn"
+              onClick={() => navigate("/reset-password")}
+            >
+              {t.forgotPassword}
+            </button>
+          </p>
+        )}
+
         <p className="login-toggle">
           {isSignUp ? t.alreadyHaveAccount : t.dontHaveAccount}{" "}
           <button
