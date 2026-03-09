@@ -146,6 +146,13 @@ export const translations = {
     errorRequiresRecentLogin: "Please sign in again to continue.",
     errorUserDisabled: "This account has been disabled. Contact support.",
     surveySaveError: "Your results could not be saved. Please check your connection.",
+    // Password reset page
+    forgotPassword: "Forgot password?",
+    resetPasswordTitle: "Reset Password",
+    resetPasswordSubtitle: "Enter your email and we'll send you a reset link.",
+    sendResetEmail: "Send Reset Email",
+    resetEmailSentDesc: "Check your inbox for a password reset link. You can close this page.",
+    backToLogin: "Back to Login",
   },
   lv: {
     // Login page
@@ -289,6 +296,13 @@ export const translations = {
     errorRequiresRecentLogin: "Lūdzu, piesakieties vēlreiz, lai turpinātu.",
     errorUserDisabled: "Šis konts ir atspējots. Sazinieties ar atbalstu.",
     surveySaveError: "Rezultāti netika saglabāti. Pārbaudiet savienojumu.",
+    // Password reset page
+    forgotPassword: "Aizmirs\u0101t paroli?",
+    resetPasswordTitle: "Atiestat\u012Bt paroli",
+    resetPasswordSubtitle: "Ievadiet savu e-pastu un m\u0113s nos\u016Bt\u012Bsim atiestat\u012B\u0161anas saiti.",
+    sendResetEmail: "Nos\u016Bt\u012Bt atiestat\u012B\u0161anas e-pastu",
+    resetEmailSentDesc: "P\u0101rbaudiet savu pastkasti. Paroles atiestat\u012B\u0161anas saite ir nos\u016Bt\u012Bta.",
+    backToLogin: "Atpaka\u013C uz pieteik\u0161anos",
   },
 } as const;
 
