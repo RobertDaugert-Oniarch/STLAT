@@ -68,3 +68,13 @@ body {
   min-height: 100vh;
 }
 
+/* Prevent layout shift when scrollbar appears/disappears */
+html {
+  scrollbar-gutter: stable;
+  scrollbar-width: none;           /* Firefox */
+}
+
+html::-webkit-scrollbar {
+  display: none;                   /* Chrome / Edge / Safari */
+}
+

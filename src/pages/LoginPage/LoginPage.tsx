@@ -191,7 +191,6 @@ const LoginPage = () => {
                 id="loginId"
                 type="text"
                 className="login-input"
-                placeholder={t.emailOrUsernamePlaceholder}
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
                 required
@@ -228,7 +227,7 @@ const LoginPage = () => {
               id="password"
               type="password"
               className="login-input"
-              placeholder={t.passwordPlaceholder}
+              placeholder={isSignUp ? t.passwordPlaceholder : undefined}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => isSignUp && setShowPwdReqs(true)}
