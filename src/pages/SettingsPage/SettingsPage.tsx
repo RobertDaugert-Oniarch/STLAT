@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { onAuthStateChanged, deleteUser } from "firebase/auth";
-import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
@@ -185,8 +185,13 @@ const SettingsPage = () => {
     if (!user) return;
     setError("");
     try {
+      if (username) {
+        await deleteDoc(doc(db, "usernames", username));
+      }
       await deleteDoc(doc(db, "users", user.uid));
       await deleteDoc(doc(db, "quizResults", user.uid));
+      const sessionsSnap = await getDocs(collection(db, "surveyHistory", user.uid, "sessions"));
+      await Promise.all(sessionsSnap.docs.map((d) => deleteDoc(d.ref)));
       await deleteUser(user);
       navigate("/login");
     } catch (err: unknown) {
