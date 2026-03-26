@@ -3,6 +3,7 @@ import { signOut } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
+import { USERS } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
 import "./SettingsMenu.css";
@@ -31,9 +32,9 @@ const SettingsMenu = () => {
     const user = auth.currentUser;
     if (!user) return;
     try {
-      await setDoc(doc(db, "users", user.uid), { theme: newTheme }, { merge: true });
-    } catch {
-      // silent
+      await setDoc(doc(db, USERS, user.uid), { theme: newTheme }, { merge: true });
+    } catch (err) {
+      console.warn("SettingsMenu: Failed to save theme", err);
     }
   };
 
@@ -43,9 +44,9 @@ const SettingsMenu = () => {
     const user = auth.currentUser;
     if (!user) return;
     try {
-      await setDoc(doc(db, "users", user.uid), { lang: newLang }, { merge: true });
-    } catch {
-      // silent
+      await setDoc(doc(db, USERS, user.uid), { lang: newLang }, { merge: true });
+    } catch (err) {
+      console.warn("SettingsMenu: Failed to save language", err);
     }
   };
 

@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
-  onAuthStateChanged,
   reauthenticateWithCredential,
   EmailAuthProvider,
   verifyBeforeUpdateEmail,
@@ -8,7 +7,10 @@ import {
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
-import "./EmailChangePage.css";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
+import { getFirebaseErrorMessage, getFirebaseErrorCode } from "../../utils/firebaseErrors";
+import BgShapes from "../../components/BgShapes/BgShapes";
+import "../../styles/FormPage.css";
 
 const isValidEmail = (value: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -16,26 +18,15 @@ const isValidEmail = (value: string) =>
 const EmailChangePage = () => {
   const { t } = useLang();
   const navigate = useNavigate();
+  const { user, loading } = useAuthGuard();
 
-  const [currentEmail, setCurrentEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-      setCurrentEmail(user.email ?? "");
-      setLoading(false);
-    });
-    return () => unsub();
-  }, [navigate]);
+  const currentEmail = user?.email ?? "";
 
   const handleSave = async () => {
     const user = auth.currentUser;
@@ -51,22 +42,7 @@ const EmailChangePage = () => {
       setSuccess(true);
       setTimeout(() => navigate("/settings"), 1800);
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code ?? "";
-      if (code === "auth/wrong-password" || code === "auth/invalid-credential") {
-        setError(t.wrongPassword);
-      } else if (code === "auth/requires-recent-login") {
-        setError(t.errorRequiresRecentLogin);
-      } else if (code === "auth/email-already-in-use") {
-        setError(t.errorEmailInUse);
-      } else if (code === "auth/invalid-email") {
-        setError(t.errorInvalidEmail);
-      } else if (code === "auth/too-many-requests") {
-        setError(t.errorTooManyRequests);
-      } else if (code === "auth/network-request-failed") {
-        setError(t.errorNetworkFailed);
-      } else {
-        setError(t.unexpectedError);
-      }
+      setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t));
     } finally {
       setSaving(false);
     }
@@ -82,9 +58,7 @@ const EmailChangePage = () => {
 
   return (
     <div className="echange-page">
-      <div className="echange-bg-shape echange-bg-shape--1" />
-      <div className="echange-bg-shape echange-bg-shape--2" />
-      <div className="echange-bg-shape echange-bg-shape--3" />
+      <BgShapes prefix="echange" />
 
       <div className="echange-layout">
         <div className="echange-topbar">

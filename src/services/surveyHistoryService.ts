@@ -7,6 +7,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { SURVEY_HISTORY, QUIZ_RESULTS } from "../firebase/collections";
 import type {
   AnswerRecord,
   CategoryStats,
@@ -47,7 +48,7 @@ export async function getUserHistory(
   categoryStats: Record<string, CategoryStats>;
   seenQuestionIds: string[];
 }> {
-  const sessionsRef = collection(db, "surveyHistory", uid, "sessions");
+  const sessionsRef = collection(db, SURVEY_HISTORY, uid, "sessions");
   const snap = await getDocs(sessionsRef);
 
   const allAnswers: AnswerRecord[] = [];
@@ -74,7 +75,7 @@ export async function saveSession(
   session: SessionResult,
 ): Promise<void> {
   // Save full session to history sub-collection
-  const sessionsRef = collection(db, "surveyHistory", uid, "sessions");
+  const sessionsRef = collection(db, SURVEY_HISTORY, uid, "sessions");
   await addDoc(sessionsRef, {
     startedAt: Timestamp.fromDate(session.startedAt),
     completedAt: Timestamp.fromDate(session.completedAt),
@@ -84,7 +85,7 @@ export async function saveSession(
   });
 
   // Update latest summary for ProfilePage
-  const quizResultRef = doc(db, "quizResults", uid);
+  const quizResultRef = doc(db, QUIZ_RESULTS, uid);
   await setDoc(
     quizResultRef,
     {

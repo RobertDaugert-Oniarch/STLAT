@@ -11,7 +11,9 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
+import { USERS } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
+import { getFirebaseErrorMessage, getFirebaseErrorCode } from "../../utils/firebaseErrors";
 import {
   validatePassword,
   isPasswordValid,
@@ -22,6 +24,7 @@ import {
 } from "../../utils/generateUsername";
 import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
 import LangToggle from "../../components/LangToggle/LangToggle";
+import BgShapes from "../../components/BgShapes/BgShapes";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -67,7 +70,7 @@ const LoginPage = () => {
         const { name, tag } = await generateUniqueUsername(cred.user.uid);
         const full = formatUsername(name, tag);
 
-        await setDoc(doc(db, "users", cred.user.uid), {
+        await setDoc(doc(db, USERS, cred.user.uid), {
           username: name,
           tag,
           fullUsername: full,
@@ -79,12 +82,7 @@ const LoginPage = () => {
 
         setGeneratedUsername(full);
       } catch (err: unknown) {
-        const code = (err as { code?: string }).code ?? "";
-        if (code === "auth/email-already-in-use") setError(t.errorEmailInUse);
-        else if (code === "auth/invalid-email") setError(t.errorInvalidEmail);
-        else if (code === "auth/too-many-requests") setError(t.errorTooManyRequests);
-        else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
-        else setError(t.unexpectedError);
+        setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t));
       } finally {
         setLoading(false);
       }
@@ -99,15 +97,7 @@ const LoginPage = () => {
           navigate("/profile");
         }
       } catch (err: unknown) {
-        const code = (err as { code?: string }).code ?? "";
-        if (code === "auth/user-not-found") setError(t.errorUserNotFound);
-        else if (code === "auth/wrong-password") setError(t.wrongPassword);
-        else if (code === "auth/invalid-credential") setError(t.errorInvalidCredentials);
-        else if (code === "auth/invalid-email") setError(t.errorInvalidEmail);
-        else if (code === "auth/too-many-requests") setError(t.errorTooManyRequests);
-        else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
-        else if (code === "auth/user-disabled") setError(t.errorUserDisabled);
-        else setError(t.unexpectedError);
+        setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t, { loginContext: true }));
       } finally {
         setLoading(false);
       }
@@ -120,9 +110,7 @@ const LoginPage = () => {
       <div className="login-page">
         <ThemeToggle />
         <LangToggle />
-        <div className="login-bg-shape login-bg-shape--1" />
-        <div className="login-bg-shape login-bg-shape--2" />
-        <div className="login-bg-shape login-bg-shape--3" />
+        <BgShapes prefix="login" />
 
         <div className="login-card username-reveal">
           <h1 className="login-title">{t.yourUsername}</h1>
@@ -144,9 +132,7 @@ const LoginPage = () => {
     <div className="login-page">
       <ThemeToggle />
       <LangToggle />
-      <div className="login-bg-shape login-bg-shape--1" />
-      <div className="login-bg-shape login-bg-shape--2" />
-      <div className="login-bg-shape login-bg-shape--3" />
+      <BgShapes prefix="login" />
 
       <div className="login-card">
         <div className="login-header">

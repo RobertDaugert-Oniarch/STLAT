@@ -3,8 +3,10 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
+import { getFirebaseErrorMessage, getFirebaseErrorCode } from "../../utils/firebaseErrors";
 import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
 import LangToggle from "../../components/LangToggle/LangToggle";
+import BgShapes from "../../components/BgShapes/BgShapes";
 import "../LoginPage/LoginPage.css";
 
 const PasswordResetPage = () => {
@@ -25,11 +27,7 @@ const PasswordResetPage = () => {
       await sendPasswordResetEmail(auth, email);
       setSent(true);
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code ?? "";
-      if (code === "auth/invalid-email") setError(t.errorInvalidEmail);
-      else if (code === "auth/too-many-requests") setError(t.errorTooManyRequests);
-      else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
-      else setError(t.unexpectedError);
+      setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t));
     } finally {
       setLoading(false);
     }
@@ -40,9 +38,7 @@ const PasswordResetPage = () => {
       <div className="login-page">
         <ThemeToggle />
         <LangToggle />
-        <div className="login-bg-shape login-bg-shape--1" />
-        <div className="login-bg-shape login-bg-shape--2" />
-        <div className="login-bg-shape login-bg-shape--3" />
+        <BgShapes prefix="login" />
 
         <div className="login-card username-reveal">
           <div className="login-header">
@@ -64,9 +60,7 @@ const PasswordResetPage = () => {
     <div className="login-page">
       <ThemeToggle />
       <LangToggle />
-      <div className="login-bg-shape login-bg-shape--1" />
-      <div className="login-bg-shape login-bg-shape--2" />
-      <div className="login-bg-shape login-bg-shape--3" />
+      <BgShapes prefix="login" />
 
       <div className="login-card">
         <div className="login-header">
