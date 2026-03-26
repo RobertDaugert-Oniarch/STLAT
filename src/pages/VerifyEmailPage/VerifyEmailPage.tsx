@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { onAuthStateChanged, sendEmailVerification, signOut } from "firebase/auth";
+import { sendEmailVerification, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase/config";
 import { useLang } from "../../context/LangContext";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
 import LangToggle from "../../components/LangToggle/LangToggle";
+import BgShapes from "../../components/BgShapes/BgShapes";
 import "../LoginPage/LoginPage.css";
 import "./VerifyEmailPage.css";
 
@@ -13,30 +15,15 @@ const RESEND_COOLDOWN = 60;
 const VerifyEmailPage = () => {
   const { t } = useLang();
   const navigate = useNavigate();
+  const { user, loading } = useAuthGuard({ requireUnverified: true });
 
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(true);
   const [checking, setChecking] = useState(false);
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-      if (user.emailVerified) {
-        navigate("/profile");
-        return;
-      }
-      setEmail(user.email ?? "");
-      setLoading(false);
-    });
-    return () => unsub();
-  }, [navigate]);
+  const email = user?.email ?? "";
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -97,9 +84,7 @@ const VerifyEmailPage = () => {
     <div className="login-page">
       <ThemeToggle />
       <LangToggle />
-      <div className="login-bg-shape login-bg-shape--1" />
-      <div className="login-bg-shape login-bg-shape--2" />
-      <div className="login-bg-shape login-bg-shape--3" />
+      <BgShapes prefix="login" />
 
       <div className="login-card vep-card">
         <div className="vep-icon">✉️</div>

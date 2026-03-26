@@ -1,6 +1,10 @@
 import type { Question, CategoryStats, SurveyCategory, AIQuestionPlan } from "../types/survey";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+const MAIN_QUESTIONS = 20;
+const BACKUP_QUESTIONS = 10;
+const MIN_QUESTIONS_FOR_AI = 30;
+const MIN_PER_CATEGORY = 5;
 
 function getApiKey(): string {
   const key = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
@@ -28,7 +32,7 @@ Rules:
     categoryPerformance,
     availableByCategory,
     recentlySeenIds,
-    targets: { main: 20, backup: 10 },
+    targets: { main: MAIN_QUESTIONS, backup: BACKUP_QUESTIONS },
   });
 
   return { system, user };
@@ -53,10 +57,10 @@ function fallbackSelection(
   const backup: Question[] = [];
   const usedIds = new Set<string>();
 
-  // Pick 5 main per category (or fewer if not enough)
+  // Pick main per category (or fewer if not enough)
   for (const cat of categories) {
     const pool = byCategory[cat];
-    const take = Math.min(5, pool.length);
+    const take = Math.min(MIN_PER_CATEGORY, pool.length);
     for (let i = 0; i < take; i++) {
       main.push(pool[i]);
       usedIds.add(pool[i].id);
@@ -99,8 +103,8 @@ export async function selectQuestions(
     }
   }
 
-  // If total available < 30, skip AI and use fallback
-  if (allQuestions.length < 30) {
+  // If total available < minimum threshold, skip AI and use fallback
+  if (allQuestions.length < MIN_QUESTIONS_FOR_AI) {
     return fallbackSelection(allQuestions, categories);
   }
 
@@ -151,7 +155,7 @@ export async function selectQuestions(
       ?? [];
 
     // If AI returned too few, fill with fallback
-    if (mainQuestions.length < 10) {
+    if (mainQuestions.length < BACKUP_QUESTIONS) {
       console.warn("AI returned too few questions, using fallback");
       return fallbackSelection(allQuestions, categories);
     }

@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { USERNAMES } from "../firebase/collections";
 
 const ADJECTIVES = [
   "Silent", "Neon", "Void", "Frost", "Hollow", "Astral", "Cryptic", "Feral",
@@ -42,7 +43,7 @@ export async function generateUniqueUsername(
     const tag = randomTag();
     const full = formatUsername(name, tag);
 
-    const ref = doc(db, "usernames", full);
+    const ref = doc(db, USERNAMES, full);
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {

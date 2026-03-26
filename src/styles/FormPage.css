@@ -1,4 +1,4 @@
-/* Email Change page */
+/* Shared styles for form pages (EmailChange, PasswordChange) */
 
 .echange-page {
   position: relative;
@@ -134,7 +134,7 @@
   margin: 0 1.25rem;
 }
 
-/* Email input */
+/* Input */
 
 .echange-input {
   width: 100%;

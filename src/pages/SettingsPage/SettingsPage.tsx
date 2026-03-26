@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { onAuthStateChanged, deleteUser } from "firebase/auth";
+import { deleteUser } from "firebase/auth";
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
+import { USERS, QUIZ_RESULTS, SURVEY_HISTORY, USERNAMES } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
+import { getFirebaseErrorMessage, getFirebaseErrorCode } from "../../utils/firebaseErrors";
+import BgShapes from "../../components/BgShapes/BgShapes";
 import "./SettingsPage.css";
 
 interface SettingsSelectOption {
@@ -123,6 +127,7 @@ const SettingsPage = () => {
   const { t, lang, applyLang } = useLang();
   const { theme, applyTheme } = useTheme();
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuthGuard();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -131,41 +136,39 @@ const SettingsPage = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-      setEmail(user.email ?? "");
+    if (!user) return;
+    setEmail(user.email ?? "");
 
+    const loadSettings = async () => {
       try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userDoc = await getDoc(doc(db, USERS, user.uid));
         if (userDoc.exists()) {
           const data = userDoc.data();
           setUsername(data.fullUsername ?? "");
           if (data.theme === "light" || data.theme === "dark") applyTheme(data.theme);
           if (data.lang === "en" || data.lang === "lv") applyLang(data.lang);
           if (user.email && data.email !== user.email) {
-            await setDoc(doc(db, "users", user.uid), { email: user.email }, { merge: true });
+            await setDoc(doc(db, USERS, user.uid), { email: user.email }, { merge: true });
           }
         }
-      } catch {
-        // Firestore read may fail
+      } catch (err) {
+        console.warn("SettingsPage: Firestore read failed", err);
       } finally {
         setLoading(false);
       }
-    });
-    return () => unsub();
-  }, [navigate, applyTheme, applyLang]);
+    };
+
+    loadSettings();
+  }, [user, applyTheme, applyLang]);
 
   const handleThemeChange = async (newTheme: "light" | "dark") => {
     applyTheme(newTheme);
     const user = auth.currentUser;
     if (!user) return;
     try {
-      await setDoc(doc(db, "users", user.uid), { theme: newTheme }, { merge: true });
-    } catch {
-      // Firestore write may fail silently
+      await setDoc(doc(db, USERS, user.uid), { theme: newTheme }, { merge: true });
+    } catch (err) {
+      console.warn("SettingsPage: Failed to save theme", err);
     }
   };
 
@@ -174,9 +177,9 @@ const SettingsPage = () => {
     const user = auth.currentUser;
     if (!user) return;
     try {
-      await setDoc(doc(db, "users", user.uid), { lang: newLang }, { merge: true });
-    } catch {
-      // Firestore write may fail silently
+      await setDoc(doc(db, USERS, user.uid), { lang: newLang }, { merge: true });
+    } catch (err) {
+      console.warn("SettingsPage: Failed to save language", err);
     }
   };
 
@@ -186,24 +189,21 @@ const SettingsPage = () => {
     setError("");
     try {
       if (username) {
-        await deleteDoc(doc(db, "usernames", username));
+        await deleteDoc(doc(db, USERNAMES, username));
       }
-      await deleteDoc(doc(db, "users", user.uid));
-      await deleteDoc(doc(db, "quizResults", user.uid));
-      const sessionsSnap = await getDocs(collection(db, "surveyHistory", user.uid, "sessions"));
+      await deleteDoc(doc(db, USERS, user.uid));
+      await deleteDoc(doc(db, QUIZ_RESULTS, user.uid));
+      const sessionsSnap = await getDocs(collection(db, SURVEY_HISTORY, user.uid, "sessions"));
       await Promise.all(sessionsSnap.docs.map((d) => deleteDoc(d.ref)));
       await deleteUser(user);
       navigate("/login");
     } catch (err: unknown) {
       setShowDeleteConfirm(false);
-      const code = (err as { code?: string }).code ?? "";
-      if (code === "auth/requires-recent-login") setError(t.errorRequiresRecentLogin);
-      else if (code === "auth/network-request-failed") setError(t.errorNetworkFailed);
-      else setError(t.unexpectedError);
+      setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t));
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="settings-page">
         <p className="settings-page-loading">{t.loading}</p>
@@ -213,9 +213,7 @@ const SettingsPage = () => {
 
   return (
     <div className="settings-page">
-      <div className="settings-bg-shape settings-bg-shape--1" />
-      <div className="settings-bg-shape settings-bg-shape--2" />
-      <div className="settings-bg-shape settings-bg-shape--3" />
+      <BgShapes prefix="settings" />
 
       <div className="settings-layout">
         <div className="settings-topbar">

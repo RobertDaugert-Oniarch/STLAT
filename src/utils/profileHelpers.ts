@@ -1,12 +1,18 @@
 export type Level = "novice" | "beginner" | "elementary" | "intermediate" | "advanced" | "expert" | "master";
 
+const LEVEL_THRESHOLDS: { min: number; level: Level }[] = [
+  { min: 90, level: "master" },
+  { min: 80, level: "expert" },
+  { min: 70, level: "advanced" },
+  { min: 55, level: "intermediate" },
+  { min: 40, level: "elementary" },
+  { min: 20, level: "beginner" },
+];
+
 export function getLevel(percentage: number): Level {
-  if (percentage >= 90) return "master";
-  if (percentage >= 80) return "expert";
-  if (percentage >= 70) return "advanced";
-  if (percentage >= 55) return "intermediate";
-  if (percentage >= 40) return "elementary";
-  if (percentage >= 20) return "beginner";
+  for (const { min, level } of LEVEL_THRESHOLDS) {
+    if (percentage >= min) return level;
+  }
   return "novice";
 }
 

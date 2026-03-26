@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebase/config";
+import { db } from "../../firebase/config";
+import { USERS, QUIZ_RESULTS } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 import { getLevel, getGreetingKey, getInitials } from "../../utils/profileHelpers";
 import { generateUniqueUsername, formatUsername } from "../../utils/generateUsername";
 import SettingsMenu from "../../components/SettingsMenu/SettingsMenu";
+import BgShapes from "../../components/BgShapes/BgShapes";
 import "./ProfilePage.css";
 
 interface UserData {
@@ -34,19 +36,17 @@ const ProfilePage = () => {
   const { t, applyLang } = useLang();
   const { applyTheme } = useTheme();
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuthGuard();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
+    if (!user) return;
 
+    const loadData = async () => {
       try {
-        const userDocRef = doc(db, "users", user.uid);
+        const userDocRef = doc(db, USERS, user.uid);
         const userDoc = await getDoc(userDocRef);
         let data: UserData | null = userDoc.exists() ? (userDoc.data() as UserData) : null;
 
@@ -66,18 +66,19 @@ const ProfilePage = () => {
         if (data.theme === "light" || data.theme === "dark") applyTheme(data.theme);
         if (data.lang === "en" || data.lang === "lv") applyLang(data.lang);
 
-        const resultDoc = await getDoc(doc(db, "quizResults", user.uid));
+        const resultDoc = await getDoc(doc(db, QUIZ_RESULTS, user.uid));
         if (resultDoc.exists()) setTestResult(resultDoc.data() as TestResult);
-      } catch {
-        // Firestore read may fail if rules are not set
+      } catch (err) {
+        console.warn("ProfilePage: Firestore read failed", err);
       } finally {
         setLoading(false);
       }
-    });
-    return () => unsub();
-  }, [navigate, applyTheme, applyLang]);
+    };
 
-  if (loading) {
+    loadData();
+  }, [user, applyTheme, applyLang]);
+
+  if (authLoading || loading) {
     return (
       <div className="profile-page">
         <p className="profile-loading">{t.loading}</p>
@@ -95,9 +96,7 @@ const ProfilePage = () => {
   return (
     <div className="profile-page">
       {/* Decorative background shapes */}
-      <div className="profile-bg-shape profile-bg-shape--1" />
-      <div className="profile-bg-shape profile-bg-shape--2" />
-      <div className="profile-bg-shape profile-bg-shape--3" />
+      <BgShapes prefix="profile" />
 
       <div className="profile-layout">
         {/* ── Left sidebar ── */}

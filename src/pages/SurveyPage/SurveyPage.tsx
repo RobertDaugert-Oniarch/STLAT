@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { auth, db } from "../../firebase/config";
+import { db } from "../../firebase/config";
+import { QUESTIONS } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
+import { useAuthGuard } from "../../hooks/useAuthGuard";
 import type {
   Question,
   AnswerRecord,
@@ -15,7 +16,7 @@ import { selectQuestions } from "../../services/aiSurveyService";
 import { getUserHistory, saveSession } from "../../services/surveyHistoryService";
 import { findAnomalyCategory, swapNextQuestion } from "../../utils/adaptiveSwap";
 import type { Language } from "../../translations";
-import type { SurveyCategory as SurveyCategoryType } from "../../types/survey";
+import BgShapes from "../../components/BgShapes/BgShapes";
 import "./SurveyPage.css";
 
 /**
@@ -24,7 +25,7 @@ import "./SurveyPage.css";
  * - Attitudes / Behaviour / Confidence: Likert scale — option index * 25
  */
 function computeAnswerScore(
-  category: SurveyCategoryType,
+  category: SurveyCategory,
   optionIndex: number,
   correctIndex?: number,
 ): number {
@@ -52,9 +53,7 @@ function getCategoryLabel(cat: SurveyCategory, t: Record<string, string>): strin
 const SurveyPage = () => {
   const { t, lang } = useLang();
   const navigate = useNavigate();
-
-  // Auth
-  const [uid, setUid] = useState<string | null>(null);
+  const { user, loading: authLoading } = useAuthGuard();
 
   // View state
   const [view, setView] = useState<ViewState>("loading");
@@ -82,16 +81,12 @@ const SurveyPage = () => {
 
   // ── Auth guard + data loading ──
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        navigate("/login");
-        return;
-      }
-      setUid(user.uid);
+    if (!user) return;
 
+    const loadSurvey = async () => {
       try {
         // Fetch all questions from Firestore
-        const qSnap = await getDocs(collection(db, "questions"));
+        const qSnap = await getDocs(collection(db, QUESTIONS));
         const allQuestions: Question[] = [];
         qSnap.forEach((docSnap) => {
           const data = docSnap.data();
@@ -127,9 +122,10 @@ const SurveyPage = () => {
         setError(t.surveyNoQuestions);
         setView("intro");
       }
-    });
-    return () => unsub();
-  }, [navigate, t.surveyNoQuestions]);
+    };
+
+    loadSurvey();
+  }, [user, t.surveyNoQuestions]);
 
   // ── Start the survey ──
   const handleStart = useCallback(() => {
@@ -198,10 +194,10 @@ const SurveyPage = () => {
       setOverallPercentage(overall);
 
       // Save to Firestore
-      if (uid) {
+      if (user) {
         setSaving(true);
-        saveSession(uid, {
-          userId: uid,
+        saveSession(user.uid, {
+          userId: user.uid,
           startedAt: sessionStartedAt,
           completedAt: new Date(),
           answers,
@@ -216,7 +212,7 @@ const SurveyPage = () => {
     } else {
       setCurrentIndex((prev) => prev + 1);
     }
-  }, [currentIndex, queue.length, answers, uid, sessionStartedAt, t]);
+  }, [currentIndex, queue.length, answers, user, sessionStartedAt, t]);
 
   // ── Retake ──
   const handleRetake = useCallback(() => {
@@ -227,7 +223,7 @@ const SurveyPage = () => {
 
   // ── Render ──
 
-  if (view === "loading") {
+  if (authLoading || view === "loading") {
     return (
       <div className="survey-page">
         <div className="survey-loading">
@@ -241,8 +237,7 @@ const SurveyPage = () => {
   if (view === "intro") {
     return (
       <div className="survey-page">
-        <div className="survey-bg-shape survey-bg-shape--1" />
-        <div className="survey-bg-shape survey-bg-shape--2" />
+        <BgShapes prefix="survey" count={2} />
 
         <div className="survey-intro">
           <h1 className="survey-title">{t.surveyTitle}</h1>
@@ -288,8 +283,7 @@ const SurveyPage = () => {
 
     return (
       <div className="survey-page">
-        <div className="survey-bg-shape survey-bg-shape--1" />
-        <div className="survey-bg-shape survey-bg-shape--2" />
+        <BgShapes prefix="survey" count={2} />
 
         <div className="survey-quiz">
           {/* Progress */}
@@ -346,8 +340,7 @@ const SurveyPage = () => {
   // view === "completed"
   return (
     <div className="survey-page">
-      <div className="survey-bg-shape survey-bg-shape--1" />
-      <div className="survey-bg-shape survey-bg-shape--2" />
+      <BgShapes prefix="survey" count={2} />
 
       <div className="survey-results">
         <h1 className="survey-title">{t.surveyResults}</h1>
