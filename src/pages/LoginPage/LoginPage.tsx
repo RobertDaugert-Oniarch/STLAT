@@ -7,10 +7,6 @@ import {
 import {
   doc,
   setDoc,
-  getDocs,
-  collection,
-  query,
-  where,
   serverTimestamp,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +34,7 @@ const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Sign-in: email or username
+  // Sign-in: email
   const [loginId, setLoginId] = useState("");
 
   // Sign-up
@@ -50,23 +46,6 @@ const LoginPage = () => {
   const [generatedUsername, setGeneratedUsername] = useState<string | null>(null);
 
   const pwdCheck = validatePassword(password);
-
-  /**
-   * Resolve a username (e.g. SilentFox#1234) to an email address
-   * by querying the Firestore `users` collection.
-   */
-  const resolveLoginEmail = async (input: string): Promise<string> => {
-    if (input.includes("@")) return input;
-
-    const q = query(
-      collection(db, "users"),
-      where("fullUsername", "==", input),
-    );
-    const snap = await getDocs(q);
-    if (snap.empty) throw new Error(t.unexpectedError);
-
-    return snap.docs[0].data().email as string;
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -113,8 +92,7 @@ const LoginPage = () => {
       // --- Sign In ---
       setLoading(true);
       try {
-        const resolvedEmail = await resolveLoginEmail(loginId);
-        const userCred = await signInWithEmailAndPassword(auth, resolvedEmail, password);
+        const userCred = await signInWithEmailAndPassword(auth, loginId, password);
         if (!userCred.user.emailVerified) {
           navigate("/verify-email");
         } else {
@@ -181,20 +159,20 @@ const LoginPage = () => {
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
-          {/* ── Sign-in: email or username ── */}
+          {/* ── Sign-in: email ── */}
           {!isSignUp && (
             <div className="login-field">
               <label htmlFor="loginId" className="login-label">
-                {t.emailOrUsername}
+                {t.email}
               </label>
               <input
                 id="loginId"
-                type="text"
+                type="email"
                 className="login-input"
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
                 required
-                autoComplete="username"
+                autoComplete="email"
               />
             </div>
           )}
