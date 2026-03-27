@@ -9,15 +9,15 @@ import type {
   Question,
   AnswerRecord,
   CategoryStats,
-  SurveyCategory,
-} from "../../types/survey";
-import { ALL_CATEGORIES } from "../../types/survey";
-import { selectQuestions } from "../../services/aiSurveyService";
-import { getUserHistory, saveSession } from "../../services/surveyHistoryService";
+  TestCategory,
+} from "../../types/test";
+import { ALL_CATEGORIES } from "../../types/test";
+import { selectQuestions } from "../../services/aiTestService";
+import { getUserHistory, saveSession } from "../../services/testHistoryService";
 import { findAnomalyCategory, swapNextQuestion } from "../../utils/adaptiveSwap";
 import type { Language } from "../../translations";
 import BgShapes from "../../components/BgShapes/BgShapes";
-import "./SurveyPage.css";
+import "./TestPage.css";
 
 /**
  * Compute the score (0-100) for an answer based on category type.
@@ -25,7 +25,7 @@ import "./SurveyPage.css";
  * - Attitudes / Behaviour / Confidence: Likert scale — option index * 25
  */
 function computeAnswerScore(
-  category: SurveyCategory,
+  category: TestCategory,
   optionIndex: number,
   correctIndex?: number,
 ): number {
@@ -38,19 +38,19 @@ function computeAnswerScore(
 
 type ViewState = "loading" | "intro" | "in-progress" | "completed";
 
-const CATEGORY_TRANSLATION_KEYS: Record<SurveyCategory, string> = {
+const CATEGORY_TRANSLATION_KEYS: Record<TestCategory, string> = {
   Knowledge: "categoryKnowledge",
   Attitudes: "categoryAttitudes",
   Behaviour: "categoryBehaviour",
   "Confidence in One's Judgement": "categoryConfidence",
 };
 
-function getCategoryLabel(cat: SurveyCategory, t: Record<string, string>): string {
+function getCategoryLabel(cat: TestCategory, t: Record<string, string>): string {
   const key = CATEGORY_TRANSLATION_KEYS[cat];
   return (t as Record<string, string>)[key] ?? cat;
 }
 
-const SurveyPage = () => {
+const TestPage = () => {
   const { t, lang } = useLang();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuthGuard();
@@ -83,7 +83,7 @@ const SurveyPage = () => {
   useEffect(() => {
     if (!user) return;
 
-    const loadSurvey = async () => {
+    const loadTest = async () => {
       try {
         // Fetch all questions from Firestore
         const qSnap = await getDocs(collection(db, QUESTIONS));
@@ -94,7 +94,7 @@ const SurveyPage = () => {
         });
 
         if (allQuestions.length === 0) {
-          setError(t.surveyNoQuestions);
+          setError(t.testNoQuestions);
           setView("intro");
           return;
         }
@@ -118,16 +118,16 @@ const SurveyPage = () => {
         setBackup(bk);
         setView("intro");
       } catch (err) {
-        console.error("Failed to load survey:", err);
-        setError(t.surveyNoQuestions);
+        console.error("Failed to load test:", err);
+        setError(t.testNoQuestions);
         setView("intro");
       }
     };
 
-    loadSurvey();
-  }, [user, t.surveyNoQuestions]);
+    loadTest();
+  }, [user, t.testNoQuestions]);
 
-  // ── Start the survey ──
+  // ── Start the test ──
   const handleStart = useCallback(() => {
     setCurrentIndex(0);
     setAnswers([]);
@@ -204,7 +204,7 @@ const SurveyPage = () => {
           categoryResults: catRes,
           overallPercentage: overall,
         })
-          .catch(() => setSaveError(t.surveySaveError))
+          .catch(() => setSaveError(t.testSaveError))
           .finally(() => setSaving(false));
       }
 
@@ -225,10 +225,10 @@ const SurveyPage = () => {
 
   if (authLoading || view === "loading") {
     return (
-      <div className="survey-page">
-        <div className="survey-loading">
-          <div className="survey-spinner" />
-          <p>{t.surveyLoadingAI}</p>
+      <div className="test-page">
+        <div className="test-loading">
+          <div className="test-spinner" />
+          <p>{t.testLoadingAI}</p>
         </div>
       </div>
     );
@@ -236,33 +236,33 @@ const SurveyPage = () => {
 
   if (view === "intro") {
     return (
-      <div className="survey-page">
-        <BgShapes prefix="survey" count={2} />
+      <div className="test-page">
+        <BgShapes prefix="test" count={2} />
 
-        <div className="survey-intro">
-          <h1 className="survey-title">{t.surveyTitle}</h1>
-          <p className="survey-subtitle">{t.surveySubtitle}</p>
-          <p className="survey-instructions">{t.surveyInstructions}</p>
+        <div className="test-intro">
+          <h1 className="test-title">{t.testTitle}</h1>
+          <p className="test-subtitle">{t.testSubtitle}</p>
+          <p className="test-instructions">{t.testInstructions}</p>
 
-          <div className="survey-categories">
+          <div className="test-categories">
             {ALL_CATEGORIES.map((cat) => (
-              <span className="survey-category-badge" key={cat}>
+              <span className="test-category-badge" key={cat}>
                 {getCategoryLabel(cat, t as unknown as Record<string, string>)}
               </span>
             ))}
           </div>
 
-          <p className="survey-estimate">{t.surveyEstimate}</p>
+          <p className="test-estimate">{t.testEstimate}</p>
 
           {error ? (
-            <p className="survey-error">{error}</p>
+            <p className="test-error">{error}</p>
           ) : (
-            <button className="survey-btn survey-btn--start" onClick={handleStart} disabled={queue.length === 0}>
-              {t.startSurvey}
+            <button className="test-btn test-btn--start" onClick={handleStart} disabled={queue.length === 0}>
+              {t.startTest}
             </button>
           )}
 
-          <button className="survey-btn survey-btn--back" onClick={() => navigate("/profile")}>
+          <button className="test-btn test-btn--back" onClick={() => navigate("/profile")}>
             {t.backToProfile}
           </button>
         </div>
@@ -282,32 +282,32 @@ const SurveyPage = () => {
     const isLastQuestion = currentIndex + 1 >= queue.length;
 
     return (
-      <div className="survey-page">
-        <BgShapes prefix="survey" count={2} />
+      <div className="test-page">
+        <BgShapes prefix="test" count={2} />
 
-        <div className="survey-quiz">
+        <div className="test-quiz">
           {/* Progress */}
-          <div className="survey-progress-header">
-            <span className="survey-progress-text">{progress}</span>
-            <span className="survey-category-badge survey-category-badge--small">
+          <div className="test-progress-header">
+            <span className="test-progress-text">{progress}</span>
+            <span className="test-category-badge test-category-badge--small">
               {getCategoryLabel(currentQ.category, t as unknown as Record<string, string>)}
             </span>
           </div>
-          <div className="survey-progress-bar">
-            <div className="survey-progress-fill" style={{ width: `${progressPercent}%` }} />
+          <div className="test-progress-bar">
+            <div className="test-progress-fill" style={{ width: `${progressPercent}%` }} />
           </div>
 
           {/* Question card */}
-          <div className="survey-question-card">
-            <h2 className="survey-question-text">{questionText}</h2>
+          <div className="test-question-card">
+            <h2 className="test-question-text">{questionText}</h2>
 
-            <div className="survey-options">
+            <div className="test-options">
               {currentQ.options.map((opt, idx) => {
                 const optText = opt[lang as Language] ?? opt.en;
                 const isSelected = selectedOption === idx;
-                let className = "survey-option";
-                if (isSelected) className += " survey-option--selected";
-                if (selectedOption !== null && !isSelected) className += " survey-option--disabled";
+                let className = "test-option";
+                if (isSelected) className += " test-option--selected";
+                if (selectedOption !== null && !isSelected) className += " test-option--disabled";
 
                 return (
                   <button
@@ -316,10 +316,10 @@ const SurveyPage = () => {
                     onClick={() => handleOptionSelect(idx)}
                     disabled={selectedOption !== null}
                   >
-                    <span className="survey-option-letter">
+                    <span className="test-option-letter">
                       {String.fromCharCode(65 + idx)}
                     </span>
-                    <span className="survey-option-text">{optText}</span>
+                    <span className="test-option-text">{optText}</span>
                   </button>
                 );
               })}
@@ -328,8 +328,8 @@ const SurveyPage = () => {
 
           {/* Next / Finish button */}
           {selectedOption !== null && (
-            <button className="survey-btn survey-btn--next" onClick={handleNext}>
-              {isLastQuestion ? t.finishSurvey : t.nextQuestion}
+            <button className="test-btn test-btn--next" onClick={handleNext}>
+              {isLastQuestion ? t.finishTest : t.nextQuestion}
             </button>
           )}
         </div>
@@ -339,39 +339,39 @@ const SurveyPage = () => {
 
   // view === "completed"
   return (
-    <div className="survey-page">
-      <BgShapes prefix="survey" count={2} />
+    <div className="test-page">
+      <BgShapes prefix="test" count={2} />
 
-      <div className="survey-results">
-        <h1 className="survey-title">{t.surveyResults}</h1>
+      <div className="test-results">
+        <h1 className="test-title">{t.testResults}</h1>
 
         {/* Overall score */}
-        <div className="survey-overall">
-          <span className="survey-overall-label">{t.overallScore}</span>
-          <div className="survey-overall-ring">
-            <svg viewBox="0 0 120 120" className="survey-ring-svg">
-              <circle cx="60" cy="60" r="52" className="survey-ring-bg" />
+        <div className="test-overall">
+          <span className="test-overall-label">{t.overallScore}</span>
+          <div className="test-overall-ring">
+            <svg viewBox="0 0 120 120" className="test-ring-svg">
+              <circle cx="60" cy="60" r="52" className="test-ring-bg" />
               <circle
                 cx="60"
                 cy="60"
                 r="52"
-                className="survey-ring-fill"
+                className="test-ring-fill"
                 strokeDasharray={`${(overallPercentage / 100) * 327} 327`}
                 strokeDashoffset="0"
               />
             </svg>
-            <span className="survey-overall-percent">{overallPercentage}%</span>
+            <span className="test-overall-percent">{overallPercentage}%</span>
           </div>
         </div>
 
-        {saving && <p className="survey-saving">{t.loading}</p>}
-        {saveError && <p className="survey-error">{saveError}</p>}
+        {saving && <p className="test-saving">{t.loading}</p>}
+        {saveError && <p className="test-error">{saveError}</p>}
 
-        <div className="survey-result-actions">
-          <button className="survey-btn survey-btn--start" onClick={handleRetake}>
-            {t.retakeSurvey}
+        <div className="test-result-actions">
+          <button className="test-btn test-btn--start" onClick={handleRetake}>
+            {t.retakeTest}
           </button>
-          <button className="survey-btn survey-btn--back" onClick={() => navigate("/profile")}>
+          <button className="test-btn test-btn--back" onClick={() => navigate("/profile")}>
             {t.backToProfile}
           </button>
         </div>
@@ -380,4 +380,4 @@ const SurveyPage = () => {
   );
 };
 
-export default SurveyPage;
+export default TestPage;

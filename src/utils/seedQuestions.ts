@@ -1,9 +1,9 @@
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
-import type { SurveyCategory } from "../types/survey";
+import type { TestCategory } from "../types/test";
 
 interface SeedQuestion {
-  category: SurveyCategory;
+  category: TestCategory;
   text: { en: string; lv: string };
   options: { en: string; lv: string }[];
   /** Index of the correct answer (Knowledge category only) */

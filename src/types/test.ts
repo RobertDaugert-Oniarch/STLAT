@@ -1,10 +1,10 @@
-export type SurveyCategory =
+export type TestCategory =
   | "Knowledge"
   | "Attitudes"
   | "Behaviour"
   | "Confidence in One's Judgement";
 
-export const ALL_CATEGORIES: SurveyCategory[] = [
+export const ALL_CATEGORIES: TestCategory[] = [
   "Knowledge",
   "Attitudes",
   "Behaviour",
@@ -18,7 +18,7 @@ export interface LocalizedText {
 
 export interface Question {
   id: string;
-  category: SurveyCategory;
+  category: TestCategory;
   text: LocalizedText;
   options: LocalizedText[];
   /** Index of the correct answer (Knowledge category only) */
@@ -27,7 +27,7 @@ export interface Question {
 
 export interface AnswerRecord {
   questionId: string;
-  category: SurveyCategory;
+  category: TestCategory;
   selectedOptionIndex: number;
   /** Score from 0 to 100 */
   score: number;

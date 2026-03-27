@@ -1,6 +1,6 @@
-/* Survey page layout */
+/* Test page layout */
 
-.survey-page {
+.test-page {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
@@ -12,7 +12,7 @@
 
 /* Decorative background shapes */
 
-.survey-bg-shape {
+.test-bg-shape {
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
@@ -21,7 +21,7 @@
   z-index: 0;
 }
 
-.survey-bg-shape--1 {
+.test-bg-shape--1 {
   width: 500px;
   height: 500px;
   background: var(--primary);
@@ -29,7 +29,7 @@
   right: -140px;
 }
 
-.survey-bg-shape--2 {
+.test-bg-shape--2 {
   width: 350px;
   height: 350px;
   background: var(--secondary);
@@ -39,7 +39,7 @@
 
 /* Loading state */
 
-.survey-loading {
+.test-loading {
   position: relative;
   z-index: 1;
   display: flex;
@@ -49,21 +49,21 @@
   color: var(--text);
 }
 
-.survey-loading p {
+.test-loading p {
   font-size: 1.1rem;
   opacity: 0.7;
 }
 
-.survey-spinner {
+.test-spinner {
   width: 48px;
   height: 48px;
   border: 4px solid var(--card-border);
   border-top-color: var(--primary);
   border-radius: 50%;
-  animation: survey-spin 0.8s linear infinite;
+  animation: test-spin 0.8s linear infinite;
 }
 
-@keyframes survey-spin {
+@keyframes test-spin {
   to {
     transform: rotate(360deg);
   }
@@ -71,7 +71,7 @@
 
 /* Intro view */
 
-.survey-intro {
+.test-intro {
   position: relative;
   z-index: 1;
   max-width: 560px;
@@ -89,14 +89,14 @@
   gap: 1rem;
 }
 
-.survey-title {
+.test-title {
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--text);
   margin: 0;
 }
 
-.survey-subtitle {
+.test-subtitle {
   font-size: 1rem;
   color: var(--text);
   opacity: 0.75;
@@ -104,27 +104,27 @@
   line-height: 1.5;
 }
 
-.survey-instructions {
+.test-instructions {
   font-size: 0.9rem;
   color: var(--text);
   opacity: 0.6;
   margin: 0;
 }
 
-.survey-estimate {
+.test-estimate {
   font-size: 0.85rem;
   color: var(--text);
   opacity: 0.5;
 }
 
-.survey-error {
+.test-error {
   color: var(--error, #ef4444);
   font-size: 0.95rem;
 }
 
 /* Category badges */
 
-.survey-categories {
+.test-categories {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
@@ -132,7 +132,7 @@
   margin: 0.5rem 0;
 }
 
-.survey-category-badge {
+.test-category-badge {
   display: inline-block;
   padding: 0.35rem 0.85rem;
   background: var(--primary);
@@ -143,14 +143,14 @@
   opacity: 0.85;
 }
 
-.survey-category-badge--small {
+.test-category-badge--small {
   padding: 0.2rem 0.6rem;
   font-size: 0.75rem;
 }
 
 /* Buttons */
 
-.survey-btn {
+.test-btn {
   padding: 0.75rem 1.75rem;
   border: none;
   border-radius: 12px;
@@ -160,26 +160,26 @@
   transition: background 0.2s, transform 0.15s, opacity 0.2s;
 }
 
-.survey-btn:active {
+.test-btn:active {
   transform: scale(0.97);
 }
 
-.survey-btn:disabled {
+.test-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-.survey-btn--start {
+.test-btn--start {
   background: var(--primary);
   color: #fff;
   width: 100%;
 }
 
-.survey-btn--start:hover:not(:disabled) {
+.test-btn--start:hover:not(:disabled) {
   opacity: 0.9;
 }
 
-.survey-btn--back {
+.test-btn--back {
   background: transparent;
   color: var(--text);
   opacity: 0.6;
@@ -187,19 +187,19 @@
   font-size: 0.9rem;
 }
 
-.survey-btn--back:hover {
+.test-btn--back:hover {
   opacity: 0.85;
 }
 
-.survey-btn--next {
+.test-btn--next {
   background: var(--primary);
   color: #fff;
   width: 100%;
   margin-top: 0.5rem;
-  animation: survey-fade-in 0.2s ease;
+  animation: test-fade-in 0.2s ease;
 }
 
-@keyframes survey-fade-in {
+@keyframes test-fade-in {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -212,7 +212,7 @@
 
 /* Quiz in-progress view */
 
-.survey-quiz {
+.test-quiz {
   position: relative;
   z-index: 1;
   max-width: 640px;
@@ -225,20 +225,20 @@
 
 /* Progress */
 
-.survey-progress-header {
+.test-progress-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.survey-progress-text {
+.test-progress-text {
   font-size: 0.9rem;
   color: var(--text);
   opacity: 0.7;
   font-weight: 600;
 }
 
-.survey-progress-bar {
+.test-progress-bar {
   width: 100%;
   height: 6px;
   background: var(--card-border);
@@ -246,7 +246,7 @@
   overflow: hidden;
 }
 
-.survey-progress-fill {
+.test-progress-fill {
   height: 100%;
   background: var(--primary);
   border-radius: 999px;
@@ -255,7 +255,7 @@
 
 /* Question card */
 
-.survey-question-card {
+.test-question-card {
   padding: 2rem;
   background: var(--card-bg);
   backdrop-filter: blur(18px);
@@ -265,7 +265,7 @@
   box-shadow: 0 8px 32px var(--card-shadow);
 }
 
-.survey-question-text {
+.test-question-text {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text);
@@ -275,13 +275,13 @@
 
 /* Options */
 
-.survey-options {
+.test-options {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
 }
 
-.survey-option {
+.test-option {
   display: flex;
   align-items: center;
   gap: 0.85rem;
@@ -297,21 +297,21 @@
   transition: border-color 0.2s, background 0.2s, opacity 0.2s;
 }
 
-.survey-option:hover:not(:disabled) {
+.test-option:hover:not(:disabled) {
   border-color: var(--primary);
 }
 
-.survey-option--selected {
+.test-option--selected {
   border-color: var(--primary);
   background: color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-.survey-option--disabled {
+.test-option--disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.survey-option-letter {
+.test-option-letter {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -325,19 +325,19 @@
   color: var(--text);
 }
 
-.survey-option--selected .survey-option-letter {
+.test-option--selected .test-option-letter {
   background: var(--primary);
   color: #fff;
 }
 
-.survey-option-text {
+.test-option-text {
   flex: 1;
   line-height: 1.35;
 }
 
 /* Results view */
 
-.survey-results {
+.test-results {
   position: relative;
   z-index: 1;
   max-width: 560px;
@@ -357,39 +357,39 @@
 
 /* Overall score ring */
 
-.survey-overall {
+.test-overall {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
 }
 
-.survey-overall-label {
+.test-overall-label {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text);
   opacity: 0.7;
 }
 
-.survey-overall-ring {
+.test-overall-ring {
   position: relative;
   width: 120px;
   height: 120px;
 }
 
-.survey-ring-svg {
+.test-ring-svg {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
 }
 
-.survey-ring-bg {
+.test-ring-bg {
   fill: none;
   stroke: var(--card-border);
   stroke-width: 10;
 }
 
-.survey-ring-fill {
+.test-ring-fill {
   fill: none;
   stroke: var(--primary);
   stroke-width: 10;
@@ -397,7 +397,7 @@
   transition: stroke-dasharray 0.8s ease;
 }
 
-.survey-overall-percent {
+.test-overall-percent {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -409,33 +409,33 @@
 
 /* Category result bars */
 
-.survey-category-results {
+.test-category-results {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   text-align: left;
 }
 
-.survey-cat-row {
+.test-cat-row {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 }
 
-.survey-cat-name {
+.test-cat-name {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
   opacity: 0.8;
 }
 
-.survey-cat-bar-wrap {
+.test-cat-bar-wrap {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.survey-cat-bar {
+.test-cat-bar {
   flex: 1;
   height: 8px;
   background: var(--card-border);
@@ -443,14 +443,14 @@
   overflow: hidden;
 }
 
-.survey-cat-bar-fill {
+.test-cat-bar-fill {
   height: 100%;
   background: var(--primary);
   border-radius: 999px;
   transition: width 0.6s ease;
 }
 
-.survey-cat-pct {
+.test-cat-pct {
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text);
@@ -460,13 +460,13 @@
 
 /* Result actions */
 
-.survey-result-actions {
+.test-result-actions {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.survey-saving {
+.test-saving {
   font-size: 0.85rem;
   color: var(--text);
   opacity: 0.5;
@@ -475,21 +475,21 @@
 /* Responsive */
 
 @media (max-width: 640px) {
-  .survey-intro,
-  .survey-results {
+  .test-intro,
+  .test-results {
     margin: 1rem;
     padding: 1.5rem 1.25rem;
   }
 
-  .survey-quiz {
+  .test-quiz {
     padding: 1rem;
   }
 
-  .survey-question-card {
+  .test-question-card {
     padding: 1.25rem;
   }
 
-  .survey-title {
+  .test-title {
     font-size: 1.35rem;
   }
 }
