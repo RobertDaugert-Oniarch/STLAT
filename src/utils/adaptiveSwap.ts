@@ -1,11 +1,11 @@
-import type { Question, AnswerRecord, CategoryStats, SurveyCategory } from "../types/survey";
+import type { Question, AnswerRecord, CategoryStats, TestCategory } from "../types/test";
 
 const DEVIATION_THRESHOLD = 40;
 const MAX_SWAPS_PER_SESSION = 5;
 const MIN_ANSWERS_FOR_ANOMALY = 3;
 
 /** Compute current session average score (0-100) for a specific category. */
-function computeCurrentScore(answers: AnswerRecord[], category: SurveyCategory): number | null {
+function computeCurrentScore(answers: AnswerRecord[], category: TestCategory): number | null {
   const catAnswers = answers.filter((a) => a.category === category);
   if (catAnswers.length < MIN_ANSWERS_FOR_ANOMALY) return null;
   const avg = catAnswers.reduce((sum, a) => sum + a.score, 0) / catAnswers.length;
@@ -28,8 +28,8 @@ function detectAnomaly(
 export function findAnomalyCategory(
   answers: AnswerRecord[],
   historyStats: Record<string, CategoryStats>,
-  categories: readonly SurveyCategory[],
-): SurveyCategory | null {
+  categories: readonly TestCategory[],
+): TestCategory | null {
   for (const cat of categories) {
     const expected = historyStats[cat]?.percentage ?? 50;
     const current = computeCurrentScore(answers, cat);
@@ -50,7 +50,7 @@ export function swapNextQuestion(
   queue: Question[],
   currentIndex: number,
   backup: Question[],
-  shiftedCategory: SurveyCategory,
+  shiftedCategory: TestCategory,
   swapCount: number,
 ): {
   newQueue: Question[];

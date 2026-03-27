@@ -7,18 +7,18 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { SURVEY_HISTORY, QUIZ_RESULTS } from "../firebase/collections";
+import { TEST_HISTORY, QUIZ_RESULTS } from "../firebase/collections";
 import type {
   AnswerRecord,
   CategoryStats,
   SessionResult,
-  SurveyCategory,
-} from "../types/survey";
+  TestCategory,
+} from "../types/test";
 
 /** Aggregate per-category stats from all past session answer records. */
 function aggregateHistory(
   allAnswers: AnswerRecord[],
-  categories: readonly SurveyCategory[],
+  categories: readonly TestCategory[],
 ): Record<string, CategoryStats> {
   const stats: Record<string, CategoryStats> = {};
   for (const cat of categories) {
@@ -43,12 +43,12 @@ function aggregateHistory(
 /** Fetch all past sessions for a user and return aggregated category stats. */
 export async function getUserHistory(
   uid: string,
-  categories: readonly SurveyCategory[],
+  categories: readonly TestCategory[],
 ): Promise<{
   categoryStats: Record<string, CategoryStats>;
   seenQuestionIds: string[];
 }> {
-  const sessionsRef = collection(db, SURVEY_HISTORY, uid, "sessions");
+  const sessionsRef = collection(db, TEST_HISTORY, uid, "sessions");
   const snap = await getDocs(sessionsRef);
 
   const allAnswers: AnswerRecord[] = [];
@@ -69,13 +69,13 @@ export async function getUserHistory(
   };
 }
 
-/** Save a completed survey session and update the latest result summary. */
+/** Save a completed test session and update the latest result summary. */
 export async function saveSession(
   uid: string,
   session: SessionResult,
 ): Promise<void> {
   // Save full session to history sub-collection
-  const sessionsRef = collection(db, SURVEY_HISTORY, uid, "sessions");
+  const sessionsRef = collection(db, TEST_HISTORY, uid, "sessions");
   await addDoc(sessionsRef, {
     startedAt: Timestamp.fromDate(session.startedAt),
     completedAt: Timestamp.fromDate(session.completedAt),
@@ -89,7 +89,7 @@ export async function saveSession(
   await setDoc(
     quizResultRef,
     {
-      quizName: "STLAT Survey",
+      quizName: "STLAT Test",
       score: session.overallPercentage,
       total: 100,
       percentage: session.overallPercentage,

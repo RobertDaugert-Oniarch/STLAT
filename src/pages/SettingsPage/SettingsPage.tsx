@@ -4,7 +4,7 @@ import { deleteUser } from "firebase/auth";
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../../firebase/config";
-import { USERS, QUIZ_RESULTS, SURVEY_HISTORY, USERNAMES } from "../../firebase/collections";
+import { USERS, QUIZ_RESULTS, TEST_HISTORY, USERNAMES } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuthGuard } from "../../hooks/useAuthGuard";
@@ -193,7 +193,7 @@ const SettingsPage = () => {
       }
       await deleteDoc(doc(db, USERS, user.uid));
       await deleteDoc(doc(db, QUIZ_RESULTS, user.uid));
-      const sessionsSnap = await getDocs(collection(db, SURVEY_HISTORY, user.uid, "sessions"));
+      const sessionsSnap = await getDocs(collection(db, TEST_HISTORY, user.uid, "sessions"));
       await Promise.all(sessionsSnap.docs.map((d) => deleteDoc(d.ref)));
       await deleteUser(user);
       navigate("/login");

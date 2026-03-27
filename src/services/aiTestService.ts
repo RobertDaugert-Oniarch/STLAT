@@ -1,4 +1,4 @@
-import type { Question, CategoryStats, SurveyCategory, AIQuestionPlan } from "../types/survey";
+import type { Question, CategoryStats, TestCategory, AIQuestionPlan } from "../types/test";
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const MAIN_QUESTIONS = 20;
@@ -40,7 +40,7 @@ Rules:
 
 function fallbackSelection(
   allQuestions: Question[],
-  categories: readonly SurveyCategory[],
+  categories: readonly TestCategory[],
 ): { main: Question[]; backup: Question[] } {
   const byCategory: Record<string, Question[]> = {};
   for (const cat of categories) byCategory[cat] = [];
@@ -83,7 +83,7 @@ export async function selectQuestions(
   allQuestions: Question[],
   categoryHistory: Record<string, CategoryStats>,
   seenQuestionIds: string[],
-  categories: readonly SurveyCategory[],
+  categories: readonly TestCategory[],
 ): Promise<{ main: Question[]; backup: Question[] }> {
   // Build lookup
   const questionMap = new Map<string, Question>();
@@ -131,7 +131,7 @@ export async function selectQuestions(
     });
 
     if (!response.ok) {
-      console.warn("AI survey service: API error", response.status);
+      console.warn("AI test service: API error", response.status);
       return fallbackSelection(allQuestions, categories);
     }
 
@@ -162,7 +162,7 @@ export async function selectQuestions(
 
     return { main: mainQuestions, backup: backupQuestions };
   } catch (err) {
-    console.warn("AI survey service error, using fallback:", err);
+    console.warn("AI test service error, using fallback:", err);
     return fallbackSelection(allQuestions, categories);
   }
 }
