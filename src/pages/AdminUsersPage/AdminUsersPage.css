@@ -1,0 +1,227 @@
+.admin-users {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-users h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ── Toolbar ── */
+.users-toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.users-search {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.users-search:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* ── Table ── */
+.users-table-wrapper {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow-x: auto;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.users-table th {
+  background: var(--bg);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.users-table th:hover {
+  color: var(--text);
+}
+
+.users-table tr:last-child td {
+  border-bottom: none;
+}
+
+.users-table tr:hover td {
+  background: var(--hover-bg);
+}
+
+/* ── User avatar ── */
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.user-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Role badge ── */
+.role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.role-admin {
+  background: #6c5ce720;
+  color: #6c5ce7;
+}
+
+.role-user {
+  background: var(--bg);
+  color: var(--text-muted);
+}
+
+/* ── Disabled badge ── */
+.disabled-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #d6303120;
+  color: #d63031;
+}
+
+/* ── Actions ── */
+.user-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.user-action-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.user-action-btn:hover {
+  background: var(--hover-bg);
+}
+
+.user-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.user-action-btn.danger {
+  color: #d63031;
+}
+
+/* ── Pagination ── */
+.users-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.users-pagination-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.users-pagination-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.users-page-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.users-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.users-page-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.users-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-muted);
+}
+
+.users-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 300;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

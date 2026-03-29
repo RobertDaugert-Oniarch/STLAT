@@ -9,6 +9,11 @@ import PasswordChangePage from "./pages/PasswordChangePage/PasswordChangePage";
 import PasswordResetPage from "./pages/PasswordResetPage/PasswordResetPage";
 import VerifyEmailPage from "./pages/VerifyEmailPage/VerifyEmailPage";
 import TestPage from "./pages/TestPage/TestPage";
+import AdminLayout from "./components/AdminLayout/AdminLayout";
+import AdminDashboardPage from "./pages/AdminDashboardPage/AdminDashboardPage";
+import AdminStatisticsPage from "./pages/AdminStatisticsPage/AdminStatisticsPage";
+import AdminUsersPage from "./pages/AdminUsersPage/AdminUsersPage";
+import AdminAuditPage from "./pages/AdminAuditPage/AdminAuditPage";
 import "./App.css";
 
 function App() {
@@ -25,6 +30,13 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/settings/email" element={<EmailChangePage />} />
             <Route path="/settings/password" element={<PasswordChangePage />} />
+            {/* Admin routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="statistics" element={<AdminStatisticsPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="audit" element={<AdminAuditPage />} />
+            </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
