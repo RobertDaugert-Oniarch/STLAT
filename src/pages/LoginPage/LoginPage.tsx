@@ -7,6 +7,7 @@ import {
 import {
   doc,
   setDoc,
+  getDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -75,6 +76,7 @@ const LoginPage = () => {
           tag,
           fullUsername: full,
           email,
+          role: "user",
           createdAt: serverTimestamp(),
         });
 
@@ -94,7 +96,15 @@ const LoginPage = () => {
         if (!userCred.user.emailVerified) {
           navigate("/verify-email");
         } else {
-          navigate("/profile");
+          // Check if user doc exists (may have been deleted by admin)
+          const userDoc = await getDoc(doc(db, USERS, userCred.user.uid));
+          if (!userDoc.exists()) {
+            await auth.signOut();
+            setError(t.errorUserDisabled);
+            return;
+          }
+          const role = userDoc.data()?.role;
+          navigate(role === "admin" ? "/admin" : "/profile");
         }
       } catch (err: unknown) {
         setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t, { loginContext: true }));

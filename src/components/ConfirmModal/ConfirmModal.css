@@ -1,0 +1,70 @@
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.confirm-modal {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 420px;
+  width: 90%;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.confirm-modal p {
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-btn {
+  padding: 8px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+
+.confirm-btn:hover {
+  background: var(--hover-bg);
+}
+
+.confirm-btn-danger {
+  background: #d63031;
+  color: #fff;
+  border-color: #d63031;
+}
+
+.confirm-btn-danger:hover {
+  background: #c0392b;
+}
+
+.confirm-btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.confirm-btn-primary:hover {
+  opacity: 0.9;
+}

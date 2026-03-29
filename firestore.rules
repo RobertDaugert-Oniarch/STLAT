@@ -2,21 +2,39 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper: check if the requesting user is an admin
+    function isAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      // Users can read their own doc, admins can read any user doc
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      // Users can create their own doc (registration) — role must be "user" or absent
+      allow create: if request.auth != null && request.auth.uid == uid
+        && (!("role" in request.resource.data) || request.resource.data.role == "user");
+      // Users can update their own doc but NEVER change the role field
+      allow update: if (request.auth != null && request.auth.uid == uid
+        && (!("role" in request.resource.data) || request.resource.data.role == resource.data.role))
+        || isAdmin();
+      // Users can delete their own doc, admins can delete any
+      allow delete: if (request.auth != null && request.auth.uid == uid) || isAdmin();
     }
 
     match /usernames/{username} {
       allow read:   if request.auth != null;
       allow create: if request.auth != null
-                    && request.resource.data.uid == request.auth.uid;
+                    && (request.resource.data.uid == request.auth.uid || isAdmin());
       allow update: if false;
       allow delete: if request.auth != null
-                    && resource.data.uid == request.auth.uid;
+                    && (resource.data.uid == request.auth.uid || isAdmin());
     }
 
     match /quizResults/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      // Owner can read/write, admins can read any
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow write: if request.auth != null && request.auth.uid == uid;
     }
 
     // Test questions — any authenticated user can read, no client writes
@@ -25,9 +43,15 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Per-user test history — only the owner can read/write
+    // Per-user test history — owner can read/write, admins can read any
     match /testHistory/{uid}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Admin audit log — only admins can read and write
+    match /adminActions/{actionId} {
+      allow read, write: if isAdmin();
     }
   }
 }

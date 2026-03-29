@@ -54,3 +54,19 @@ export async function generateUniqueUsername(
 
   throw new Error("Failed to generate a unique username. Please try again.");
 }
+
+/**
+ * Reserve an arbitrary username string (e.g. "First Last") for a given uid.
+ * Checks uniqueness before writing.
+ */
+export async function reserveUsername(
+  fullUsername: string,
+  uid: string,
+): Promise<void> {
+  const ref = doc(db, USERNAMES, fullUsername);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    throw new Error(`Username "${fullUsername}" is already taken.`);
+  }
+  await setDoc(ref, { uid });
+}
