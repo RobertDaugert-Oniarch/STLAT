@@ -1,10 +1,9 @@
 import {
   collection,
   getDocs,
-  addDoc,
   doc,
-  setDoc,
   Timestamp,
+  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { TEST_HISTORY, QUIZ_RESULTS } from "../firebase/collections";
@@ -74,9 +73,12 @@ export async function saveSession(
   uid: string,
   session: SessionResult,
 ): Promise<void> {
+  const batch = writeBatch(db);
+
   // Save full session to history sub-collection
   const sessionsRef = collection(db, TEST_HISTORY, uid, "sessions");
-  await addDoc(sessionsRef, {
+  const newSessionRef = doc(sessionsRef);
+  batch.set(newSessionRef, {
     startedAt: Timestamp.fromDate(session.startedAt),
     completedAt: Timestamp.fromDate(session.completedAt),
     answers: session.answers,
@@ -86,7 +88,7 @@ export async function saveSession(
 
   // Update latest summary for ProfilePage
   const quizResultRef = doc(db, QUIZ_RESULTS, uid);
-  await setDoc(
+  batch.set(
     quizResultRef,
     {
       quizName: "STLAT Test",
@@ -98,4 +100,6 @@ export async function saveSession(
     },
     { merge: true },
   );
+
+  await batch.commit();
 }

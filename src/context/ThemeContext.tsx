@@ -1,7 +1,9 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -32,13 +34,20 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggleTheme = useCallback(
+    () => setTheme((prev) => (prev === "light" ? "dark" : "light")),
+    [],
+  );
 
-  const applyTheme = (t: Theme) => setTheme(t);
+  const applyTheme = useCallback((t: Theme) => setTheme(t), []);
+
+  const value = useMemo(
+    () => ({ theme, toggleTheme, applyTheme }),
+    [theme, toggleTheme, applyTheme],
+  );
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, applyTheme }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -16,11 +16,18 @@ export function useAdminGuard() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const cachedUid = useRef<string | null>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!firebaseUser) {
+        cachedUid.current = null;
         navigate("/login");
+        return;
+      }
+
+      // Skip Firestore fetch if role was already checked for this uid
+      if (cachedUid.current === firebaseUser.uid && user) {
         return;
       }
 
@@ -29,6 +36,7 @@ export function useAdminGuard() {
         const role = userDoc.data()?.role as UserRole | undefined;
 
         if (role === "admin") {
+          cachedUid.current = firebaseUser.uid;
           setUser(firebaseUser);
           setIsAdmin(true);
           setLoading(false);
@@ -40,7 +48,7 @@ export function useAdminGuard() {
       }
     });
     return () => unsub();
-  }, [navigate]);
+  }, [navigate, user]);
 
   return { user, isAdmin, loading };
 }

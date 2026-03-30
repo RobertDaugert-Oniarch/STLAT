@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useLang } from "../../context/LangContext";
 import {
   subscribeToAllUsers,
@@ -188,7 +188,7 @@ const AdminStatisticsPage = () => {
     setPage(0);
   };
 
-  const handleExportCSV = () => {
+  const handleExportCSV = useCallback(() => {
     const data = filtered.map((r) => ({
       [t.username]: r.username,
       [t.email]: r.email,
@@ -201,9 +201,9 @@ const AdminStatisticsPage = () => {
       [t.adminLevel]: r.level,
     }));
     exportToCSV(data, "stlat-statistics");
-  };
+  }, [filtered, t]);
 
-  const handleExportExcel = () => {
+  const handleExportExcel = useCallback(() => {
     const data = filtered.map((r) => ({
       [t.username]: r.username,
       [t.email]: r.email,
@@ -216,7 +216,7 @@ const AdminStatisticsPage = () => {
       [t.adminLevel]: r.level,
     }));
     exportToExcel(data, "stlat-statistics");
-  };
+  }, [filtered, t]);
 
   const sortArrow = (key: SortKey) => {
     if (sortKey !== key) return "";

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase/config";
@@ -78,20 +78,23 @@ const ProfilePage = () => {
     loadData();
   }, [user, applyTheme, applyLang]);
 
+  const username = useMemo(() => userData?.fullUsername ?? "User", [userData]);
+  const initials = useMemo(() => getInitials(username), [username]);
+  const greetingKey = getGreetingKey();
+  const percentage = testResult?.percentage ?? 0;
+  const level = useMemo(() => getLevel(percentage), [percentage]);
+  const levelLabel = useMemo(
+    () => t[`level_${level}` as keyof typeof t] as string,
+    [t, level],
+  );
+
   if (authLoading || loading) {
     return (
-      <div className="profile-page">
-        <p className="profile-loading">{t.loading}</p>
+      <div className="page-spinner-wrapper">
+        <div className="page-spinner" />
       </div>
     );
   }
-
-  const username = userData?.fullUsername ?? "User";
-  const initials = getInitials(username);
-  const greetingKey = getGreetingKey();
-  const percentage = testResult?.percentage ?? 0;
-  const level = getLevel(percentage);
-  const levelLabel = t[`level_${level}` as keyof typeof t] as string;
 
   return (
     <div className="profile-page">

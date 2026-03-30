@@ -1,5 +1,3 @@
-import * as XLSX from "xlsx";
-
 export function exportToCSV(
   data: Record<string, unknown>[],
   filename: string,
@@ -29,12 +27,13 @@ export function exportToCSV(
   downloadBlob(blob, `${filename}.csv`);
 }
 
-export function exportToExcel(
+export async function exportToExcel(
   data: Record<string, unknown>[],
   filename: string,
-): void {
+): Promise<void> {
   if (data.length === 0) return;
 
+  const XLSX = await import("xlsx");
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Data");
