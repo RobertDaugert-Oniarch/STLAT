@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { doc, updateDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth, db } from "../../firebase/config";
@@ -105,7 +105,7 @@ const AdminUsersPage = () => {
 
   const showToast = (msg: string) => setToast(msg);
 
-  const handleResetPassword = async (uid: string, email: string) => {
+  const handleResetPassword = useCallback(async (uid: string, email: string) => {
     try {
       await sendPasswordResetEmail(auth, email);
       await logAdminAction({
@@ -117,9 +117,9 @@ const AdminUsersPage = () => {
     } catch (err) {
       console.error("Password reset failed:", err);
     }
-  };
+  }, [t.resetSent]);
 
-  const handleDeleteUser = async () => {
+  const handleDeleteUser = useCallback(async () => {
     if (!modal || modal.type !== "delete") return;
     const { uid, email } = modal;
     setModal(null);
@@ -149,9 +149,9 @@ const AdminUsersPage = () => {
     } catch (err) {
       console.error("Delete user failed:", err);
     }
-  };
+  }, [modal, users, t.adminUserDeleted]);
 
-  const handleRoleChange = async (firstName?: string, lastName?: string) => {
+  const handleRoleChange = useCallback(async (firstName?: string, lastName?: string) => {
     if (!modal || modal.type !== "role" || !modal.newRole) return;
     const { uid, email, fullUsername: oldFullUsername, newRole } = modal;
     setModal(null);
@@ -196,7 +196,7 @@ const AdminUsersPage = () => {
     } catch (err) {
       console.error("Role change failed:", err);
     }
-  };
+  }, [modal, t.adminRoleChanged]);
 
   if (loading) return <div className="users-empty">{t.loading}</div>;
 
