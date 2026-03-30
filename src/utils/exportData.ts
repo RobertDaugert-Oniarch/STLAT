@@ -1,5 +1,13 @@
 import * as XLSX from "xlsx";
 
+/** Sanitize a cell value to prevent CSV formula injection. */
+function sanitizeCell(value: string): string {
+  if (/^[=+\-@\t\r]/.test(value)) {
+    return "'" + value;
+  }
+  return value;
+}
+
 export function exportToCSV(
   data: Record<string, unknown>[],
   filename: string,
@@ -13,7 +21,7 @@ export function exportToCSV(
       headers
         .map((h) => {
           const val = row[h] ?? "";
-          const str = String(val);
+          const str = sanitizeCell(String(val));
           // Escape commas and quotes
           return str.includes(",") || str.includes('"')
             ? `"${str.replace(/"/g, '""')}"`
@@ -35,7 +43,16 @@ export function exportToExcel(
 ): void {
   if (data.length === 0) return;
 
-  const ws = XLSX.utils.json_to_sheet(data);
+  // Sanitize cell values to prevent formula injection
+  const sanitized = data.map((row) => {
+    const clean: Record<string, unknown> = {};
+    for (const [key, val] of Object.entries(row)) {
+      clean[key] = typeof val === "string" ? sanitizeCell(val) : val;
+    }
+    return clean;
+  });
+
+  const ws = XLSX.utils.json_to_sheet(sanitized);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Data");
   const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });

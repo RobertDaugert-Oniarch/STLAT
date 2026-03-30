@@ -207,6 +207,7 @@ export const translations = {
     adminActionPasswordReset: "Password Reset",
     adminActionUserDelete: "User Delete",
     adminActionRoleChange: "Role Change",
+    adminActionDataExport: "Data Export",
     adminNoAuditEntries: "No audit log entries.",
   },
   lv: {
@@ -412,6 +413,7 @@ export const translations = {
     adminActionPasswordReset: "Paroles atiestat\u012B\u0161ana",
     adminActionUserDelete: "Lietot\u0101ja dz\u0113\u0161ana",
     adminActionRoleChange: "Lomas mai\u0146a",
+    adminActionDataExport: "Datu eksports",
     adminNoAuditEntries: "Nav darb\u012Bbu \u017Eurn\u0101la ierakstu.",
   },
 } as const;

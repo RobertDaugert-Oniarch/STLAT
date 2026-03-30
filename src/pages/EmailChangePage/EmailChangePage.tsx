@@ -13,7 +13,9 @@ import BgShapes from "../../components/BgShapes/BgShapes";
 import "../../styles/FormPage.css";
 
 const isValidEmail = (value: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
+  && !/^[.@]/.test(value)
+  && !value.includes("..");
 
 const EmailChangePage = () => {
   const { t } = useLang();
