@@ -3,6 +3,7 @@
 .settings-menu {
   position: relative;
   z-index: 300;
+  flex-shrink: 0;
 }
 
 /* Trigger button */
