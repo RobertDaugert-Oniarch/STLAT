@@ -55,7 +55,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 200px 1fr 200px;
+  grid-template-columns: 240px 1fr 240px;
   gap: 1.25rem;
   min-height: 100vh;
   padding: 1.5rem;
@@ -360,6 +360,8 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .profile-avatar {
@@ -382,6 +384,9 @@
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
 
 /* ── Responsive ── */

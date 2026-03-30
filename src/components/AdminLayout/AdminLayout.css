@@ -127,6 +127,13 @@
   padding: 4px;
 }
 
+.admin-topbar-user {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
 .admin-content {
   flex: 1;
   padding: 24px;

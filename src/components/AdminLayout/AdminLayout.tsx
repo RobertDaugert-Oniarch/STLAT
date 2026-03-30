@@ -96,7 +96,7 @@ const AdminLayout = () => {
           >
             <Menu size={22} />
           </button>
-          <span>{username}</span>
+          <span className="admin-topbar-user">{username}</span>
         </header>
 
         <main className="admin-content">
