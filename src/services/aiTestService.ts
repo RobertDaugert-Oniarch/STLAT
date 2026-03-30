@@ -1,42 +1,10 @@
 import type { Question, CategoryStats, TestCategory, AIQuestionPlan } from "../types/test";
+import { auth } from "../firebase/config";
 
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-const MAIN_QUESTIONS = 20;
+const SELECT_QUESTIONS_URL = import.meta.env.VITE_SELECT_QUESTIONS_URL as string | undefined;
 const BACKUP_QUESTIONS = 10;
 const MIN_QUESTIONS_FOR_AI = 30;
 const MIN_PER_CATEGORY = 5;
-
-function getApiKey(): string {
-  const key = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
-  if (!key) throw new Error("VITE_OPENAI_API_KEY is not set");
-  return key;
-}
-
-function buildPrompt(
-  categoryPerformance: Record<string, number>,
-  availableByCategory: Record<string, string[]>,
-  recentlySeenIds: string[],
-): { system: string; user: string } {
-  const system = `You are an adaptive quiz selector. You receive a user's per-category performance history (percentage correct) and a pool of available question IDs grouped by category. Your job is to return a JSON object with two arrays:
-- "mainIds": exactly 20 question IDs (the primary test questions)
-- "backupIds": exactly 10 question IDs (reserve questions, all different from mainIds)
-
-Rules:
-1. Give MORE main questions from categories where the user performs WORSE (lower percentage) to help them improve weak areas.
-2. Guarantee at least 2 main questions per category.
-3. Backup questions should cover all 4 categories roughly equally and must NOT overlap with main questions.
-4. Prefer questions NOT in the recentlySeenIds list, but you may include them if no alternatives exist.
-5. Return ONLY valid JSON with no extra text.`;
-
-  const user = JSON.stringify({
-    categoryPerformance,
-    availableByCategory,
-    recentlySeenIds,
-    targets: { main: MAIN_QUESTIONS, backup: BACKUP_QUESTIONS },
-  });
-
-  return { system, user };
-}
 
 function fallbackSelection(
   allQuestions: Question[],
@@ -104,29 +72,25 @@ export async function selectQuestions(
   }
 
   // If total available < minimum threshold, skip AI and use fallback
-  if (allQuestions.length < MIN_QUESTIONS_FOR_AI) {
+  if (allQuestions.length < MIN_QUESTIONS_FOR_AI || !SELECT_QUESTIONS_URL) {
     return fallbackSelection(allQuestions, categories);
   }
 
   try {
-    const apiKey = getApiKey();
-    const { system, user } = buildPrompt(categoryPerformance, availableByCategory, seenQuestionIds);
+    const user = auth.currentUser;
+    if (!user) return fallbackSelection(allQuestions, categories);
 
-    const response = await fetch(OPENAI_API_URL, {
+    const idToken = await user.getIdToken();
+    const response = await fetch(SELECT_QUESTIONS_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${idToken}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        temperature: 0.7,
-        max_tokens: 1500,
-        response_format: { type: "json_object" },
+        categoryPerformance,
+        availableByCategory,
+        seenIds: seenQuestionIds,
       }),
     });
 
@@ -135,13 +99,7 @@ export async function selectQuestions(
       return fallbackSelection(allQuestions, categories);
     }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) {
-      return fallbackSelection(allQuestions, categories);
-    }
-
-    const plan: AIQuestionPlan = JSON.parse(content);
+    const plan: AIQuestionPlan = await response.json();
 
     // Validate and map IDs to questions
     const mainQuestions = plan.mainIds

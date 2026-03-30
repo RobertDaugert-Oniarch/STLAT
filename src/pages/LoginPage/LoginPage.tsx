@@ -26,6 +26,7 @@ import {
 import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
 import LangToggle from "../../components/LangToggle/LangToggle";
 import BgShapes from "../../components/BgShapes/BgShapes";
+import { useRateLimit } from "../../hooks/useRateLimit";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -49,11 +50,17 @@ const LoginPage = () => {
   // After sign-up: show generated username
   const [generatedUsername, setGeneratedUsername] = useState<string | null>(null);
 
+  // Rate limiting: 5 attempts per 60 seconds
+  const { canProceed, remainingSeconds, recordAttempt } = useRateLimit(5, 60_000);
+
   const pwdCheck = validatePassword(password);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!canProceed) return;
+    recordAttempt();
 
     if (isSignUp) {
       // --- Validate password rules ---
@@ -248,9 +255,13 @@ const LoginPage = () => {
           <button
             type="submit"
             className="login-button"
-            disabled={loading}
+            disabled={loading || !canProceed}
           >
-            {loading ? t.loading : isSignUp ? t.signUp : t.signIn}
+            {loading
+              ? t.loading
+              : !canProceed
+                ? `${t.errorTooManyRequests} (${remainingSeconds}s)`
+                : isSignUp ? t.signUp : t.signIn}
           </button>
         </form>
 

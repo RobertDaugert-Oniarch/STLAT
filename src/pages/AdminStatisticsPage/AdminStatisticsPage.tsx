@@ -7,6 +7,7 @@ import {
 } from "../../services/adminDataService";
 import { getLevel, type Level } from "../../utils/profileHelpers";
 import { exportToCSV, exportToExcel } from "../../utils/exportData";
+import { logAdminAction } from "../../services/auditLogService";
 import type { UserDoc } from "../../types/user";
 import { FileDown, FileSpreadsheet } from "lucide-react";
 import "./AdminStatisticsPage.css";
@@ -201,6 +202,12 @@ const AdminStatisticsPage = () => {
       [t.adminLevel]: r.level,
     }));
     exportToCSV(data, "stlat-statistics");
+    logAdminAction({
+      action: "data_export",
+      targetUid: "",
+      targetEmail: "",
+      details: `CSV export: ${data.length} rows`,
+    });
   }, [filtered, t]);
 
   const handleExportExcel = useCallback(() => {
@@ -216,6 +223,12 @@ const AdminStatisticsPage = () => {
       [t.adminLevel]: r.level,
     }));
     exportToExcel(data, "stlat-statistics");
+    logAdminAction({
+      action: "data_export",
+      targetUid: "",
+      targetEmail: "",
+      details: `Excel export: ${data.length} rows`,
+    });
   }, [filtered, t]);
 
   const sortArrow = (key: SortKey) => {

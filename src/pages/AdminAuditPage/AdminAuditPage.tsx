@@ -27,6 +27,7 @@ const AdminAuditPage = () => {
     password_reset: t.adminActionPasswordReset,
     user_delete: t.adminActionUserDelete,
     role_change: t.adminActionRoleChange,
+    data_export: t.adminActionDataExport,
   };
 
   const filtered = useMemo(() => {

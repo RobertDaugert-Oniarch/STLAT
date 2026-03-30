@@ -17,6 +17,7 @@ export function useAdminGuard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const cachedUid = useRef<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -43,12 +44,14 @@ export function useAdminGuard() {
         } else {
           navigate("/profile");
         }
-      } catch {
-        navigate("/profile");
+      } catch (err) {
+        console.error("Admin guard: failed to verify role", err);
+        setError("Failed to verify admin access. Please try again.");
+        setLoading(false);
       }
     });
     return () => unsub();
   }, [navigate, user]);
 
-  return { user, isAdmin, loading };
+  return { user, isAdmin, loading, error };
 }

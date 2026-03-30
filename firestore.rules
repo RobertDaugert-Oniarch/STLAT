@@ -49,9 +49,25 @@ service cloud.firestore {
       allow write: if request.auth != null && request.auth.uid == uid;
     }
 
-    // Admin audit log — only admins can read and write
+    // Admin audit log — append-only, admins can read and create but never modify or delete
     match /adminActions/{actionId} {
-      allow read, write: if isAdmin();
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.timestamp == request.time;
+    }
+
+    // Collection group rule for test history sessions
+    match /{path=**}/sessions/{sessionId} {
+      allow read: if request.auth != null
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if request.auth != null
+        && request.resource.data.userId == request.auth.uid;
+    }
+
+    // AI rate limit — only Cloud Function (admin SDK) writes, users can read their own
+    match /aiRateLimit/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
     }
   }
 }
