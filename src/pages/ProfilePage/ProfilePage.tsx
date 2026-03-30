@@ -90,8 +90,8 @@ const ProfilePage = () => {
 
   if (authLoading || loading) {
     return (
-      <div className="profile-page">
-        <p className="profile-loading">{t.loading}</p>
+      <div className="page-spinner-wrapper">
+        <div className="page-spinner" />
       </div>
     );
   }
