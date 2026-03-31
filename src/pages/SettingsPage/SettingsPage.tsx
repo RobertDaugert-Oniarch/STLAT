@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+import { useState, useEffect, useMemo } from "react";
 import { deleteUser } from "firebase/auth";
 import { doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -9,119 +8,10 @@ import { useLang } from "../../context/LangContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuthGuard } from "../../hooks/useAuthGuard";
 import { getFirebaseErrorMessage, getFirebaseErrorCode } from "../../utils/firebaseErrors";
+import { SettingsSelect, SearchableSettingsSelect } from "../../components/SettingsSelect/SettingsSelect";
+import { countries } from "../../data/countries";
 import BgShapes from "../../components/BgShapes/BgShapes";
 import "./SettingsPage.css";
-
-interface SettingsSelectOption {
-  value: string;
-  label: string;
-}
-
-const SettingsSelect = ({
-  value,
-  onChange,
-  options,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: SettingsSelectOption[];
-}) => {
-  const [open, setOpen] = useState(false);
-  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
-  const ref = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handle = (e: MouseEvent) => {
-      if (
-        ref.current && !ref.current.contains(e.target as Node) &&
-        menuRef.current && !menuRef.current.contains(e.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
-  }, []);
-
-  const handleToggle = () => {
-    if (!open && triggerRef.current) {
-      const rect = triggerRef.current.getBoundingClientRect();
-      setMenuPos({
-        top: rect.bottom + 8,
-        right: window.innerWidth - rect.right,
-      });
-    }
-    setOpen((v) => !v);
-  };
-
-  const selected = options.find((o) => o.value === value);
-
-  return (
-    <div className="stn-dropdown" ref={ref}>
-      <button
-        ref={triggerRef}
-        className="stn-dropdown-trigger"
-        onClick={handleToggle}
-        type="button"
-      >
-        {selected?.label}
-        <svg
-          className={`stn-dropdown-chevron${open ? " open" : ""}`}
-          width="12"
-          height="12"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
-      {open && createPortal(
-        <div
-          ref={menuRef}
-          className="stn-dropdown-menu"
-          style={{ position: "fixed", top: menuPos.top, right: menuPos.right }}
-        >
-          {options.map((opt) => (
-            <button
-              key={opt.value}
-              className={`stn-dropdown-item${opt.value === value ? " active" : ""}`}
-              onClick={() => {
-                onChange(opt.value);
-                setOpen(false);
-              }}
-              type="button"
-            >
-              {opt.label}
-              {opt.value === value && (
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              )}
-            </button>
-          ))}
-        </div>,
-        document.body
-      )}
-    </div>
-  );
-};
 
 const SettingsPage = () => {
   const { t, lang, applyLang } = useLang();
@@ -135,6 +25,13 @@ const SettingsPage = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [error, setError] = useState("");
 
+  // Demographics
+  const [ageGroup, setAgeGroup] = useState("");
+  const [country, setCountry] = useState("");
+  const [gender, setGender] = useState("");
+  const [education, setEducation] = useState("");
+  const [employment, setEmployment] = useState("");
+
   useEffect(() => {
     if (!user) return;
     setEmail(user.email ?? "");
@@ -147,6 +44,12 @@ const SettingsPage = () => {
           setUsername(data.fullUsername ?? "");
           if (data.theme === "light" || data.theme === "dark") applyTheme(data.theme);
           if (data.lang === "en" || data.lang === "lv") applyLang(data.lang);
+          // Load demographics
+          if (data.ageGroup) setAgeGroup(data.ageGroup);
+          if (data.country) setCountry(data.country);
+          if (data.gender) setGender(data.gender);
+          if (data.education) setEducation(data.education);
+          if (data.employment) setEmployment(data.employment);
           if (user.email && data.email !== user.email) {
             await setDoc(doc(db, USERS, user.uid), { email: user.email }, { merge: true });
           }
@@ -182,6 +85,60 @@ const SettingsPage = () => {
       console.warn("SettingsPage: Failed to save language", err);
     }
   };
+
+  const handleDemoChange = async (field: string, value: string, setter: (v: string) => void) => {
+    setter(value);
+    const user = auth.currentUser;
+    if (!user) return;
+    try {
+      await setDoc(doc(db, USERS, user.uid), { [field]: value }, { merge: true });
+    } catch (err) {
+      console.warn(`SettingsPage: Failed to save ${field}`, err);
+    }
+  };
+
+  const ageGroupOptions = useMemo(() => [
+    { value: "under_16", label: t.ageGroupUnder16 },
+    { value: "16_18", label: t.ageGroup16to18 },
+    { value: "19_25", label: t.ageGroup19to25 },
+    { value: "26_35", label: t.ageGroup26to35 },
+    { value: "36_50", label: t.ageGroup36to50 },
+    { value: "over_50", label: t.ageGroupOver50 },
+    { value: "prefer_not_to_say", label: t.preferNotToSay },
+  ], [t]);
+
+  const genderOptions = useMemo(() => [
+    { value: "male", label: t.genderMale },
+    { value: "female", label: t.genderFemale },
+    { value: "prefer_not_to_say", label: t.genderPreferNotToSay },
+  ], [t]);
+
+  const educationOptions = useMemo(() => [
+    { value: "primary", label: t.educationPrimary },
+    { value: "secondary", label: t.educationSecondary },
+    { value: "professional", label: t.educationProfessional },
+    { value: "higher", label: t.educationHigher },
+    { value: "bachelor", label: t.educationBachelor },
+    { value: "master", label: t.educationMaster },
+    { value: "prefer_not_to_say", label: t.preferNotToSay },
+  ], [t]);
+
+  const employmentOptions = useMemo(() => [
+    { value: "school_student", label: t.employmentSchoolStudent },
+    { value: "student", label: t.employmentStudent },
+    { value: "employed", label: t.employmentEmployed },
+    { value: "self_employed", label: t.employmentSelfEmployed },
+    { value: "unemployed", label: t.employmentUnemployed },
+    { value: "retired", label: t.employmentRetired },
+    { value: "prefer_not_to_say", label: t.employmentPreferNotToSay },
+  ], [t]);
+
+  const countryOptions = useMemo(() => [
+    ...countries
+      .map((c) => ({ value: c.code, label: lang === "lv" ? c.lv : c.en }))
+      .sort((a, b) => a.label.localeCompare(b.label)),
+    { value: "prefer_not_to_say", label: t.preferNotToSay },
+  ], [lang, t]);
 
   const handleDeleteAccount = async () => {
     const user = auth.currentUser;
@@ -297,6 +254,71 @@ const SettingsPage = () => {
                   { value: "en", label: t.langEnglish },
                   { value: "lv", label: t.langLatvian },
                 ]}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Demographics section */}
+        <section className="settings-section">
+          <h2 className="settings-section-heading">{t.demographics}</h2>
+          <div className="settings-card">
+            <div className="settings-field">
+              <span className="settings-field-label">{t.profileSetupAgeGroup}</span>
+              <SettingsSelect
+                value={ageGroup}
+                onChange={(v) => handleDemoChange("ageGroup", v, setAgeGroup)}
+                options={ageGroupOptions}
+                placeholder={t.profileSetupSelectPlaceholder}
+              />
+            </div>
+
+            <div className="settings-field-divider" />
+
+            <div className="settings-field">
+              <span className="settings-field-label">{t.profileSetupCountry}</span>
+              <SearchableSettingsSelect
+                value={country}
+                onChange={(v) => handleDemoChange("country", v, setCountry)}
+                options={countryOptions}
+                placeholder={t.profileSetupSelectPlaceholder}
+                searchPlaceholder={t.profileSetupSearchCountry}
+              />
+            </div>
+
+            <div className="settings-field-divider" />
+
+            <div className="settings-field">
+              <span className="settings-field-label">{t.profileSetupGender}</span>
+              <SettingsSelect
+                value={gender}
+                onChange={(v) => handleDemoChange("gender", v, setGender)}
+                options={genderOptions}
+                placeholder={t.profileSetupSelectPlaceholder}
+              />
+            </div>
+
+            <div className="settings-field-divider" />
+
+            <div className="settings-field">
+              <span className="settings-field-label">{t.profileSetupEducation}</span>
+              <SettingsSelect
+                value={education}
+                onChange={(v) => handleDemoChange("education", v, setEducation)}
+                options={educationOptions}
+                placeholder={t.profileSetupSelectPlaceholder}
+              />
+            </div>
+
+            <div className="settings-field-divider" />
+
+            <div className="settings-field">
+              <span className="settings-field-label">{t.profileSetupEmployment}</span>
+              <SettingsSelect
+                value={employment}
+                onChange={(v) => handleDemoChange("employment", v, setEmployment)}
+                options={employmentOptions}
+                placeholder={t.profileSetupSelectPlaceholder}
               />
             </div>
           </div>

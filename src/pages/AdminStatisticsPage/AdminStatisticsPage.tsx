@@ -8,6 +8,7 @@ import {
 import { getLevel, type Level } from "../../utils/profileHelpers";
 import { exportToCSV, exportToExcel } from "../../utils/exportData";
 import { logAdminAction } from "../../services/auditLogService";
+import { countries } from "../../data/countries";
 import type { UserDoc } from "../../types/user";
 import { FileDown, FileSpreadsheet } from "lucide-react";
 import "./AdminStatisticsPage.css";
@@ -26,12 +27,17 @@ interface RowData {
   behaviour: number;
   confidence: number;
   level: Level;
+  ageGroup: string;
+  country: string;
+  gender: string;
+  education: string;
+  employment: string;
 }
 
 type SortKey = keyof RowData;
 
 const AdminStatisticsPage = () => {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [users, setUsers] = useState<(UserDoc & { uid: string })[]>([]);
   const [results, setResults] = useState<QuizResultDoc[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +50,13 @@ const AdminStatisticsPage = () => {
   const [scoreMax, setScoreMax] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [userSearch, setUserSearch] = useState("");
+
+  // Demographic filters
+  const [ageGroupFilter, setAgeGroupFilter] = useState("");
+  const [countryFilter, setCountryFilter] = useState("");
+  const [genderFilter, setGenderFilter] = useState("");
+  const [educationFilter, setEducationFilter] = useState("");
+  const [employmentFilter, setEmploymentFilter] = useState("");
 
   // Sort
   const [sortKey, setSortKey] = useState<SortKey>("dateTs");
@@ -63,9 +76,17 @@ const AdminStatisticsPage = () => {
   }, []);
 
   const userMap = useMemo(() => {
-    const m = new Map<string, { username: string; email: string }>();
+    const m = new Map<string, { username: string; email: string; ageGroup: string; country: string; gender: string; education: string; employment: string }>();
     for (const u of users) {
-      m.set(u.uid, { username: u.fullUsername || "", email: u.email || "" });
+      m.set(u.uid, {
+        username: u.fullUsername || "",
+        email: u.email || "",
+        ageGroup: u.ageGroup || "",
+        country: u.country || "",
+        gender: u.gender || "",
+        education: u.education || "",
+        employment: u.employment || "",
+      });
     }
     return m;
   }, [users]);
@@ -89,6 +110,11 @@ const AdminStatisticsPage = () => {
         behaviour: getPerc("Behaviour"),
         confidence: getPerc("Confidence in One's Judgement"),
         level: getLevel(r.percentage || 0),
+        ageGroup: info?.ageGroup || "",
+        country: info?.country || "",
+        gender: info?.gender || "",
+        education: info?.education || "",
+        employment: info?.employment || "",
       };
     });
   }, [results, userMap]);
@@ -132,6 +158,13 @@ const AdminStatisticsPage = () => {
       });
     }
 
+    // Demographic filters
+    if (ageGroupFilter) data = data.filter((r) => r.ageGroup === ageGroupFilter);
+    if (countryFilter) data = data.filter((r) => r.country === countryFilter);
+    if (genderFilter) data = data.filter((r) => r.gender === genderFilter);
+    if (educationFilter) data = data.filter((r) => r.education === educationFilter);
+    if (employmentFilter) data = data.filter((r) => r.employment === employmentFilter);
+
     // Sort
     data.sort((a, b) => {
       const aVal = a[sortKey];
@@ -145,7 +178,7 @@ const AdminStatisticsPage = () => {
     });
 
     return data;
-  }, [rows, dateFrom, dateTo, scoreMin, scoreMax, levelFilter, userSearch, categoryFilter, sortKey, sortDir]);
+  }, [rows, dateFrom, dateTo, scoreMin, scoreMax, levelFilter, userSearch, categoryFilter, sortKey, sortDir, ageGroupFilter, countryFilter, genderFilter, educationFilter, employmentFilter]);
 
   // Pagination
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -186,50 +219,13 @@ const AdminStatisticsPage = () => {
     setScoreMax("");
     setLevelFilter("");
     setUserSearch("");
+    setAgeGroupFilter("");
+    setCountryFilter("");
+    setGenderFilter("");
+    setEducationFilter("");
+    setEmploymentFilter("");
     setPage(0);
   };
-
-  const handleExportCSV = useCallback(() => {
-    const data = filtered.map((r) => ({
-      [t.username]: r.username,
-      [t.email]: r.email,
-      [t.adminDate]: r.date,
-      [t.overallScore]: r.overall,
-      [t.categoryKnowledge]: r.knowledge,
-      [t.categoryAttitudes]: r.attitudes,
-      [t.categoryBehaviour]: r.behaviour,
-      [t.categoryConfidence]: r.confidence,
-      [t.adminLevel]: r.level,
-    }));
-    exportToCSV(data, "stlat-statistics");
-    logAdminAction({
-      action: "data_export",
-      targetUid: "",
-      targetEmail: "",
-      details: `CSV export: ${data.length} rows`,
-    });
-  }, [filtered, t]);
-
-  const handleExportExcel = useCallback(() => {
-    const data = filtered.map((r) => ({
-      [t.username]: r.username,
-      [t.email]: r.email,
-      [t.adminDate]: r.date,
-      [t.overallScore]: r.overall,
-      [t.categoryKnowledge]: r.knowledge,
-      [t.categoryAttitudes]: r.attitudes,
-      [t.categoryBehaviour]: r.behaviour,
-      [t.categoryConfidence]: r.confidence,
-      [t.adminLevel]: r.level,
-    }));
-    exportToExcel(data, "stlat-statistics");
-    logAdminAction({
-      action: "data_export",
-      targetUid: "",
-      targetEmail: "",
-      details: `Excel export: ${data.length} rows`,
-    });
-  }, [filtered, t]);
 
   const sortArrow = (key: SortKey) => {
     if (sortKey !== key) return "";
@@ -246,6 +242,86 @@ const AdminStatisticsPage = () => {
     beginner: t.level_beginner,
     novice: t.level_novice,
   };
+
+  const countryMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of countries) m.set(c.code, lang === "lv" ? c.lv : c.en);
+    return m;
+  }, [lang]);
+
+  const demoLabel = useCallback((value: string, type: "age" | "country" | "gender" | "education" | "employment") => {
+    if (!value || value === "prefer_not_to_say") return t.preferNotToSay;
+    const map: Record<string, Record<string, string>> = {
+      age: { under_16: t.ageGroupUnder16, "16_18": t.ageGroup16to18, "19_25": t.ageGroup19to25, "26_35": t.ageGroup26to35, "36_50": t.ageGroup36to50, over_50: t.ageGroupOver50 },
+      gender: { male: t.genderMale, female: t.genderFemale },
+      education: { primary: t.educationPrimary, secondary: t.educationSecondary, professional: t.educationProfessional, higher: t.educationHigher, bachelor: t.educationBachelor, master: t.educationMaster },
+      employment: { school_student: t.employmentSchoolStudent, student: t.employmentStudent, employed: t.employmentEmployed, self_employed: t.employmentSelfEmployed, unemployed: t.employmentUnemployed, retired: t.employmentRetired },
+      country: {},
+    };
+    if (type === "country") return countryMap.get(value) || value;
+    return map[type]?.[value] || value;
+  }, [t, countryMap]);
+
+  // Unique countries present in data for filter dropdown
+  const activeCountries = useMemo(() => {
+    const codes = new Set<string>();
+    for (const r of rows) if (r.country && r.country !== "prefer_not_to_say") codes.add(r.country);
+    return Array.from(codes)
+      .map((code) => ({ code, label: countryMap.get(code) || code }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [rows, countryMap]);
+
+  const handleExportCSV = useCallback(() => {
+    const data = filtered.map((r) => ({
+      [t.username]: r.username,
+      [t.email]: r.email,
+      [t.adminDate]: r.date,
+      [t.overallScore]: r.overall,
+      [t.categoryKnowledge]: r.knowledge,
+      [t.categoryAttitudes]: r.attitudes,
+      [t.categoryBehaviour]: r.behaviour,
+      [t.categoryConfidence]: r.confidence,
+      [t.adminLevel]: r.level,
+      [t.profileSetupAgeGroup]: demoLabel(r.ageGroup, "age"),
+      [t.profileSetupCountry]: demoLabel(r.country, "country"),
+      [t.profileSetupGender]: demoLabel(r.gender, "gender"),
+      [t.profileSetupEducation]: demoLabel(r.education, "education"),
+      [t.profileSetupEmployment]: demoLabel(r.employment, "employment"),
+    }));
+    exportToCSV(data, "stlat-statistics");
+    logAdminAction({
+      action: "data_export",
+      targetUid: "",
+      targetEmail: "",
+      details: `CSV export: ${data.length} rows`,
+    });
+  }, [filtered, t, demoLabel]);
+
+  const handleExportExcel = useCallback(() => {
+    const data = filtered.map((r) => ({
+      [t.username]: r.username,
+      [t.email]: r.email,
+      [t.adminDate]: r.date,
+      [t.overallScore]: r.overall,
+      [t.categoryKnowledge]: r.knowledge,
+      [t.categoryAttitudes]: r.attitudes,
+      [t.categoryBehaviour]: r.behaviour,
+      [t.categoryConfidence]: r.confidence,
+      [t.adminLevel]: r.level,
+      [t.profileSetupAgeGroup]: demoLabel(r.ageGroup, "age"),
+      [t.profileSetupCountry]: demoLabel(r.country, "country"),
+      [t.profileSetupGender]: demoLabel(r.gender, "gender"),
+      [t.profileSetupEducation]: demoLabel(r.education, "education"),
+      [t.profileSetupEmployment]: demoLabel(r.employment, "employment"),
+    }));
+    exportToExcel(data, "stlat-statistics");
+    logAdminAction({
+      action: "data_export",
+      targetUid: "",
+      targetEmail: "",
+      details: `Excel export: ${data.length} rows`,
+    });
+  }, [filtered, t, demoLabel]);
 
   if (loading) return <div className="stats-empty">{t.loading}</div>;
 
@@ -320,6 +396,64 @@ const AdminStatisticsPage = () => {
             value={userSearch}
             onChange={(e) => { setUserSearch(e.target.value); setPage(0); }}
           />
+        </div>
+        <div className="stats-filter-group">
+          <span className="stats-filter-label">{t.profileSetupAgeGroup}</span>
+          <select className="stats-filter-input" value={ageGroupFilter} onChange={(e) => { setAgeGroupFilter(e.target.value); setPage(0); }}>
+            <option value="">{t.adminAll}</option>
+            <option value="under_16">{t.ageGroupUnder16}</option>
+            <option value="16_18">{t.ageGroup16to18}</option>
+            <option value="19_25">{t.ageGroup19to25}</option>
+            <option value="26_35">{t.ageGroup26to35}</option>
+            <option value="36_50">{t.ageGroup36to50}</option>
+            <option value="over_50">{t.ageGroupOver50}</option>
+            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+          </select>
+        </div>
+        <div className="stats-filter-group">
+          <span className="stats-filter-label">{t.profileSetupCountry}</span>
+          <select className="stats-filter-input" value={countryFilter} onChange={(e) => { setCountryFilter(e.target.value); setPage(0); }}>
+            <option value="">{t.adminAll}</option>
+            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+            {activeCountries.map((c) => (
+              <option key={c.code} value={c.code}>{c.label}</option>
+            ))}
+          </select>
+        </div>
+        <div className="stats-filter-group">
+          <span className="stats-filter-label">{t.profileSetupGender}</span>
+          <select className="stats-filter-input" value={genderFilter} onChange={(e) => { setGenderFilter(e.target.value); setPage(0); }}>
+            <option value="">{t.adminAll}</option>
+            <option value="male">{t.genderMale}</option>
+            <option value="female">{t.genderFemale}</option>
+            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+          </select>
+        </div>
+        <div className="stats-filter-group">
+          <span className="stats-filter-label">{t.profileSetupEducation}</span>
+          <select className="stats-filter-input" value={educationFilter} onChange={(e) => { setEducationFilter(e.target.value); setPage(0); }}>
+            <option value="">{t.adminAll}</option>
+            <option value="primary">{t.educationPrimary}</option>
+            <option value="secondary">{t.educationSecondary}</option>
+            <option value="professional">{t.educationProfessional}</option>
+            <option value="higher">{t.educationHigher}</option>
+            <option value="bachelor">{t.educationBachelor}</option>
+            <option value="master">{t.educationMaster}</option>
+            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+          </select>
+        </div>
+        <div className="stats-filter-group">
+          <span className="stats-filter-label">{t.profileSetupEmployment}</span>
+          <select className="stats-filter-input" value={employmentFilter} onChange={(e) => { setEmploymentFilter(e.target.value); setPage(0); }}>
+            <option value="">{t.adminAll}</option>
+            <option value="school_student">{t.employmentSchoolStudent}</option>
+            <option value="student">{t.employmentStudent}</option>
+            <option value="employed">{t.employmentEmployed}</option>
+            <option value="self_employed">{t.employmentSelfEmployed}</option>
+            <option value="unemployed">{t.employmentUnemployed}</option>
+            <option value="retired">{t.employmentRetired}</option>
+            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+          </select>
         </div>
         <div className="stats-filter-actions">
           <button className="stats-btn" onClick={resetFilters}>{t.adminReset}</button>
@@ -396,6 +530,21 @@ const AdminStatisticsPage = () => {
                   <th onClick={() => handleSort("level")}>
                     {t.adminLevel} <span className="sort-arrow">{sortArrow("level")}</span>
                   </th>
+                  <th onClick={() => handleSort("ageGroup")}>
+                    {t.profileSetupAgeGroup} <span className="sort-arrow">{sortArrow("ageGroup")}</span>
+                  </th>
+                  <th onClick={() => handleSort("country")}>
+                    {t.profileSetupCountry} <span className="sort-arrow">{sortArrow("country")}</span>
+                  </th>
+                  <th onClick={() => handleSort("gender")}>
+                    {t.profileSetupGender} <span className="sort-arrow">{sortArrow("gender")}</span>
+                  </th>
+                  <th onClick={() => handleSort("education")}>
+                    {t.profileSetupEducation} <span className="sort-arrow">{sortArrow("education")}</span>
+                  </th>
+                  <th onClick={() => handleSort("employment")}>
+                    {t.profileSetupEmployment} <span className="sort-arrow">{sortArrow("employment")}</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -410,6 +559,11 @@ const AdminStatisticsPage = () => {
                     <td>{r.behaviour}%</td>
                     <td>{r.confidence}%</td>
                     <td>{levelLabelMap[r.level] || r.level}</td>
+                    <td>{demoLabel(r.ageGroup, "age")}</td>
+                    <td>{demoLabel(r.country, "country")}</td>
+                    <td>{demoLabel(r.gender, "gender")}</td>
+                    <td>{demoLabel(r.education, "education")}</td>
+                    <td>{demoLabel(r.employment, "employment")}</td>
                   </tr>
                 ))}
               </tbody>
