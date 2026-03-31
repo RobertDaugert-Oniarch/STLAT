@@ -196,7 +196,16 @@
   color: #fff;
   width: 100%;
   margin-top: 0.5rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.test-btn--next:not(.test-btn--next-hidden) {
   animation: test-fade-in 0.2s ease;
+}
+
+.test-btn--next-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 @keyframes test-fade-in {
@@ -229,6 +238,34 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.test-progress-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.test-btn--exit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s, border-color 0.2s;
+}
+
+.test-btn--exit:hover {
+  opacity: 1;
+  border-color: var(--error, #ef4444);
+  color: var(--error, #ef4444);
 }
 
 .test-progress-text {

@@ -12,6 +12,7 @@ const EmailChangePage = lazy(() => import("./pages/EmailChangePage/EmailChangePa
 const PasswordChangePage = lazy(() => import("./pages/PasswordChangePage/PasswordChangePage"));
 const PasswordResetPage = lazy(() => import("./pages/PasswordResetPage/PasswordResetPage"));
 const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage/VerifyEmailPage"));
+const ProfileSetupPage = lazy(() => import("./pages/ProfileSetupPage/ProfileSetupPage"));
 const TestPage = lazy(() => import("./pages/TestPage/TestPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage/AdminDashboardPage"));
 const AdminStatisticsPage = lazy(() => import("./pages/AdminStatisticsPage/AdminStatisticsPage"));
@@ -34,6 +35,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/reset-password" element={<PasswordResetPage />} />
               <Route path="/verify-email" element={<VerifyEmailPage />} />
+              <Route path="/profile-setup" element={<ProfileSetupPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/test" element={<TestPage />} />
               <Route path="/settings" element={<SettingsPage />} />

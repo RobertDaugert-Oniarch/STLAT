@@ -15,4 +15,11 @@ export interface UserDoc {
   lastName?: string;
   disabled?: boolean;
   createdAt?: unknown;
+  // Demographics
+  ageGroup?: string;
+  country?: string;
+  gender?: string;
+  education?: string;
+  employment?: string;
+  profileComplete?: boolean;
 }
