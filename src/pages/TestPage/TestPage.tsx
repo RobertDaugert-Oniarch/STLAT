@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase/config";
@@ -17,6 +17,9 @@ import { getUserHistory, saveSession } from "../../services/testHistoryService";
 import { findAnomalyCategory, swapNextQuestion } from "../../utils/adaptiveSwap";
 import type { Language } from "../../translations";
 import BgShapes from "../../components/BgShapes/BgShapes";
+import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
+import LangToggle from "../../components/LangToggle/LangToggle";
+import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import "./TestPage.css";
 
 /**
@@ -56,7 +59,7 @@ const TestPage = () => {
   const { user, loading: authLoading } = useAuthGuard();
 
   // View state
-  const [view, setView] = useState<ViewState>("loading");
+  const [view, setView] = useState<ViewState>("intro");
 
   // Question pool
   const [queue, setQueue] = useState<Question[]>([]);
@@ -79,82 +82,85 @@ const TestPage = () => {
   // Error
   const [error, setError] = useState<string | null>(null);
 
-  // ── Auth guard + data loading ──
-  useEffect(() => {
+  // Exit confirmation
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+
+  // ── Start the test (loads questions, then begins) ──
+  const handleStart = useCallback(async () => {
     if (!user) return;
+    setError(null);
+    setView("loading");
 
-    const loadTest = async () => {
-      try {
-        // Fetch all questions from Firestore
-        const qSnap = await getDocs(collection(db, QUESTIONS));
-        const allQuestions: Question[] = [];
-        qSnap.forEach((docSnap) => {
-          const data = docSnap.data();
-          allQuestions.push({ id: docSnap.id, ...data } as Question);
-        });
+    try {
+      // Fetch all questions from Firestore
+      const qSnap = await getDocs(collection(db, QUESTIONS));
+      const allQuestions: Question[] = [];
+      qSnap.forEach((docSnap) => {
+        const data = docSnap.data();
+        allQuestions.push({ id: docSnap.id, ...data } as Question);
+      });
 
-        if (allQuestions.length === 0) {
-          setError(t.testNoQuestions);
-          setView("intro");
-          return;
-        }
-
-        // Fetch user history
-        const { categoryStats, seenQuestionIds } = await getUserHistory(
-          user.uid,
-          ALL_CATEGORIES,
-        );
-        setHistoryStats(categoryStats);
-
-        // Call AI to select questions
-        const { main, backup: bk } = await selectQuestions(
-          allQuestions,
-          categoryStats,
-          seenQuestionIds,
-          ALL_CATEGORIES,
-        );
-
-        setQueue(main);
-        setBackup(bk);
-        setView("intro");
-      } catch (err) {
-        console.error("Failed to load test:", err);
+      if (allQuestions.length === 0) {
         setError(t.testNoQuestions);
         setView("intro");
+        return;
       }
-    };
 
-    loadTest();
+      // Fetch user history
+      const { categoryStats, seenQuestionIds } = await getUserHistory(
+        user.uid,
+        ALL_CATEGORIES,
+      );
+      setHistoryStats(categoryStats);
+
+      // Call AI to select questions
+      const { main, backup: bk } = await selectQuestions(
+        allQuestions,
+        categoryStats,
+        seenQuestionIds,
+        ALL_CATEGORIES,
+      );
+
+      setQueue(main);
+      setBackup(bk);
+      setCurrentIndex(0);
+      setAnswers([]);
+      setSelectedOption(null);
+      setSwapCount(0);
+      setSessionStartedAt(new Date());
+      setView("in-progress");
+    } catch (err) {
+      console.error("Failed to load test:", err);
+      setError(t.testNoQuestions);
+      setView("intro");
+    }
   }, [user, t.testNoQuestions]);
 
-  // ── Start the test ──
-  const handleStart = useCallback(() => {
-    setCurrentIndex(0);
-    setAnswers([]);
-    setSelectedOption(null);
-    setSwapCount(0);
-    setSessionStartedAt(new Date());
-    setView("in-progress");
-  }, []);
-
-  // ── Select an answer ──
+  // ── Select an answer (re-selectable until Next is pressed) ──
   const handleOptionSelect = useCallback(
     (optionIndex: number) => {
-      if (selectedOption !== null) return; // already answered
       const currentQ = queue[currentIndex];
       if (!currentQ) return;
 
-      const score = computeAnswerScore(currentQ.category, optionIndex, currentQ.correctIndex);
+      setSelectedOption(optionIndex);
+    },
+    [queue, currentIndex],
+  );
+
+  // ── Advance to next question or finish ──
+  const handleNext = useCallback(() => {
+    // Record the answer for this question
+    const currentQ = queue[currentIndex];
+    if (currentQ && selectedOption !== null) {
+      const score = computeAnswerScore(currentQ.category, selectedOption, currentQ.correctIndex);
       const record: AnswerRecord = {
         questionId: currentQ.id,
         category: currentQ.category,
-        selectedOptionIndex: optionIndex,
+        selectedOptionIndex: selectedOption,
         score,
       };
-
       const newAnswers = [...answers, record];
       setAnswers(newAnswers);
-      setSelectedOption(optionIndex);
 
       // Adaptive swap check
       const anomalyCategory = findAnomalyCategory(newAnswers, historyStats, ALL_CATEGORIES);
@@ -164,12 +170,8 @@ const TestPage = () => {
         setBackup(result.newBackup);
         setSwapCount(result.swapCount);
       }
-    },
-    [selectedOption, queue, currentIndex, answers, historyStats, backup, swapCount],
-  );
+    }
 
-  // ── Advance to next question or finish ──
-  const handleNext = useCallback(() => {
     setSelectedOption(null);
     if (currentIndex + 1 >= queue.length) {
       // Compute results
@@ -212,20 +214,20 @@ const TestPage = () => {
     } else {
       setCurrentIndex((prev) => prev + 1);
     }
-  }, [currentIndex, queue.length, answers, user, sessionStartedAt, t]);
+  }, [currentIndex, queue, selectedOption, answers, historyStats, backup, swapCount, user, sessionStartedAt, t]);
 
   // ── Retake ──
   const handleRetake = useCallback(() => {
-    setView("loading");
-    // Re-trigger the full flow
-    window.location.reload();
-  }, []);
+    handleStart();
+  }, [handleStart]);
 
   // ── Render ──
 
   if (authLoading || view === "loading") {
     return (
       <div className="test-page">
+        <ThemeToggle />
+        <LangToggle />
         <div className="test-loading">
           <div className="test-spinner" />
           <p>{t.testLoadingAI}</p>
@@ -237,6 +239,8 @@ const TestPage = () => {
   if (view === "intro") {
     return (
       <div className="test-page">
+        <ThemeToggle />
+        <LangToggle />
         <BgShapes prefix="test" count={2} />
 
         <div className="test-intro">
@@ -254,13 +258,11 @@ const TestPage = () => {
 
           <p className="test-estimate">{t.testEstimate}</p>
 
-          {error ? (
-            <p className="test-error">{error}</p>
-          ) : (
-            <button className="test-btn test-btn--start" onClick={handleStart} disabled={queue.length === 0}>
-              {t.startTest}
-            </button>
-          )}
+          {error && <p className="test-error">{error}</p>}
+
+          <button className="test-btn test-btn--start" onClick={handleStart}>
+            {t.startTest}
+          </button>
 
           <button className="test-btn test-btn--back" onClick={() => navigate("/profile")}>
             {t.backToProfile}
@@ -283,15 +285,38 @@ const TestPage = () => {
 
     return (
       <div className="test-page">
+        <ThemeToggle />
+        <LangToggle />
         <BgShapes prefix="test" count={2} />
+
+        {showExitConfirm && (
+          <ConfirmModal
+            title={t.exitTestTitle}
+            message={t.exitTestMessage}
+            confirmLabel={t.exitTest}
+            cancelLabel={t.cancel}
+            variant="danger"
+            onConfirm={() => navigate("/profile")}
+            onCancel={() => setShowExitConfirm(false)}
+          />
+        )}
 
         <div className="test-quiz">
           {/* Progress */}
           <div className="test-progress-header">
             <span className="test-progress-text">{progress}</span>
-            <span className="test-category-badge test-category-badge--small">
-              {getCategoryLabel(currentQ.category, t as unknown as Record<string, string>)}
-            </span>
+            <div className="test-progress-right">
+              <span className="test-category-badge test-category-badge--small">
+                {getCategoryLabel(currentQ.category, t as unknown as Record<string, string>)}
+              </span>
+              <button
+                className="test-btn--exit"
+                onClick={() => setShowExitConfirm(true)}
+                aria-label={t.exitTest}
+              >
+                ✕
+              </button>
+            </div>
           </div>
           <div className="test-progress-bar">
             <div className="test-progress-fill" style={{ width: `${progressPercent}%` }} />
@@ -307,14 +332,12 @@ const TestPage = () => {
                 const isSelected = selectedOption === idx;
                 let className = "test-option";
                 if (isSelected) className += " test-option--selected";
-                if (selectedOption !== null && !isSelected) className += " test-option--disabled";
 
                 return (
                   <button
                     key={idx}
                     className={className}
                     onClick={() => handleOptionSelect(idx)}
-                    disabled={selectedOption !== null}
                   >
                     <span className="test-option-letter">
                       {String.fromCharCode(65 + idx)}
@@ -326,12 +349,14 @@ const TestPage = () => {
             </div>
           </div>
 
-          {/* Next / Finish button */}
-          {selectedOption !== null && (
-            <button className="test-btn test-btn--next" onClick={handleNext}>
-              {isLastQuestion ? t.finishTest : t.nextQuestion}
-            </button>
-          )}
+          {/* Next / Finish button — always rendered for stable layout */}
+          <button
+            className={`test-btn test-btn--next${selectedOption === null ? " test-btn--next-hidden" : ""}`}
+            onClick={handleNext}
+            disabled={selectedOption === null}
+          >
+            {isLastQuestion ? t.finishTest : t.nextQuestion}
+          </button>
         </div>
       </div>
     );
@@ -340,6 +365,8 @@ const TestPage = () => {
   // view === "completed"
   return (
     <div className="test-page">
+      <ThemeToggle />
+      <LangToggle />
       <BgShapes prefix="test" count={2} />
 
       <div className="test-results">
@@ -371,8 +398,8 @@ const TestPage = () => {
           <button className="test-btn test-btn--start" onClick={handleRetake}>
             {t.retakeTest}
           </button>
-          <button className="test-btn test-btn--back" onClick={() => navigate("/profile")}>
-            {t.backToProfile}
+          <button className="test-btn test-btn--start" onClick={() => navigate("/profile")}>
+            {t.finishTest}
           </button>
         </div>
       </div>
