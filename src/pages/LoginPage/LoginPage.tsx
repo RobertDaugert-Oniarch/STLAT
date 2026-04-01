@@ -111,7 +111,13 @@ const LoginPage = () => {
             return;
           }
           const role = userDoc.data()?.role;
-          navigate(role === "admin" ? "/admin" : "/profile");
+          if (role === "admin") {
+            navigate("/admin");
+          } else if (userDoc.data()?.profileComplete) {
+            navigate("/profile");
+          } else {
+            navigate("/profile-setup");
+          }
         }
       } catch (err: unknown) {
         setError(getFirebaseErrorMessage(getFirebaseErrorCode(err), t, { loginContext: true }));

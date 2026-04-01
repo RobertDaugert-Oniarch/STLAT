@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { sendEmailVerification, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../../firebase/config";
+import { auth, db } from "../../firebase/config";
+import { USERS } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
 import { useAuthGuard } from "../../hooks/useAuthGuard";
 import ThemeToggle from "../../components/ThemeToggle/ThemeToggle";
@@ -39,7 +41,17 @@ const VerifyEmailPage = () => {
     try {
       await user.reload();
       if (auth.currentUser?.emailVerified) {
-        navigate("/profile");
+        // Check if profile setup is needed
+        try {
+          const snap = await getDoc(doc(db, USERS, user.uid));
+          if (snap.exists() && snap.data().profileComplete) {
+            navigate("/profile");
+          } else {
+            navigate("/profile-setup");
+          }
+        } catch {
+          navigate("/profile-setup");
+        }
       } else {
         setError(t.verifyEmailNotVerified);
       }

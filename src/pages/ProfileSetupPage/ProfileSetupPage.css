@@ -1,0 +1,89 @@
+/* ProfileSetupPage overrides on top of LoginPage styles */
+
+.psp-card {
+  max-width: 480px;
+  width: 100%;
+}
+
+.psp-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+.psp-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.psp-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.psp-field .stn-dropdown-trigger {
+  width: 180px;
+  font-size: 0.8rem;
+}
+
+.psp-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.psp-skip-btn {
+  padding: 0.65rem 1.5rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  opacity: 0.6;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s;
+}
+
+.psp-skip-btn:hover {
+  opacity: 1;
+  background: rgba(60, 114, 195, 0.05);
+}
+
+.psp-skip-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.psp-save-btn {
+  flex: 1;
+  max-width: none;
+}
+
+@media (max-width: 500px) {
+  .psp-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .psp-field .stn-dropdown-trigger {
+    width: 100%;
+  }
+
+  .psp-actions {
+    flex-direction: column-reverse;
+  }
+
+  .psp-skip-btn {
+    width: 100%;
+  }
+}
