@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext";
-import { countries } from "../../data/countries";
+import { countries, type Country } from "../../data/countries";
 import type { GuestDemographics } from "../../types/user";
 import "./DemographicsForm.css";
 
@@ -11,7 +11,7 @@ interface DemographicsFormProps {
 }
 
 const DemographicsForm = ({ onSubmit, onSkip, loading }: DemographicsFormProps) => {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
@@ -75,8 +75,11 @@ const DemographicsForm = ({ onSubmit, onSkip, loading }: DemographicsFormProps) 
             onChange={(e) => setCountry(e.target.value)}
           >
             <option value="">{t.demoSelectPlaceholder}</option>
-            {countries.map((c) => (
-              <option key={c} value={c}>{c}</option>
+            {countries
+              .map((c) => ({ code: c.code, label: lang === "lv" ? c.lv : c.en }))
+              .sort((a, b) => a.label.localeCompare(b.label))
+              .map((c) => (
+              <option key={c.code} value={c.code}>{c.label}</option>
             ))}
           </select>
         </div>

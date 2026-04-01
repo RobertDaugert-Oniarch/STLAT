@@ -79,6 +79,7 @@ export async function saveSession(
   const sessionsRef = collection(db, TEST_HISTORY, uid, "sessions");
   const newSessionRef = doc(sessionsRef);
   batch.set(newSessionRef, {
+    userId: uid,
     startedAt: Timestamp.fromDate(session.startedAt),
     completedAt: Timestamp.fromDate(session.completedAt),
     answers: session.answers,

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { signInAnonymously } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
@@ -86,8 +86,18 @@ const GuestTestPage = () => {
   // Demographics saving
   const [demoSaving, setDemoSaving] = useState(false);
 
+  // Track in-flight save to guard exit/cleanup
+  const savePromiseRef = useRef<Promise<void> | null>(null);
+  const signOutTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Sign in anonymously on mount
   useEffect(() => {
+    // Cancel any pending sign-out from a previous unmount (StrictMode re-mount)
+    if (signOutTimer.current) {
+      clearTimeout(signOutTimer.current);
+      signOutTimer.current = null;
+    }
+
     let cancelled = false;
     signInAnonymously(auth)
       .then((cred) => {
@@ -102,19 +112,28 @@ const GuestTestPage = () => {
           setAuthLoading(false);
         }
       });
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+      // Defer sign-out so StrictMode re-mount can cancel it
+      signOutTimer.current = setTimeout(() => {
+        const pending = savePromiseRef.current;
+        if (auth.currentUser?.isAnonymous) {
+          if (pending) {
+            pending.finally(() => auth.signOut());
+          } else {
+            auth.signOut();
+          }
+        }
+      }, 100);
+    };
   }, [t.unexpectedError]);
 
-  // Clean up anonymous session on unmount
-  useEffect(() => {
-    return () => {
-      if (auth.currentUser?.isAnonymous) {
-        auth.signOut();
-      }
-    };
-  }, []);
-
   const handleExit = useCallback(async () => {
+    // Wait for any in-flight save before signing out
+    if (savePromiseRef.current) {
+      await savePromiseRef.current.catch(() => {});
+    }
     if (auth.currentUser?.isAnonymous) {
       await auth.signOut();
     }
@@ -164,7 +183,7 @@ const GuestTestPage = () => {
       setView("in-progress");
     } catch (err) {
       console.error("Failed to load test:", err);
-      setError(t.testNoQuestions);
+      setError(err instanceof Error ? err.message : t.testNoQuestions);
       setView("intro");
     }
   }, [uid, t.testNoQuestions]);
@@ -180,7 +199,7 @@ const GuestTestPage = () => {
   );
 
   // ── Advance to next question or finish ──
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     const currentQ = queue[currentIndex];
     if (currentQ && selectedOption !== null) {
       const score = computeAnswerScore(currentQ.category, selectedOption, currentQ.correctIndex);
@@ -230,10 +249,10 @@ const GuestTestPage = () => {
         setCategoryResults(catRes);
         setOverallPercentage(overall);
 
-        // Save to Firestore
+        // Save to Firestore — await before transitioning
         if (uid) {
           setSaving(true);
-          saveGuestSession(uid, {
+          const promise = saveGuestSession(uid, {
             userId: uid,
             startedAt: sessionStartedAt,
             completedAt: new Date(),
@@ -242,8 +261,16 @@ const GuestTestPage = () => {
             overallPercentage: overall,
             isAnonymous: true,
           })
-            .catch(() => setSaveError(t.testSaveError))
-            .finally(() => setSaving(false));
+            .catch((err) => {
+              console.error("Guest save failed:", err);
+              setSaveError(t.testSaveError);
+            })
+            .finally(() => {
+              setSaving(false);
+              savePromiseRef.current = null;
+            });
+          savePromiseRef.current = promise;
+          await promise;
         }
 
         setView("demographics");
@@ -275,7 +302,20 @@ const GuestTestPage = () => {
 
   // ── Render ──
 
-  if (authLoading || view === "loading") {
+  if (authLoading) {
+    return (
+      <div className="test-page">
+        <ThemeToggle />
+        <LangToggle />
+        <div className="test-loading">
+          <div className="test-spinner" />
+          <p>{t.loading}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "loading") {
     return (
       <div className="test-page">
         <ThemeToggle />
