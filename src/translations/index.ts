@@ -251,9 +251,6 @@ export const translations = {
     backToLoginGuest: "Back to Login",
     adminAnonymous: "Anonymous",
     adminAnonymousTests: "Anonymous Tests",
-    exitTestTitle: "Exit Test",
-    exitTestMessage: "Are you sure you want to exit? Your progress will be lost.",
-    exitTest: "Exit",
     // Profile setup page
     profileSetupTitle: "Complete Your Profile",
     profileSetupSubtitle: "Tell us a bit about yourself. This helps us understand our users better.",
@@ -543,9 +540,6 @@ export const translations = {
     backToLoginGuest: "Atpaka\u013C uz pieteik\u0161anos",
     adminAnonymous: "Anon\u012Bms",
     adminAnonymousTests: "Anon\u012Bmie testi",
-    exitTestTitle: "Iziet no testa",
-    exitTestMessage: "Vai esat p\u0101rliecin\u0101ts? J\u016Bsu progress tiks zaud\u0113ts.",
-    exitTest: "Iziet",
     // Profile setup page
     profileSetupTitle: "Aizpildiet savu profilu",
     profileSetupSubtitle: "Past\u0101stiet nedaudz par sevi. Tas pal\u012Bdz mums lab\u0101k izprast m\u016Bsu lietot\u0101jus.",

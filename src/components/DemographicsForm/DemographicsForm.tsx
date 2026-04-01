@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLang } from "../../context/LangContext";
-import { countries, type Country } from "../../data/countries";
+import { countries } from "../../data/countries";
 import type { GuestDemographics } from "../../types/user";
 import "./DemographicsForm.css";
 
