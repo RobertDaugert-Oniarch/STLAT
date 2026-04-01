@@ -293,6 +293,18 @@ const LoginPage = () => {
             {isSignUp ? t.signIn : t.signUp}
           </button>
         </p>
+
+        <div className="login-guest-divider">
+          <span>{t.other}</span>
+        </div>
+
+        <button
+          type="button"
+          className="login-guest-btn"
+          onClick={() => navigate("/guest-test")}
+        >
+          {t.guestTestBtn}
+        </button>
       </div>
     </div>
   );

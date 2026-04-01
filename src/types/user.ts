@@ -16,3 +16,11 @@ export interface UserDoc {
   disabled?: boolean;
   createdAt?: unknown;
 }
+
+export interface GuestDemographics {
+  age: string;
+  gender: string;
+  country: string;
+  education: string;
+  occupation: string;
+}

@@ -15,7 +15,7 @@ import { generateUniqueUsername, formatUsername, reserveUsername } from "../../u
 import type { UserDoc, UserRole } from "../../types/user";
 import ConfirmModal from "../../components/ConfirmModal/ConfirmModal";
 import RoleChangeModal from "../../components/RoleChangeModal/RoleChangeModal";
-import { KeyRound, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
+import { KeyRound, ShieldCheck, ShieldOff, Trash2, UserX } from "lucide-react";
 import "./AdminUsersPage.css";
 
 const PAGE_SIZE = 20;
@@ -31,6 +31,7 @@ interface UserRow {
   testsCount: number;
   avgScore: number;
   initials: string;
+  isAnonymous?: boolean;
 }
 
 const AdminUsersPage = () => {
@@ -74,7 +75,9 @@ const AdminUsersPage = () => {
   }, [results]);
 
   const rows = useMemo((): UserRow[] => {
-    return users.map((u) => {
+    const userUids = new Set(users.map((u) => u.uid));
+
+    const registeredRows: UserRow[] = users.map((u) => {
       const result = resultMap.get(u.uid);
       const ts = result?.completedAt?.seconds ?? 0;
       return {
@@ -85,12 +88,33 @@ const AdminUsersPage = () => {
         disabled: u.disabled || false,
         lastActivity: ts ? new Date(ts * 1000).toLocaleDateString() : "—",
         lastActivityTs: ts,
-        testsCount: result ? 1 : 0, // latest result count
+        testsCount: result ? 1 : 0,
         avgScore: result?.percentage ?? 0,
         initials: getInitials(u.fullUsername || "??"),
       };
     });
-  }, [users, resultMap]);
+
+    const anonRows: UserRow[] = results
+      .filter((r) => r.isAnonymous && !userUids.has(r.uid))
+      .map((r) => {
+        const ts = r.completedAt?.seconds ?? 0;
+        return {
+          uid: r.uid,
+          username: t.adminAnonymous,
+          email: "—",
+          role: "user" as UserRole,
+          disabled: false,
+          lastActivity: ts ? new Date(ts * 1000).toLocaleDateString() : "—",
+          lastActivityTs: ts,
+          testsCount: 1,
+          avgScore: r.percentage ?? 0,
+          initials: "?",
+          isAnonymous: true,
+        };
+      });
+
+    return [...registeredRows, ...anonRows];
+  }, [users, results, resultMap, t.adminAnonymous]);
 
   const filtered = useMemo(() => {
     if (!search) return rows;
@@ -235,13 +259,22 @@ const AdminUsersPage = () => {
                   <tr key={r.uid}>
                     <td>
                       <div className="user-info-cell">
-                        <div className="user-avatar">{r.initials}</div>
-                        <span>{r.username}</span>
+                        {r.isAnonymous ? (
+                          <div className="user-avatar anon"><UserX size={16} /></div>
+                        ) : (
+                          <div className="user-avatar">{r.initials}</div>
+                        )}
+                        <span>
+                          {r.username}
+                          {r.isAnonymous && <span className="anon-badge">{t.adminAnonymous}</span>}
+                        </span>
                       </div>
                     </td>
                     <td>{r.email}</td>
                     <td>
-                      {r.disabled ? (
+                      {r.isAnonymous ? (
+                        <span className="role-badge role-anon">{t.adminAnonymous}</span>
+                      ) : r.disabled ? (
                         <span className="disabled-badge">{t.adminDisabled}</span>
                       ) : (
                         <span className={`role-badge role-${r.role}`}>
@@ -252,42 +285,56 @@ const AdminUsersPage = () => {
                     <td>{r.lastActivity}</td>
                     <td>{r.avgScore > 0 ? `${r.avgScore}%` : "—"}</td>
                     <td>
-                      <div className="user-actions">
-                        <button
-                          className="user-action-btn"
-                          onClick={() => handleResetPassword(r.uid, r.email)}
-                          title={t.adminResetPassword}
-                          disabled={r.disabled}
-                        >
-                          <KeyRound size={16} />
-                        </button>
-                        <button
-                          className="user-action-btn"
-                          onClick={() =>
-                            setModal({
-                              type: "role",
-                              uid: r.uid,
-                              email: r.email,
-                              fullUsername: r.username,
-                              newRole: r.role === "admin" ? "user" : "admin",
-                            })
-                          }
-                          title={r.role === "admin" ? t.adminDemote : t.adminPromote}
-                          disabled={r.disabled}
-                        >
-                          {r.role === "admin" ? <ShieldOff size={16} /> : <ShieldCheck size={16} />}
-                        </button>
-                        <button
-                          className="user-action-btn danger"
-                          onClick={() =>
-                            setModal({ type: "delete", uid: r.uid, email: r.email })
-                          }
-                          title={t.delete}
-                          disabled={r.disabled}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                      {r.isAnonymous ? (
+                        <div className="user-actions">
+                          <button
+                            className="user-action-btn danger"
+                            onClick={() =>
+                              setModal({ type: "delete", uid: r.uid, email: "—" })
+                            }
+                            title={t.delete}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="user-actions">
+                          <button
+                            className="user-action-btn"
+                            onClick={() => handleResetPassword(r.uid, r.email)}
+                            title={t.adminResetPassword}
+                            disabled={r.disabled}
+                          >
+                            <KeyRound size={16} />
+                          </button>
+                          <button
+                            className="user-action-btn"
+                            onClick={() =>
+                              setModal({
+                                type: "role",
+                                uid: r.uid,
+                                email: r.email,
+                                fullUsername: r.username,
+                                newRole: r.role === "admin" ? "user" : "admin",
+                              })
+                            }
+                            title={r.role === "admin" ? t.adminDemote : t.adminPromote}
+                            disabled={r.disabled}
+                          >
+                            {r.role === "admin" ? <ShieldOff size={16} /> : <ShieldCheck size={16} />}
+                          </button>
+                          <button
+                            className="user-action-btn danger"
+                            onClick={() =>
+                              setModal({ type: "delete", uid: r.uid, email: r.email })
+                            }
+                            title={t.delete}
+                            disabled={r.disabled}
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}

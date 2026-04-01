@@ -64,6 +64,13 @@ service cloud.firestore {
         && request.resource.data.userId == request.auth.uid;
     }
 
+    // Guest demographics — anonymous users can create their own, admins can read
+    match /guestDemographics/{uid} {
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
     // AI rate limit — only Cloud Function (admin SDK) writes, users can read their own
     match /aiRateLimit/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;

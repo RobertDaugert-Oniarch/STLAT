@@ -26,6 +26,7 @@ interface RowData {
   behaviour: number;
   confidence: number;
   level: Level;
+  isAnonymous?: boolean;
 }
 
 type SortKey = keyof RowData;
@@ -74,13 +75,14 @@ const AdminStatisticsPage = () => {
   const rows = useMemo((): RowData[] => {
     return results.map((r) => {
       const info = userMap.get(r.uid);
+      const isAnon = r.isAnonymous === true;
       const cat = r.categoryResults || {};
       const getPerc = (key: string) => cat[key]?.percentage ?? 0;
       const ts = r.completedAt?.seconds ?? 0;
       return {
         uid: r.uid,
-        username: info?.username || r.uid,
-        email: info?.email || "",
+        username: isAnon ? t.adminAnonymous : (info?.username || r.uid),
+        email: isAnon ? "—" : (info?.email || ""),
         date: ts ? new Date(ts * 1000).toLocaleDateString() : "—",
         dateTs: ts,
         overall: r.percentage || 0,
@@ -89,9 +91,10 @@ const AdminStatisticsPage = () => {
         behaviour: getPerc("Behaviour"),
         confidence: getPerc("Confidence in One's Judgement"),
         level: getLevel(r.percentage || 0),
+        isAnonymous: isAnon,
       };
     });
-  }, [results, userMap]);
+  }, [results, userMap, t.adminAnonymous]);
 
   // Apply filters
   const filtered = useMemo(() => {
@@ -401,7 +404,7 @@ const AdminStatisticsPage = () => {
               <tbody>
                 {pageRows.map((r) => (
                   <tr key={r.uid}>
-                    <td>{r.username}</td>
+                    <td>{r.username}{r.isAnonymous && <span className="anon-badge">{t.adminAnonymous}</span>}</td>
                     <td>{r.email}</td>
                     <td>{r.date}</td>
                     <td>{r.overall}%</td>

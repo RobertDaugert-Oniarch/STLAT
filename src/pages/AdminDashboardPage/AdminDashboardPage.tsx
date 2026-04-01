@@ -11,7 +11,7 @@ import {
 } from "../../services/adminDataService";
 import { getLevel } from "../../utils/profileHelpers";
 import type { UserDoc } from "../../types/user";
-import { Users, FileText, BarChart3, Flame } from "lucide-react";
+import { Users, FileText, BarChart3, Flame, UserX } from "lucide-react";
 import "./AdminDashboardPage.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -52,6 +52,7 @@ const AdminDashboardPage = () => {
   // Compute stats
   const totalUsers = users.filter((u) => !u.disabled).length;
   const totalTests = results.length;
+  const anonymousTests = results.filter((r) => r.isAnonymous).length;
   const avgScore = totalTests > 0
     ? Math.round(results.reduce((sum, r) => sum + (r.percentage || 0), 0) / totalTests)
     : 0;
@@ -172,6 +173,11 @@ const AdminDashboardPage = () => {
           <span className="dashboard-card-value">{activeToday}</span>
           <span className="dashboard-card-label">{t.adminActiveToday}</span>
         </div>
+        <div className="dashboard-card">
+          <span className="dashboard-card-icon"><UserX size={22} /></span>
+          <span className="dashboard-card-value">{anonymousTests}</span>
+          <span className="dashboard-card-label">{t.adminAnonymousTests}</span>
+        </div>
       </div>
 
       {/* Pie charts */}
@@ -200,7 +206,9 @@ const AdminDashboardPage = () => {
             {recentSessions.map((s, i) => (
               <li key={s.sessionId || i} className="dashboard-recent-item">
                 <span className="dashboard-recent-user">
-                  {s.userId ? (userMap.get(s.userId) || s.userId) : "—"}
+                  {s.isAnonymous
+                    ? <span className="anon-badge">{t.adminAnonymous}</span>
+                    : (s.userId ? (userMap.get(s.userId) || s.userId) : "\u2014")}
                 </span>
                 <span className="dashboard-recent-score">
                   {Math.round(s.overallPercentage)}%

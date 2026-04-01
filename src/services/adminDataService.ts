@@ -9,7 +9,7 @@ import {
   type Unsubscribe,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { USERS, QUIZ_RESULTS } from "../firebase/collections";
+import { USERS, QUIZ_RESULTS, GUEST_DEMOGRAPHICS } from "../firebase/collections";
 import type { UserDoc } from "../types/user";
 
 export interface QuizResultDoc {
@@ -20,6 +20,7 @@ export interface QuizResultDoc {
   percentage: number;
   categoryResults?: Record<string, { total: number; totalScore?: number; correctCount?: number; percentage: number }>;
   completedAt?: { seconds: number };
+  isAnonymous?: boolean;
 }
 
 export interface SessionDoc {
@@ -28,6 +29,7 @@ export interface SessionDoc {
   categoryResults: Record<string, { total: number; totalScore: number; percentage: number }>;
   completedAt?: { seconds: number };
   answers?: unknown[];
+  isAnonymous?: boolean;
 }
 
 /** Subscribe to all users in real-time. Returns unsubscribe function. */
@@ -78,4 +80,28 @@ export async function getUserSessions(uid: string): Promise<SessionDoc[]> {
   const q = query(sessionsRef, orderBy("completedAt", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => d.data()) as SessionDoc[];
+}
+
+export interface GuestDemographicDoc {
+  uid: string;
+  age: string;
+  gender: string;
+  country: string;
+  education: string;
+  occupation: string;
+  createdAt?: { seconds: number };
+}
+
+/** Subscribe to all guest demographics in real-time. */
+export function subscribeToGuestDemographics(
+  callback: (docs: GuestDemographicDoc[]) => void,
+): Unsubscribe {
+  const q = query(collection(db, GUEST_DEMOGRAPHICS));
+  return onSnapshot(q, (snap) => {
+    const docs = snap.docs.map((d) => ({
+      uid: d.id,
+      ...d.data(),
+    })) as GuestDemographicDoc[];
+    callback(docs);
+  });
 }
