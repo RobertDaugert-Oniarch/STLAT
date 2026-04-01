@@ -23,3 +23,11 @@ export interface UserDoc {
   employment?: string;
   profileComplete?: boolean;
 }
+
+export interface GuestDemographics {
+  age: string;
+  gender: string;
+  country: string;
+  education: string;
+  occupation: string;
+}

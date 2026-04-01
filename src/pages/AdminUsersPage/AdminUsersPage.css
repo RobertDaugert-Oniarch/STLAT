@@ -131,6 +131,29 @@
   color: #d63031;
 }
 
+/* ── Anonymous badge ── */
+.user-avatar.anon {
+  background: #636e7220;
+  color: #636e72;
+}
+
+.anon-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: #636e7220;
+  color: #636e72;
+  vertical-align: middle;
+}
+
+.role-anon {
+  background: #636e7220;
+  color: #636e72;
+}
+
 /* ── Actions ── */
 .user-actions {
   display: flex;

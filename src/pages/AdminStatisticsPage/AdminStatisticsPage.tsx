@@ -3,7 +3,9 @@ import { useLang } from "../../context/LangContext";
 import {
   subscribeToAllUsers,
   subscribeToAllTestResults,
+  subscribeToGuestDemographics,
   type QuizResultDoc,
+  type GuestDemographicDoc,
 } from "../../services/adminDataService";
 import { getLevel, type Level } from "../../utils/profileHelpers";
 import { exportToCSV, exportToExcel } from "../../utils/exportData";
@@ -27,6 +29,7 @@ interface RowData {
   behaviour: number;
   confidence: number;
   level: Level;
+  isAnonymous?: boolean;
   ageGroup: string;
   country: string;
   gender: string;
@@ -40,6 +43,7 @@ const AdminStatisticsPage = () => {
   const { t, lang } = useLang();
   const [users, setUsers] = useState<(UserDoc & { uid: string })[]>([]);
   const [results, setResults] = useState<QuizResultDoc[]>([]);
+  const [guestDemos, setGuestDemos] = useState<GuestDemographicDoc[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -66,13 +70,14 @@ const AdminStatisticsPage = () => {
   const [page, setPage] = useState(0);
 
   useEffect(() => {
-    let loaded = { users: false, results: false };
-    const check = () => { if (loaded.users && loaded.results) setLoading(false); };
+    let loaded = { users: false, results: false, guestDemos: false };
+    const check = () => { if (loaded.users && loaded.results && loaded.guestDemos) setLoading(false); };
 
     const unsub1 = subscribeToAllUsers((u) => { setUsers(u); loaded.users = true; check(); });
     const unsub2 = subscribeToAllTestResults((r) => { setResults(r); loaded.results = true; check(); });
+    const unsub3 = subscribeToGuestDemographics((d) => { setGuestDemos(d); loaded.guestDemos = true; check(); });
 
-    return () => { unsub1(); unsub2(); };
+    return () => { unsub1(); unsub2(); unsub3(); };
   }, []);
 
   const userMap = useMemo(() => {
@@ -91,17 +96,24 @@ const AdminStatisticsPage = () => {
     return m;
   }, [users]);
 
+  const guestDemoMap = useMemo(() => {
+    const m = new Map<string, GuestDemographicDoc>();
+    for (const d of guestDemos) m.set(d.uid, d);
+    return m;
+  }, [guestDemos]);
+
   // Build rows
   const rows = useMemo((): RowData[] => {
     return results.map((r) => {
       const info = userMap.get(r.uid);
+      const isAnon = r.isAnonymous === true;
       const cat = r.categoryResults || {};
       const getPerc = (key: string) => cat[key]?.percentage ?? 0;
       const ts = r.completedAt?.seconds ?? 0;
       return {
         uid: r.uid,
-        username: info?.username || r.uid,
-        email: info?.email || "",
+        username: isAnon ? t.adminAnonymous : (info?.username || r.uid),
+        email: isAnon ? "—" : (info?.email || ""),
         date: ts ? new Date(ts * 1000).toLocaleDateString() : "—",
         dateTs: ts,
         overall: r.percentage || 0,
@@ -110,14 +122,15 @@ const AdminStatisticsPage = () => {
         behaviour: getPerc("Behaviour"),
         confidence: getPerc("Confidence in One's Judgement"),
         level: getLevel(r.percentage || 0),
-        ageGroup: info?.ageGroup || "",
-        country: info?.country || "",
-        gender: info?.gender || "",
-        education: info?.education || "",
-        employment: info?.employment || "",
+        isAnonymous: isAnon,
+        ageGroup: info?.ageGroup || guestDemoMap.get(r.uid)?.age || "",
+        country: info?.country || guestDemoMap.get(r.uid)?.country || "",
+        gender: info?.gender || guestDemoMap.get(r.uid)?.gender || "",
+        education: info?.education || guestDemoMap.get(r.uid)?.education || "",
+        employment: info?.employment || guestDemoMap.get(r.uid)?.occupation || "",
       };
     });
-  }, [results, userMap]);
+  }, [results, userMap, guestDemoMap, t.adminAnonymous]);
 
   // Apply filters
   const filtered = useMemo(() => {
@@ -250,12 +263,27 @@ const AdminStatisticsPage = () => {
   }, [lang]);
 
   const demoLabel = useCallback((value: string, type: "age" | "country" | "gender" | "education" | "employment") => {
-    if (!value || value === "prefer_not_to_say") return t.preferNotToSay;
+    if (!value || value === "prefer_not_to_say" || value === "preferNotToSay") return t.preferNotToSay;
     const map: Record<string, Record<string, string>> = {
-      age: { under_16: t.ageGroupUnder16, "16_18": t.ageGroup16to18, "19_25": t.ageGroup19to25, "26_35": t.ageGroup26to35, "36_50": t.ageGroup36to50, over_50: t.ageGroupOver50 },
-      gender: { male: t.genderMale, female: t.genderFemale },
-      education: { primary: t.educationPrimary, secondary: t.educationSecondary, professional: t.educationProfessional, higher: t.educationHigher, bachelor: t.educationBachelor, master: t.educationMaster },
-      employment: { school_student: t.employmentSchoolStudent, student: t.employmentStudent, employed: t.employmentEmployed, self_employed: t.employmentSelfEmployed, unemployed: t.employmentUnemployed, retired: t.employmentRetired },
+      age: {
+        under_16: t.ageGroupUnder16, "16_18": t.ageGroup16to18, "19_25": t.ageGroup19to25, "26_35": t.ageGroup26to35, "36_50": t.ageGroup36to50, over_50: t.ageGroupOver50,
+        // Guest demographic values
+        under18: t.demoAgeUnder18, "18-24": t.demoAge1824, "25-34": t.demoAge2534, "35-44": t.demoAge3544, "45-54": t.demoAge4554, "55+": t.demoAge55,
+      },
+      gender: {
+        male: t.genderMale, female: t.genderFemale,
+        other: t.demoGenderOther,
+      },
+      education: {
+        primary: t.educationPrimary, secondary: t.educationSecondary, professional: t.educationProfessional, higher: t.educationHigher, bachelor: t.educationBachelor, master: t.educationMaster,
+        // Guest demographic values
+        highSchool: t.demoEduHighSchool, bachelors: t.demoEduBachelors, masters: t.demoEduMasters, doctorate: t.demoEduDoctorate, other: t.demoEduOther,
+      },
+      employment: {
+        school_student: t.employmentSchoolStudent, student: t.employmentStudent, employed: t.employmentEmployed, self_employed: t.employmentSelfEmployed, unemployed: t.employmentUnemployed, retired: t.employmentRetired,
+        // Guest demographic values
+        selfEmployed: t.demoOccSelfEmployed, other: t.demoOccOther,
+      },
       country: {},
     };
     if (type === "country") return countryMap.get(value) || value;
@@ -550,7 +578,7 @@ const AdminStatisticsPage = () => {
               <tbody>
                 {pageRows.map((r) => (
                   <tr key={r.uid}>
-                    <td>{r.username}</td>
+                    <td>{r.username}{r.isAnonymous && <span className="anon-badge">{t.adminAnonymous}</span>}</td>
                     <td>{r.email}</td>
                     <td>{r.date}</td>
                     <td>{r.overall}%</td>

@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useCallback } from "react";
 import { doc, updateDoc, deleteDoc, collection, getDocs } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth, db } from "../../firebase/config";
-import { USERS, USERNAMES, QUIZ_RESULTS, TEST_HISTORY } from "../../firebase/collections";
+import { USERS, USERNAMES, QUIZ_RESULTS, TEST_HISTORY, GUEST_DEMOGRAPHICS } from "../../firebase/collections";
 import { useLang } from "../../context/LangContext";
 import {
   subscribeToAllUsers,
@@ -85,7 +85,7 @@ const AdminUsersPage = () => {
         disabled: u.disabled || false,
         lastActivity: ts ? new Date(ts * 1000).toLocaleDateString() : "—",
         lastActivityTs: ts,
-        testsCount: result ? 1 : 0, // latest result count
+        testsCount: result ? 1 : 0,
         avgScore: result?.percentage ?? 0,
         initials: getInitials(u.fullUsername || "??"),
       };
@@ -131,6 +131,7 @@ const AdminUsersPage = () => {
         try { await deleteDoc(doc(db, USERNAMES, userDoc.fullUsername)); } catch { /* ignore */ }
       }
       try { await deleteDoc(doc(db, QUIZ_RESULTS, uid)); } catch { /* ignore */ }
+      try { await deleteDoc(doc(db, GUEST_DEMOGRAPHICS, uid)); } catch { /* ignore */ }
       // Delete test history subcollection
       try {
         const sessionsRef = collection(db, TEST_HISTORY, uid, "sessions");

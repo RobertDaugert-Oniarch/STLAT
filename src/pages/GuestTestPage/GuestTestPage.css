@@ -1,0 +1,2 @@
+/* GuestTestPage reuses TestPage.css classes — import TestPage.css in the page */
+@import "../../pages/TestPage/TestPage.css";

@@ -121,3 +121,14 @@
   padding: 40px;
   color: var(--text-muted);
 }
+
+/* ── Anonymous badge ── */
+.anon-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  background: #636e72;
+  border-radius: 6px;
+}

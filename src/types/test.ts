@@ -46,6 +46,7 @@ export interface SessionResult {
   answers: AnswerRecord[];
   categoryResults: Record<string, CategoryStats>;
   overallPercentage: number;
+  isAnonymous?: boolean;
 }
 
 export interface AIQuestionPlan {
