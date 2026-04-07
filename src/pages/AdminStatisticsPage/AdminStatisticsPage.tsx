@@ -13,6 +13,8 @@ import { logAdminAction } from "../../services/auditLogService";
 import { countries } from "../../data/countries";
 import type { UserDoc } from "../../types/user";
 import { FileDown, FileSpreadsheet } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "./AdminStatisticsPage.css";
 
 const PAGE_SIZE = 20;
@@ -47,8 +49,8 @@ const AdminStatisticsPage = () => {
   const [loading, setLoading] = useState(true);
 
   // Filters
-  const [dateFrom, setDateFrom] = useState("");
-  const [dateTo, setDateTo] = useState("");
+  const [dateFrom, setDateFrom] = useState<Date | null>(null);
+  const [dateTo, setDateTo] = useState<Date | null>(null);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [scoreMin, setScoreMin] = useState("");
   const [scoreMax, setScoreMax] = useState("");
@@ -137,11 +139,11 @@ const AdminStatisticsPage = () => {
     let data = [...rows];
 
     if (dateFrom) {
-      const ts = new Date(dateFrom).getTime() / 1000;
+      const ts = dateFrom.getTime() / 1000;
       data = data.filter((r) => r.dateTs >= ts);
     }
     if (dateTo) {
-      const ts = new Date(dateTo).getTime() / 1000 + 86400;
+      const ts = dateTo.getTime() / 1000 + 86400;
       data = data.filter((r) => r.dateTs <= ts);
     }
     if (scoreMin) {
@@ -225,8 +227,8 @@ const AdminStatisticsPage = () => {
   };
 
   const resetFilters = () => {
-    setDateFrom("");
-    setDateTo("");
+    setDateFrom(null);
+    setDateTo(null);
     setCategoryFilter("");
     setScoreMin("");
     setScoreMax("");
@@ -361,20 +363,28 @@ const AdminStatisticsPage = () => {
       <div className="stats-filters">
         <div className="stats-filter-group">
           <span className="stats-filter-label">{t.adminDateFrom}</span>
-          <input
-            type="date"
+          <DatePicker
+            selected={dateFrom}
+            onChange={(d: Date | null) => { setDateFrom(d); setPage(0); }}
+            dateFormat="dd.MM.yyyy"
+            placeholderText="DD.MM.YYYY"
             className="stats-filter-input"
-            value={dateFrom}
-            onChange={(e) => { setDateFrom(e.target.value); setPage(0); }}
+            isClearable
+            maxDate={dateTo || undefined}
+            portalId="datepicker-portal"
           />
         </div>
         <div className="stats-filter-group">
           <span className="stats-filter-label">{t.adminDateTo}</span>
-          <input
-            type="date"
+          <DatePicker
+            selected={dateTo}
+            onChange={(d: Date | null) => { setDateTo(d); setPage(0); }}
+            dateFormat="dd.MM.yyyy"
+            placeholderText="DD.MM.YYYY"
             className="stats-filter-input"
-            value={dateTo}
-            onChange={(e) => { setDateTo(e.target.value); setPage(0); }}
+            isClearable
+            minDate={dateFrom || undefined}
+            portalId="datepicker-portal"
           />
         </div>
         <div className="stats-filter-group">
@@ -489,7 +499,7 @@ const AdminStatisticsPage = () => {
       </div>
 
       {/* Export + summary row */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
+      <div className="stats-summary-row">
         <div className="stats-summary">
           <div className="stats-summary-item">
             <span className="stats-summary-label">{t.adminResults}</span>
