@@ -71,6 +71,7 @@ export async function getRecentSessions(count: number = 10): Promise<(SessionDoc
   return snap.docs.map((d) => ({
     sessionId: d.id,
     ...d.data(),
+    userId: d.data().userId || d.ref.parent.parent?.id,
   })) as (SessionDoc & { sessionId: string })[];
 }
 

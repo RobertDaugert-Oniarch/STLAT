@@ -17,6 +17,12 @@
   border-radius: 12px;
   padding: 20px;
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stats-filter-row {
+  display: flex;
   flex-wrap: wrap;
   gap: 12px;
   align-items: flex-end;
@@ -26,13 +32,24 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 140px;
+  min-width: 0;
+  flex: 1 1 130px;
+}
+
+.stats-score-pair {
+  display: flex;
+  gap: 4px;
+}
+
+.stats-score-pair .stats-filter-input {
+  width: 100%;
+  min-width: 0;
 }
 
 .stats-filter-label {
   font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  color: var(--text);
+  font-weight: 700;
 }
 
 .stats-filter-input {
@@ -52,6 +69,7 @@
 .stats-filter-actions {
   display: flex;
   gap: 8px;
+  flex: 0 0 auto;
   align-self: flex-end;
 }
 
@@ -176,11 +194,19 @@
 }
 
 /* ── Summary ── */
-.stats-summary {
+.stats-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px 20px;
+}
+
+.stats-summary {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
@@ -220,4 +246,65 @@
   background: #636e7220;
   color: #636e72;
   vertical-align: middle;
+}
+
+/* ── Date picker ── */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-family: inherit;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.react-datepicker__month-container {
+  background: var(--card-bg);
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: var(--text);
+}
+
+.react-datepicker__day {
+  color: var(--text);
+  border-radius: 6px;
+}
+
+.react-datepicker__day:hover {
+  background: var(--hover-bg);
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+.react-datepicker__day--outside-month {
+  opacity: 0.35;
+}
+
+.react-datepicker__triangle {
+  display: none;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: var(--text-muted);
+}
+
+.react-datepicker__close-icon::after {
+  background: var(--text-muted);
+  font-size: 14px;
 }
