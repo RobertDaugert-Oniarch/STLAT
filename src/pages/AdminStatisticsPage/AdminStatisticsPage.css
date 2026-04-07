@@ -18,36 +18,29 @@
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
-  gap: 16px 12px;
+  gap: 14px;
   align-items: flex-end;
 }
 
 .stats-filter-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 0;
-  flex: 1 1 150px;
+  gap: 5px;
   position: relative;
 }
 
 .stats-filter-group--wide {
-  flex: 2 1 250px;
+  flex: 1 1 180px;
 }
 
 .stats-filter-group--date {
-  flex: 0 0 130px;
+  width: 130px;
 }
 
 .stats-filter-label {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 500;
 }
 
 .stats-filter-input {
