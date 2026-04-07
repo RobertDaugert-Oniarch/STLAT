@@ -16,10 +16,10 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 16px 12px;
-  align-items: end;
+  align-items: flex-end;
 }
 
 .stats-filter-group {
@@ -27,15 +27,16 @@
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+  flex: 1 1 150px;
   position: relative;
 }
 
 .stats-filter-group--wide {
-  grid-column: span 2;
+  flex: 2 1 250px;
 }
 
 .stats-filter-group--date {
-  max-width: 140px;
+  flex: 0 0 130px;
 }
 
 .stats-filter-label {
