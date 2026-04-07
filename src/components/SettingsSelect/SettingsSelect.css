@@ -6,7 +6,7 @@
 }
 
 .stn-dropdown-trigger {
-  width: 140px;
+  width: min(140px, 100%);
   padding: 0.45rem 0.75rem;
   font-family: inherit;
   font-size: 0.82rem;
@@ -41,7 +41,7 @@
 }
 
 .stn-dropdown-menu {
-  min-width: 170px;
+  min-width: min(170px, calc(100vw - 2rem));
   padding: 0.5rem;
   background: var(--card-bg);
   backdrop-filter: blur(18px);
@@ -90,8 +90,8 @@
 /* Searchable variant */
 
 .stn-dropdown-menu--searchable {
-  min-width: 220px;
-  max-width: 300px;
+  min-width: min(220px, calc(100vw - 2rem));
+  max-width: min(300px, calc(100vw - 2rem));
 }
 
 .stn-dropdown-search-wrap {

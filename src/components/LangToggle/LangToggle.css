@@ -36,3 +36,15 @@
 .lang-toggle:active {
   transform: scale(0.93);
 }
+
+/* Responsive */
+
+@media (max-width: 480px) {
+  .lang-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.6rem;
+    right: calc(0.75rem + 36px + 0.35rem);
+    top: 0.75rem;
+  }
+}
