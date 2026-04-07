@@ -16,24 +16,33 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px 12px;
+  align-items: end;
 }
 
 .stats-filter-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  min-width: 140px;
+  gap: 6px;
+  min-width: 0;
   position: relative;
 }
 
+.stats-filter-group--wide {
+  grid-column: span 2;
+}
+
 .stats-filter-label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
-  font-weight: 500;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .stats-filter-input {
@@ -42,7 +51,9 @@
   border-radius: 8px;
   background: var(--bg);
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  height: 36px;
+  box-sizing: border-box;
 }
 
 .stats-filter-input:focus {
@@ -127,8 +138,13 @@
 
 .stats-filter-actions {
   display: flex;
-  gap: 8px;
-  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.stats-filter-actions .stats-btn {
+  height: 36px;
+  display: flex;
+  align-items: center;
 }
 
 .stats-btn {

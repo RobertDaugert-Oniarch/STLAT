@@ -398,7 +398,7 @@ const AdminStatisticsPage = () => {
               min={0}
               max={100}
               onChange={(e) => { setScoreMin(e.target.value); setPage(0); }}
-              style={{ width: 60 }}
+              style={{ width: "50%" }}
             />
             <input
               type="number"
@@ -408,7 +408,7 @@ const AdminStatisticsPage = () => {
               min={0}
               max={100}
               onChange={(e) => { setScoreMax(e.target.value); setPage(0); }}
-              style={{ width: 60 }}
+              style={{ width: "50%" }}
             />
           </div>
         </div>
@@ -425,7 +425,7 @@ const AdminStatisticsPage = () => {
             ))}
           </select>
         </div>
-        <div className="stats-filter-group">
+        <div className="stats-filter-group stats-filter-group--wide">
           <span className="stats-filter-label">{t.adminSearchUser}</span>
           <input
             type="text"
