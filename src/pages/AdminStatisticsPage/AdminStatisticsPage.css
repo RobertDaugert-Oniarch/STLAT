@@ -34,6 +34,10 @@
   grid-column: span 2;
 }
 
+.stats-filter-group--date {
+  max-width: 140px;
+}
+
 .stats-filter-label {
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -73,6 +77,7 @@
 
 .react-datepicker {
   font-family: inherit;
+  font-size: 0.8rem;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--card-bg);

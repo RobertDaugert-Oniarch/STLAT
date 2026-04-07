@@ -361,7 +361,7 @@ const AdminStatisticsPage = () => {
 
       {/* Filters */}
       <div className="stats-filters">
-        <div className="stats-filter-group">
+        <div className="stats-filter-group stats-filter-group--date">
           <span className="stats-filter-label">{t.adminDateFrom}</span>
           <DatePicker
             selected={dateFrom}
@@ -374,7 +374,7 @@ const AdminStatisticsPage = () => {
             portalId="datepicker-portal"
           />
         </div>
-        <div className="stats-filter-group">
+        <div className="stats-filter-group stats-filter-group--date">
           <span className="stats-filter-label">{t.adminDateTo}</span>
           <DatePicker
             selected={dateTo}
