@@ -361,140 +361,140 @@ const AdminStatisticsPage = () => {
 
       {/* Filters */}
       <div className="stats-filters">
-        <div className="stats-filter-group stats-filter-group--date">
-          <span className="stats-filter-label">{t.adminDateFrom}</span>
-          <DatePicker
-            selected={dateFrom}
-            onChange={(d: Date | null) => { setDateFrom(d); setPage(0); }}
-            dateFormat="dd.MM.yyyy"
-            placeholderText="DD.MM.YYYY"
-            className="stats-filter-input"
-            isClearable
-            maxDate={dateTo || undefined}
-            portalId="datepicker-portal"
-          />
-        </div>
-        <div className="stats-filter-group stats-filter-group--date">
-          <span className="stats-filter-label">{t.adminDateTo}</span>
-          <DatePicker
-            selected={dateTo}
-            onChange={(d: Date | null) => { setDateTo(d); setPage(0); }}
-            dateFormat="dd.MM.yyyy"
-            placeholderText="DD.MM.YYYY"
-            className="stats-filter-input"
-            isClearable
-            minDate={dateFrom || undefined}
-            portalId="datepicker-portal"
-          />
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.adminScoreRange}</span>
-          <div style={{ display: "flex", gap: 4 }}>
-            <input
-              type="number"
+        <div className="stats-filter-row">
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.adminDateFrom}</span>
+            <DatePicker
+              selected={dateFrom}
+              onChange={(d: Date | null) => { setDateFrom(d); setPage(0); }}
+              dateFormat="dd.MM.yyyy"
+              placeholderText="DD.MM.YYYY"
               className="stats-filter-input"
-              placeholder="Min"
-              value={scoreMin}
-              min={0}
-              max={100}
-              onChange={(e) => { setScoreMin(e.target.value); setPage(0); }}
-              style={{ width: "50%" }}
-            />
-            <input
-              type="number"
-              className="stats-filter-input"
-              placeholder="Max"
-              value={scoreMax}
-              min={0}
-              max={100}
-              onChange={(e) => { setScoreMax(e.target.value); setPage(0); }}
-              style={{ width: "50%" }}
+              isClearable
+              maxDate={dateTo || undefined}
+              portalId="datepicker-portal"
             />
           </div>
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.adminLevel}</span>
-          <select
-            className="stats-filter-input"
-            value={levelFilter}
-            onChange={(e) => { setLevelFilter(e.target.value); setPage(0); }}
-          >
-            <option value="">{t.adminAll}</option>
-            {levels.map((l) => (
-              <option key={l} value={l}>{levelLabelMap[l]}</option>
-            ))}
-          </select>
-        </div>
-        <div className="stats-filter-group stats-filter-group--wide">
-          <span className="stats-filter-label">{t.adminSearchUser}</span>
-          <input
-            type="text"
-            className="stats-filter-input"
-            placeholder={t.adminSearchPlaceholder}
-            value={userSearch}
-            onChange={(e) => { setUserSearch(e.target.value); setPage(0); }}
-          />
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.profileSetupAgeGroup}</span>
-          <select className="stats-filter-input" value={ageGroupFilter} onChange={(e) => { setAgeGroupFilter(e.target.value); setPage(0); }}>
-            <option value="">{t.adminAll}</option>
-            <option value="under_16">{t.ageGroupUnder16}</option>
-            <option value="16_18">{t.ageGroup16to18}</option>
-            <option value="19_25">{t.ageGroup19to25}</option>
-            <option value="26_35">{t.ageGroup26to35}</option>
-            <option value="36_50">{t.ageGroup36to50}</option>
-            <option value="over_50">{t.ageGroupOver50}</option>
-            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
-          </select>
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.profileSetupCountry}</span>
-          <select className="stats-filter-input" value={countryFilter} onChange={(e) => { setCountryFilter(e.target.value); setPage(0); }}>
-            <option value="">{t.adminAll}</option>
-            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
-            {activeCountries.map((c) => (
-              <option key={c.code} value={c.code}>{c.label}</option>
-            ))}
-          </select>
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.profileSetupGender}</span>
-          <select className="stats-filter-input" value={genderFilter} onChange={(e) => { setGenderFilter(e.target.value); setPage(0); }}>
-            <option value="">{t.adminAll}</option>
-            <option value="male">{t.genderMale}</option>
-            <option value="female">{t.genderFemale}</option>
-            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
-          </select>
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.profileSetupEducation}</span>
-          <select className="stats-filter-input" value={educationFilter} onChange={(e) => { setEducationFilter(e.target.value); setPage(0); }}>
-            <option value="">{t.adminAll}</option>
-            <option value="primary">{t.educationPrimary}</option>
-            <option value="secondary">{t.educationSecondary}</option>
-            <option value="professional">{t.educationProfessional}</option>
-            <option value="higher">{t.educationHigher}</option>
-            <option value="bachelor">{t.educationBachelor}</option>
-            <option value="master">{t.educationMaster}</option>
-            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
-          </select>
-        </div>
-        <div className="stats-filter-group">
-          <span className="stats-filter-label">{t.profileSetupEmployment}</span>
-          <select className="stats-filter-input" value={employmentFilter} onChange={(e) => { setEmploymentFilter(e.target.value); setPage(0); }}>
-            <option value="">{t.adminAll}</option>
-            <option value="school_student">{t.employmentSchoolStudent}</option>
-            <option value="student">{t.employmentStudent}</option>
-            <option value="employed">{t.employmentEmployed}</option>
-            <option value="self_employed">{t.employmentSelfEmployed}</option>
-            <option value="unemployed">{t.employmentUnemployed}</option>
-            <option value="retired">{t.employmentRetired}</option>
-            <option value="prefer_not_to_say">{t.preferNotToSay}</option>
-          </select>
-        </div>
-        <div className="stats-filter-actions">
-          <button className="stats-btn" onClick={resetFilters}>{t.adminReset}</button>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.adminDateTo}</span>
+            <DatePicker
+              selected={dateTo}
+              onChange={(d: Date | null) => { setDateTo(d); setPage(0); }}
+              dateFormat="dd.MM.yyyy"
+              placeholderText="DD.MM.YYYY"
+              className="stats-filter-input"
+              isClearable
+              minDate={dateFrom || undefined}
+              portalId="datepicker-portal"
+            />
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.adminScoreRange}</span>
+            <div className="stats-score-pair">
+              <input
+                type="number"
+                className="stats-filter-input"
+                placeholder="Min"
+                value={scoreMin}
+                min={0}
+                max={100}
+                onChange={(e) => { setScoreMin(e.target.value); setPage(0); }}
+              />
+              <input
+                type="number"
+                className="stats-filter-input"
+                placeholder="Max"
+                value={scoreMax}
+                min={0}
+                max={100}
+                onChange={(e) => { setScoreMax(e.target.value); setPage(0); }}
+              />
+            </div>
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.adminLevel}</span>
+            <select
+              className="stats-filter-input"
+              value={levelFilter}
+              onChange={(e) => { setLevelFilter(e.target.value); setPage(0); }}
+            >
+              <option value="">{t.adminAll}</option>
+              {levels.map((l) => (
+                <option key={l} value={l}>{levelLabelMap[l]}</option>
+              ))}
+            </select>
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.adminSearchUser}</span>
+            <input
+              type="text"
+              className="stats-filter-input"
+              placeholder={t.adminSearchPlaceholder}
+              value={userSearch}
+              onChange={(e) => { setUserSearch(e.target.value); setPage(0); }}
+            />
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.profileSetupAgeGroup}</span>
+            <select className="stats-filter-input" value={ageGroupFilter} onChange={(e) => { setAgeGroupFilter(e.target.value); setPage(0); }}>
+              <option value="">{t.adminAll}</option>
+              <option value="under_16">{t.ageGroupUnder16}</option>
+              <option value="16_18">{t.ageGroup16to18}</option>
+              <option value="19_25">{t.ageGroup19to25}</option>
+              <option value="26_35">{t.ageGroup26to35}</option>
+              <option value="36_50">{t.ageGroup36to50}</option>
+              <option value="over_50">{t.ageGroupOver50}</option>
+              <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+            </select>
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.profileSetupCountry}</span>
+            <select className="stats-filter-input" value={countryFilter} onChange={(e) => { setCountryFilter(e.target.value); setPage(0); }}>
+              <option value="">{t.adminAll}</option>
+              <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+              {activeCountries.map((c) => (
+                <option key={c.code} value={c.code}>{c.label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.profileSetupGender}</span>
+            <select className="stats-filter-input" value={genderFilter} onChange={(e) => { setGenderFilter(e.target.value); setPage(0); }}>
+              <option value="">{t.adminAll}</option>
+              <option value="male">{t.genderMale}</option>
+              <option value="female">{t.genderFemale}</option>
+              <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+            </select>
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.profileSetupEducation}</span>
+            <select className="stats-filter-input" value={educationFilter} onChange={(e) => { setEducationFilter(e.target.value); setPage(0); }}>
+              <option value="">{t.adminAll}</option>
+              <option value="primary">{t.educationPrimary}</option>
+              <option value="secondary">{t.educationSecondary}</option>
+              <option value="professional">{t.educationProfessional}</option>
+              <option value="higher">{t.educationHigher}</option>
+              <option value="bachelor">{t.educationBachelor}</option>
+              <option value="master">{t.educationMaster}</option>
+              <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+            </select>
+          </div>
+          <div className="stats-filter-group">
+            <span className="stats-filter-label">{t.profileSetupEmployment}</span>
+            <select className="stats-filter-input" value={employmentFilter} onChange={(e) => { setEmploymentFilter(e.target.value); setPage(0); }}>
+              <option value="">{t.adminAll}</option>
+              <option value="school_student">{t.employmentSchoolStudent}</option>
+              <option value="student">{t.employmentStudent}</option>
+              <option value="employed">{t.employmentEmployed}</option>
+              <option value="self_employed">{t.employmentSelfEmployed}</option>
+              <option value="unemployed">{t.employmentUnemployed}</option>
+              <option value="retired">{t.employmentRetired}</option>
+              <option value="prefer_not_to_say">{t.preferNotToSay}</option>
+            </select>
+          </div>
+          <div className="stats-filter-actions">
+            <button className="stats-btn" onClick={resetFilters}>{t.adminReset}</button>
+          </div>
         </div>
       </div>
 

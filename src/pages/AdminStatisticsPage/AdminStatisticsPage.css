@@ -17,6 +17,12 @@
   border-radius: 12px;
   padding: 20px;
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stats-filter-row {
+  display: flex;
   flex-wrap: wrap;
   gap: 12px;
   align-items: flex-end;
@@ -26,22 +32,24 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 140px;
+  min-width: 0;
+  flex: 1 1 130px;
 }
 
-.stats-filter-group--date {
-  min-width: 120px;
-  max-width: 130px;
+.stats-score-pair {
+  display: flex;
+  gap: 4px;
 }
 
-.stats-filter-group--wide {
-  flex: 1 1 180px;
+.stats-score-pair .stats-filter-input {
+  width: 100%;
+  min-width: 0;
 }
 
 .stats-filter-label {
   font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  color: var(--text);
+  font-weight: 700;
 }
 
 .stats-filter-input {
@@ -61,6 +69,7 @@
 .stats-filter-actions {
   display: flex;
   gap: 8px;
+  flex: 0 0 auto;
   align-self: flex-end;
 }
 
