@@ -28,6 +28,8 @@ export async function saveGuestSession(
   uid: string,
   session: SessionResult,
 ): Promise<void> {
+  const overallInt = Math.round(session.overallPercentage);
+
   // Save test history session
   const sessionsRef = collection(db, TEST_HISTORY, uid, "sessions");
   const newSessionRef = doc(sessionsRef);
@@ -37,7 +39,7 @@ export async function saveGuestSession(
     completedAt: Timestamp.fromDate(session.completedAt),
     answers: session.answers,
     categoryResults: session.categoryResults,
-    overallPercentage: session.overallPercentage,
+    overallPercentage: overallInt,
     isAnonymous: true,
   });
 
@@ -47,9 +49,9 @@ export async function saveGuestSession(
     quizResultRef,
     {
       quizName: "STLAT Test",
-      score: session.overallPercentage,
+      score: overallInt,
       total: 100,
-      percentage: session.overallPercentage,
+      percentage: overallInt,
       categoryResults: session.categoryResults,
       completedAt: Timestamp.fromDate(session.completedAt),
       isAnonymous: true,

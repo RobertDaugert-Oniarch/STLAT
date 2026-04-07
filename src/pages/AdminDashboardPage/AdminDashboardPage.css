@@ -135,3 +135,52 @@
   background: #636e72;
   border-radius: 6px;
 }
+
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .admin-dashboard {
+    gap: 16px;
+  }
+
+  .admin-dashboard h1 {
+    font-size: 1.25rem;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .dashboard-card {
+    padding: 14px;
+  }
+
+  .dashboard-card-value {
+    font-size: 1.35rem;
+  }
+
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .dashboard-chart-card {
+    padding: 14px;
+  }
+
+  .dashboard-chart-wrapper {
+    max-width: 100%;
+  }
+
+  .dashboard-recent-item {
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+    font-size: 0.8rem;
+  }
+
+  .dashboard-recent-date {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+}

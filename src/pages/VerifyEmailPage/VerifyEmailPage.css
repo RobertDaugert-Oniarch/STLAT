@@ -47,3 +47,15 @@
   color: var(--text);
   opacity: 0.6;
 }
+
+/* Responsive */
+
+@media (max-width: 480px) {
+  .vep-icon {
+    font-size: 2.2rem;
+  }
+
+  .vep-email {
+    font-size: 0.85rem;
+  }
+}

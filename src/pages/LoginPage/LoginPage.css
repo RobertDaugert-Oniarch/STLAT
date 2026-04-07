@@ -22,24 +22,24 @@
 }
 
 .login-bg-shape--1 {
-  width: 420px;
-  height: 420px;
+  width: clamp(180px, 45vw, 420px);
+  height: clamp(180px, 45vw, 420px);
   background: var(--primary);
   top: -120px;
   left: -100px;
 }
 
 .login-bg-shape--2 {
-  width: 320px;
-  height: 320px;
+  width: clamp(140px, 35vw, 320px);
+  height: clamp(140px, 35vw, 320px);
   background: var(--secondary);
   bottom: -80px;
   right: -60px;
 }
 
 .login-bg-shape--3 {
-  width: 200px;
-  height: 200px;
+  width: clamp(100px, 22vw, 200px);
+  height: clamp(100px, 22vw, 200px);
   background: var(--accent);
   top: 50%;
   left: 60%;
@@ -196,10 +196,24 @@
 @media (max-width: 480px) {
   .login-card {
     padding: 2rem 1.25rem;
+    margin: 0.75rem;
+    border-radius: 16px;
   }
 
   .login-title {
     font-size: 1.5rem;
+  }
+
+  .login-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .login-form {
+    gap: 1rem;
+  }
+
+  .generated-username {
+    font-size: 1.4rem;
   }
 }
 

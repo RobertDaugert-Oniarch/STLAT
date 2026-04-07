@@ -21,24 +21,24 @@
 }
 
 .profile-bg-shape--1 {
-  width: 500px;
-  height: 500px;
+  width: clamp(200px, 50vw, 500px);
+  height: clamp(200px, 50vw, 500px);
   background: var(--primary);
   top: -180px;
   right: -140px;
 }
 
 .profile-bg-shape--2 {
-  width: 350px;
-  height: 350px;
+  width: clamp(150px, 35vw, 350px);
+  height: clamp(150px, 35vw, 350px);
   background: var(--secondary);
   bottom: -100px;
   left: -80px;
 }
 
 .profile-bg-shape--3 {
-  width: 220px;
-  height: 220px;
+  width: clamp(100px, 22vw, 220px);
+  height: clamp(100px, 22vw, 220px);
   background: var(--accent);
   top: 45%;
   left: 15%;
@@ -412,5 +412,44 @@
 
   .profile-user-card {
     flex-direction: row;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-layout {
+    padding: 0.75rem;
+    padding-top: 3.5rem;
+    gap: 1rem;
+  }
+
+  .profile-greeting {
+    font-size: 1.2rem;
+  }
+
+  .profile-card {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .profile-section-title {
+    font-size: 0.95rem;
+  }
+
+  .profile-test-percent {
+    font-size: 1.25rem;
+  }
+
+  .profile-cat-name {
+    min-width: 70px;
+    font-size: 0.72rem;
+  }
+
+  .sidebar-btn {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  .profile-username {
+    max-width: 100px;
   }
 }

@@ -30,24 +30,24 @@
 }
 
 .settings-bg-shape--1 {
-  width: 500px;
-  height: 500px;
+  width: clamp(200px, 50vw, 500px);
+  height: clamp(200px, 50vw, 500px);
   background: var(--primary);
   top: -180px;
   right: -140px;
 }
 
 .settings-bg-shape--2 {
-  width: 350px;
-  height: 350px;
+  width: clamp(150px, 35vw, 350px);
+  height: clamp(150px, 35vw, 350px);
   background: var(--secondary);
   bottom: -100px;
   left: -80px;
 }
 
 .settings-bg-shape--3 {
-  width: 220px;
-  height: 220px;
+  width: clamp(100px, 22vw, 220px);
+  height: clamp(100px, 22vw, 220px);
   background: var(--accent);
   top: 45%;
   left: 15%;
@@ -356,5 +356,39 @@
 
   .settings-field-value {
     max-width: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 1rem 0.75rem;
+  }
+
+  .settings-page-title {
+    font-size: 1rem;
+  }
+
+  .settings-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .settings-action-btn {
+    width: 100%;
+  }
+
+  .settings-field-value {
+    max-width: 100%;
+  }
+
+  .settings-modal {
+    padding: 1.5rem;
+    margin: 0.75rem;
+  }
+
+  .settings-modal-actions {
+    flex-direction: column;
   }
 }

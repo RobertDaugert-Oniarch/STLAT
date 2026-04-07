@@ -175,3 +175,21 @@
     padding: 16px;
   }
 }
+
+@media (max-width: 480px) {
+  .admin-content {
+    padding: 12px;
+  }
+
+  .admin-topbar {
+    padding: 10px 12px;
+  }
+
+  .admin-sidebar-header {
+    padding: 16px 14px 12px;
+  }
+
+  .admin-sidebar-title {
+    font-size: 1.1rem;
+  }
+}

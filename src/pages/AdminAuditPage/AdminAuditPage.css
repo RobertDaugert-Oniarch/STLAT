@@ -147,3 +147,42 @@
   color: #fff;
   border-color: var(--accent);
 }
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .audit-filters {
+    flex-direction: column;
+  }
+
+  .audit-filter-group {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .audit-table th,
+  .audit-table td {
+    padding: 10px 10px;
+  }
+
+  .audit-pagination {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-audit h1 {
+    font-size: 1.25rem;
+  }
+
+  .audit-table {
+    font-size: 0.8rem;
+  }
+
+  .audit-table th,
+  .audit-table td {
+    padding: 8px 6px;
+  }
+}
