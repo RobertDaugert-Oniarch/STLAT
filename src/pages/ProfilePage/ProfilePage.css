@@ -85,6 +85,11 @@
   align-self: start;
 }
 
+.sidebar-logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .sidebar-logo {
   display: block;
   font-size: 1.25rem;
