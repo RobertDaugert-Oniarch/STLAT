@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { auth, db } from "../../firebase/config";
@@ -52,7 +52,9 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <aside className={`admin-sidebar${sidebarOpen ? " open" : ""}`}>
         <div className="admin-sidebar-header">
-          <h2 className="admin-sidebar-title">STLAT</h2>
+          <Link to="/admin" className="admin-logo-link">
+            <h2 className="admin-sidebar-title">STLAT</h2>
+          </Link>
           <p className="admin-sidebar-subtitle">{t.adminPanel}</p>
         </div>
 

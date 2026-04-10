@@ -23,6 +23,11 @@
   border-bottom: 1px solid var(--border);
 }
 
+.admin-logo-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .admin-sidebar-title {
   font-size: 1.25rem;
   font-weight: 700;
