@@ -215,11 +215,6 @@
   width: 60%;
 }
 
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
-}
-
 /* ── Responsive ── */
 
 @media (max-width: 860px) {

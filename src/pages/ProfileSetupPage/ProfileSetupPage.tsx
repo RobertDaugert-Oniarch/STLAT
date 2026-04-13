@@ -140,9 +140,20 @@ const ProfileSetupPage = () => {
   if (authLoading || pageLoading) {
     return (
       <div className="login-page">
-        <p style={{ color: "var(--text)", opacity: 0.5, textAlign: "center", marginTop: "40vh" }}>
-          {t.loading}
-        </p>
+        <div className="login-skeleton-card skeleton skeleton--card">
+          <div className="skeleton skeleton--heading" style={{ width: "60%" }} />
+          <div className="skeleton skeleton--text" style={{ width: "80%" }} />
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} style={{ width: "100%", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+              <div className="skeleton skeleton--text-xs" style={{ width: "30%" }} />
+              <div className="skeleton" style={{ height: 40, width: "100%", borderRadius: 12 }} />
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: "0.75rem", width: "100%", marginTop: "0.5rem" }}>
+            <div className="skeleton skeleton--btn" style={{ flex: 1 }} />
+            <div className="skeleton skeleton--btn" style={{ flex: 1 }} />
+          </div>
+        </div>
       </div>
     );
   }

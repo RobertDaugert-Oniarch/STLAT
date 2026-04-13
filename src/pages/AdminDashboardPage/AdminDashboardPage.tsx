@@ -144,7 +144,40 @@ const AdminDashboardPage = () => {
   const userMap = new Map(users.map((u) => [u.uid, u.fullUsername || u.email || u.uid]));
 
   if (loading) {
-    return <div className="dashboard-empty">{t.loading}</div>;
+    return (
+      <div className="admin-dashboard">
+        <div className="skeleton skeleton--heading" style={{ width: "35%", marginBottom: "1rem" }} />
+        <div className="admin-skeleton-cards">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="skeleton skeleton--card admin-skeleton-stat">
+              <div className="skeleton skeleton--circle" style={{ width: 32, height: 32 }} />
+              <div className="skeleton skeleton--text" style={{ width: "50%", height: 24 }} />
+              <div className="skeleton skeleton--text-xs" />
+            </div>
+          ))}
+        </div>
+        <div className="admin-skeleton-charts">
+          <div className="skeleton skeleton--card admin-skeleton-chart">
+            <div className="skeleton skeleton--text" style={{ width: "60%" }} />
+            <div className="skeleton skeleton--cover" style={{ borderRadius: 8, flex: 1 }} />
+          </div>
+          <div className="skeleton skeleton--card admin-skeleton-chart">
+            <div className="skeleton skeleton--text" style={{ width: "60%" }} />
+            <div className="skeleton skeleton--cover" style={{ borderRadius: 8, flex: 1 }} />
+          </div>
+        </div>
+        <div className="admin-skeleton-list">
+          <div className="skeleton skeleton--text" style={{ width: "30%", marginBottom: "0.5rem" }} />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="admin-skeleton-list-item">
+              <div className="skeleton skeleton--text" style={{ width: "30%" }} />
+              <div className="skeleton skeleton--text-xs" style={{ width: "50px" }} />
+              <div className="skeleton skeleton--text-xs" style={{ width: "80px" }} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (

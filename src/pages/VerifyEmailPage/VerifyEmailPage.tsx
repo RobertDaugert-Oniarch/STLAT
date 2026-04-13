@@ -87,7 +87,14 @@ const VerifyEmailPage = () => {
   if (loading) {
     return (
       <div className="login-page">
-        <p className="vep-loading">{t.loading}</p>
+        <div className="login-skeleton-card skeleton skeleton--card">
+          <div className="skeleton skeleton--circle" style={{ width: 48, height: 48 }} />
+          <div className="skeleton skeleton--heading" style={{ width: "60%" }} />
+          <div className="skeleton skeleton--text" style={{ width: "80%" }} />
+          <div className="skeleton skeleton--text-short" style={{ width: "50%" }} />
+          <div className="skeleton skeleton--btn" style={{ width: "100%", marginTop: "0.5rem" }} />
+          <div className="skeleton skeleton--btn" style={{ width: "100%" }} />
+        </div>
       </div>
     );
   }

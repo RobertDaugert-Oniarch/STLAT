@@ -163,7 +163,28 @@ const SettingsPage = () => {
   if (authLoading || loading) {
     return (
       <div className="settings-page">
-        <p className="settings-page-loading">{t.loading}</p>
+        <div className="settings-skeleton">
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
+            <div className="skeleton" style={{ width: 16, height: 16, borderRadius: 4 }} />
+            <div className="skeleton skeleton--heading" style={{ width: "30%" }} />
+          </div>
+          {[1, 2, 3].map((s) => (
+            <div key={s} className="settings-skeleton-section">
+              <div className="skeleton skeleton--text" style={{ width: "25%", height: 20 }} />
+              <div className="skeleton skeleton--card settings-skeleton-card">
+                <div className="settings-skeleton-field">
+                  <div className="skeleton skeleton--text" style={{ width: "30%" }} />
+                  <div className="skeleton skeleton--text" style={{ width: "40%" }} />
+                </div>
+                <div className="skeleton--divider skeleton" />
+                <div className="settings-skeleton-field">
+                  <div className="skeleton skeleton--text" style={{ width: "25%" }} />
+                  <div className="skeleton skeleton--btn" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
