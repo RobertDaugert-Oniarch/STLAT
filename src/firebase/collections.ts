@@ -5,3 +5,5 @@ export const QUESTIONS = "questions";
 export const USERNAMES = "usernames";
 export const ADMIN_ACTIONS = "adminActions";
 export const GUEST_DEMOGRAPHICS = "guestDemographics";
+export const LECTURES = "lectures";
+export const LECTURE_PROGRESS = "lectureProgress";

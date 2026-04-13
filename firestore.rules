@@ -142,5 +142,18 @@ service cloud.firestore {
       allow read: if request.auth != null && isOwner(uid);
       allow write: if false;
     }
+
+    // ── Lectures — any authenticated user can read, admin writes ──
+
+    match /lectures/{lectureId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
+    // ── Per-user lecture progress — owner only ──
+
+    match /lectureProgress/{uid}/items/{docId} {
+      allow read, write: if request.auth != null && isOwner(uid);
+    }
   }
 }
