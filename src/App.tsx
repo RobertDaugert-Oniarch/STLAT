@@ -15,6 +15,8 @@ const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage/VerifyEmailPa
 const ProfileSetupPage = lazy(() => import("./pages/ProfileSetupPage/ProfileSetupPage"));
 const TestPage = lazy(() => import("./pages/TestPage/TestPage"));
 const GuestTestPage = lazy(() => import("./pages/GuestTestPage/GuestTestPage"));
+const LecturesPage = lazy(() => import("./pages/LecturesPage/LecturesPage"));
+const LectureViewerPage = lazy(() => import("./pages/LectureViewerPage/LectureViewerPage"));
 const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage/AdminDashboardPage"));
 const AdminStatisticsPage = lazy(() => import("./pages/AdminStatisticsPage/AdminStatisticsPage"));
 const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage/AdminUsersPage"));
@@ -40,6 +42,8 @@ function App() {
               <Route path="/profile-setup" element={<ProfileSetupPage />} />
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/test" element={<TestPage />} />
+              <Route path="/lectures" element={<LecturesPage />} />
+              <Route path="/lectures/:id" element={<LectureViewerPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/settings/email" element={<EmailChangePage />} />
               <Route path="/settings/password" element={<PasswordChangePage />} />

@@ -10,6 +10,7 @@ import { getLevel, getGreetingKey, getInitials } from "../../utils/profileHelper
 import { generateUniqueUsername, formatUsername } from "../../utils/generateUsername";
 import SettingsMenu from "../../components/SettingsMenu/SettingsMenu";
 import BgShapes from "../../components/BgShapes/BgShapes";
+import { getAllLectures, getUserProgress } from "../../services/lectureService";
 import "./ProfilePage.css";
 
 interface UserData {
@@ -29,7 +30,7 @@ interface TestResult {
 
 // Placeholder modules until real data is available
 const MODULES = [
-  { id: "reading", nameKey: "moduleReading" as const, completed: 0, total: 8 },
+  { id: "reading", nameKey: "moduleReading" as const, completed: 0, total: 0 },
 ];
 
 const ProfilePage = () => {
@@ -39,6 +40,7 @@ const ProfilePage = () => {
   const { user, loading: authLoading } = useAuthGuard();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
+  const [modules, setModules] = useState(MODULES);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -68,6 +70,21 @@ const ProfilePage = () => {
 
         const resultDoc = await getDoc(doc(db, QUIZ_RESULTS, user.uid));
         if (resultDoc.exists()) setTestResult(resultDoc.data() as TestResult);
+
+        // Load lecture progress
+        const [allLectures, lectureProgress] = await Promise.all([
+          getAllLectures(),
+          getUserProgress(user.uid),
+        ]);
+        const progressMap = new Map(lectureProgress.map((p) => [p.lectureId, p]));
+        const totalSections = allLectures.reduce((sum, l) => sum + l.sections.length, 0);
+        const completedSections = allLectures.reduce((sum, l) => {
+          const p = progressMap.get(l.id);
+          return sum + (p?.completedSections?.length ?? 0);
+        }, 0);
+        setModules([
+          { id: "reading", nameKey: "moduleReading" as const, completed: completedSections, total: totalSections },
+        ]);
       } catch (err) {
         console.warn("ProfilePage: Firestore read failed", err);
       } finally {
@@ -117,7 +134,7 @@ const ProfilePage = () => {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
               <span>{t.navTest}</span>
             </button>
-            <button className="sidebar-btn">
+            <button className="sidebar-btn" onClick={() => navigate("/lectures")}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
               <span>{t.navLectures}</span>
             </button>
@@ -183,7 +200,7 @@ const ProfilePage = () => {
           <div className="profile-card profile-learning">
             <h2 className="profile-section-title">{t.learningProgress}</h2>
             <div className="profile-modules">
-              {MODULES.map((mod) => {
+              {modules.map((mod) => {
                 const pct = mod.total > 0 ? Math.round((mod.completed / mod.total) * 100) : 0;
                 return (
                   <div className="profile-module" key={mod.id}>
