@@ -38,7 +38,7 @@ const STATUS_FILTERS: { key: string; value: StatusFilter }[] = [
 ];
 
 const LecturesPage = () => {
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const { applyTheme } = useTheme();
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuthGuard();

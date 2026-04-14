@@ -24,7 +24,7 @@ import "./LectureViewerPage.css";
 
 const LectureViewerPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const { applyTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();

@@ -28,6 +28,10 @@ const AdminAuditPage = () => {
     user_delete: t.adminActionUserDelete,
     role_change: t.adminActionRoleChange,
     data_export: t.adminActionDataExport,
+    lecture_create: "Lecture Create",
+    lecture_update: "Lecture Update",
+    lecture_delete: "Lecture Delete",
+    lecture_status_change: "Lecture Status Change",
   };
 
   const filtered = useMemo(() => {

@@ -45,8 +45,6 @@ const ProfilePage = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
   const [lectureProgressList, setLectureProgressList] = useState<LectureProgress[]>([]);
-  const [totalSections, setTotalSections] = useState(0);
-  const [completedSections, setCompletedSections] = useState(0);
   const [continueTarget, setContinueTarget] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -84,13 +82,6 @@ const ProfilePage = () => {
           getUserProgress(user.uid),
         ]);
         const progressMap = new Map(lectureProgress.map((p) => [p.lectureId, p]));
-        const totalSec = allLectures.reduce((sum, l) => sum + l.sections.length, 0);
-        const completedSec = allLectures.reduce((sum, l) => {
-          const p = progressMap.get(l.id);
-          return sum + (p?.completedSections?.length ?? 0);
-        }, 0);
-        setTotalSections(totalSec);
-        setCompletedSections(completedSec);
 
         // Build per-lecture progress for started lectures
         const perLecture: LectureProgress[] = allLectures

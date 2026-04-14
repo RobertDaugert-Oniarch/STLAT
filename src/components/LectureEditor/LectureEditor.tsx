@@ -52,8 +52,8 @@ const LectureEditor = ({ lecture, onClose }: Props) => {
   const [status, setStatus] = useState<"draft" | "published">(
     lecture?.status || "draft",
   );
-  const [coverImage, setCoverImage] = useState(lecture?.coverImage || "");
-  const [order, setOrder] = useState(lecture?.order || 1);
+  const [coverImage] = useState(lecture?.coverImage || "");
+  const [order] = useState(lecture?.order || 1);
   const [sections, setSections] = useState<LectureSection[]>(
     lecture?.sections || [],
   );
