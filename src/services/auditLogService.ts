@@ -10,7 +10,7 @@ import {
 import { auth, db } from "../firebase/config";
 import { ADMIN_ACTIONS } from "../firebase/collections";
 
-export type AdminActionType = "password_reset" | "user_delete" | "role_change" | "data_export";
+export type AdminActionType = "password_reset" | "user_delete" | "role_change" | "data_export" | "lecture_create" | "lecture_update" | "lecture_delete" | "lecture_status_change";
 
 export interface AdminActionDoc {
   id?: string;

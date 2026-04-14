@@ -21,6 +21,7 @@ const AdminDashboardPage = lazy(() => import("./pages/AdminDashboardPage/AdminDa
 const AdminStatisticsPage = lazy(() => import("./pages/AdminStatisticsPage/AdminStatisticsPage"));
 const AdminUsersPage = lazy(() => import("./pages/AdminUsersPage/AdminUsersPage"));
 const AdminAuditPage = lazy(() => import("./pages/AdminAuditPage/AdminAuditPage"));
+const AdminLecturesPage = lazy(() => import("./pages/AdminLecturesPage/AdminLecturesPage"));
 
 const PageSpinner = () => (
   <div className="page-spinner-wrapper">
@@ -44,12 +45,14 @@ function App() {
               <Route path="/test" element={<TestPage />} />
               <Route path="/lectures" element={<LecturesPage />} />
               <Route path="/lectures/:id" element={<LectureViewerPage />} />
+              <Route path="/admin/lectures/preview/:id" element={<LectureViewerPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/settings/email" element={<EmailChangePage />} />
               <Route path="/settings/password" element={<PasswordChangePage />} />
               {/* Admin routes */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboardPage />} />
+                <Route path="lectures" element={<AdminLecturesPage />} />
                 <Route path="statistics" element={<AdminStatisticsPage />} />
                 <Route path="users" element={<AdminUsersPage />} />
                 <Route path="audit" element={<AdminAuditPage />} />

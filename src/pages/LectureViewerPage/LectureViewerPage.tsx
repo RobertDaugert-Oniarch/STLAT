@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { db } from "../../firebase/config";
 import { USERS } from "../../firebase/collections";
@@ -24,9 +24,11 @@ import "./LectureViewerPage.css";
 
 const LectureViewerPage = () => {
   const { id } = useParams<{ id: string }>();
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const { applyTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPreview = location.pathname.startsWith("/admin/lectures/preview");
   const { user, loading: authLoading } = useAuthGuard();
 
   const [username, setUsername] = useState("User");
@@ -80,10 +82,12 @@ const LectureViewerPage = () => {
         setLecture(lec);
 
         let progressList: import("../../types/lecture").UserLectureProgress[] = [];
-        try {
-          progressList = await getUserProgress(user.uid);
-        } catch {
-          // Progress may fail — continue without it
+        if (!isPreview) {
+          try {
+            progressList = await getUserProgress(user.uid);
+          } catch {
+            // Progress may fail — continue without it
+          }
         }
 
         const match = progressList.find((p) => p.lectureId === id) ?? null;
@@ -138,19 +142,43 @@ const LectureViewerPage = () => {
   const goToSection = useCallback(
     async (idx: number) => {
       if (!lecture || !user || !id) return;
+
+      // Auto-mark current section as read when navigating away
+      if (!isPreview) {
+        const currentSection = lecture.sections[currentIdx];
+        const alreadyDone = progress?.completedSections?.includes(currentSection.id);
+        if (currentSection && !alreadyDone) {
+          try {
+            await markSectionComplete(user.uid, id, currentSection.id);
+            setProgress((prev) => {
+              const existing = prev?.completedSections ?? [];
+              return {
+                lectureId: id,
+                completedSections: [...existing, currentSection.id],
+                lastSectionId: currentSection.id,
+              };
+            });
+          } catch {
+            // silent
+          }
+        }
+      }
+
       setCurrentIdx(idx);
       setTocOpen(false);
-      try {
-        await saveLectureProgress(user.uid, id, lecture.sections[idx].id);
-      } catch {
-        // silent
+      if (!isPreview) {
+        try {
+          await saveLectureProgress(user.uid, id, lecture.sections[idx].id);
+        } catch {
+          // silent
+        }
       }
     },
-    [lecture, user, id],
+    [lecture, user, id, isPreview, currentIdx, progress],
   );
 
   const handleMarkSection = useCallback(async () => {
-    if (!user || !id || !section || isSectionDone || marking || !canProceed) return;
+    if (!user || !id || !section || isSectionDone || marking || !canProceed || isPreview) return;
     setMarking(true);
     recordAttempt();
     try {
@@ -170,7 +198,7 @@ const LectureViewerPage = () => {
     }
   }, [user, id, section, isSectionDone, marking, canProceed, recordAttempt]);
 
-  const title = lecture ? lecture.title[lang] || lecture.title.en : "";
+  const title = lecture ? lecture.title : "";
   const initials = useMemo(() => getInitials(username), [username]);
 
   if (authLoading || loading) {
@@ -203,12 +231,22 @@ const LectureViewerPage = () => {
 
   if (!lecture || !section) return null;
 
-  const sectionTitle = section.title[lang] || section.title.en;
-  const sectionContent = section.content[lang] || section.content.en;
+  const sectionTitle = section.title;
+  const sectionContent = section.content;
 
   return (
-    <div className="viewer-page">
+    <div className={`viewer-page${isPreview ? " viewer-page--preview" : ""}`}>
       <BgShapes prefix="viewer" />
+
+      {/* Preview banner */}
+      {isPreview && (
+        <div className="viewer-preview-banner">
+          {t.previewMode}
+          <button className="viewer-preview-back" onClick={() => navigate("/admin/lectures")}>
+            ← {t.backToEditor}
+          </button>
+        </div>
+      )}
 
       {/* Sticky mini-header (mobile) */}
       <div
@@ -224,96 +262,14 @@ const LectureViewerPage = () => {
       </div>
 
       <div className="viewer-layout">
-        {/* ── Sidebar ── */}
-        <aside className="profile-sidebar">
-          <nav className="sidebar-nav">
+        {/* ── Left panel: nav + TOC + progress ── */}
+        <aside className="viewer-left-panel">
+          <div className="viewer-sidebar-toc">
             <Link to="/profile" className="sidebar-logo-link">
               <span className="sidebar-logo">STLAT</span>
             </Link>
             <div className="sidebar-divider" />
-            <button className="sidebar-btn" onClick={() => navigate("/profile")}>
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
-              <span>{t.navHome}</span>
-            </button>
-            <button className="sidebar-btn" onClick={() => navigate("/test")}>
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
-              <span>{t.navTest}</span>
-            </button>
-            <button
-              className="sidebar-btn sidebar-btn--active"
-              onClick={() => navigate("/lectures")}
-            >
-              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
-              <span>{t.navLectures}</span>
-            </button>
-          </nav>
-        </aside>
-
-        {/* ── Main content ── */}
-        <main className="viewer-main">
-          {/* Header */}
-          <div className="viewer-header" ref={headerRef}>
-            <div className="viewer-header-left">
-              <h1 className="viewer-title">{title}</h1>
-              <span className="viewer-category">{lecture.category}</span>
-            </div>
-            <div className="viewer-progress-badge">
-              <div className="viewer-progress-bar">
-                <div
-                  className="viewer-progress-fill"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-              <span className="viewer-progress-text" aria-live="polite">
-                {completedCount}/{totalSections} ({pct}%)
-              </span>
-            </div>
-          </div>
-
-          {/* Table of contents toggle (mobile) */}
-          <button
-            className="viewer-toc-toggle"
-            onClick={() => setTocOpen(!tocOpen)}
-            type="button"
-            aria-expanded={tocOpen}
-            aria-controls="viewer-toc"
-          >
-            {t.tableOfContents} ({currentIdx + 1}/{totalSections})
-            <svg
-              aria-hidden="true"
-              className={`viewer-toc-chevron${tocOpen ? " viewer-toc-chevron--open" : ""}`}
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-
-          {/* Table of contents */}
-          {tocOpen && <div className="viewer-toc-overlay" onClick={() => setTocOpen(false)} />}
-          <div
-            id="viewer-toc"
-            ref={tocRef}
-            tabIndex={-1}
-            className={`viewer-toc${tocOpen ? " viewer-toc--open" : ""}`}
-          >
-            <div className="viewer-toc-header">
-              <h3 className="viewer-toc-title">{t.tableOfContents}</h3>
-              <button
-                className="viewer-toc-close"
-                onClick={() => setTocOpen(false)}
-                type="button"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
+            <h3 className="viewer-toc-title">{t.tableOfContents}</h3>
             <ol className="viewer-toc-list">
               {lecture.sections.map((s, idx) => {
                 const done = completedSections.has(s.id);
@@ -326,13 +282,64 @@ const LectureViewerPage = () => {
                       type="button"
                     >
                       {done && <span className="viewer-toc-check">✓</span>}
-                      <span>{s.title[lang] || s.title.en}</span>
+                      <span>{s.title}</span>
                     </button>
                   </li>
                 );
               })}
             </ol>
           </div>
+
+          <div className="viewer-sidebar-nav-btns">
+            <button
+              className="viewer-sidebar-nav-btn"
+              onClick={() => goToSection(currentIdx - 1)}
+              disabled={currentIdx === 0}
+              type="button"
+              aria-label={t.prevSection}
+            >
+              ← {t.prevSection}
+            </button>
+            <button
+              className="viewer-sidebar-nav-btn"
+              onClick={() => goToSection(currentIdx + 1)}
+              disabled={currentIdx >= totalSections - 1}
+              type="button"
+              aria-label={t.nextSection}
+            >
+              {t.nextSection} →
+            </button>
+          </div>
+
+          <div className="viewer-sidebar-progress">
+            <div className="viewer-progress-bar">
+              <div className="viewer-progress-fill" style={{ width: `${Math.round(((currentIdx + 1) / totalSections) * 100)}%` }} />
+            </div>
+            <span className="viewer-progress-text">
+              {currentIdx + 1}/{totalSections} ({Math.round(((currentIdx + 1) / totalSections) * 100)}%)
+            </span>
+          </div>
+        </aside>
+
+        {/* ── Main content ── */}
+        <main className="viewer-main">
+          {/* Header */}
+          <div className="viewer-header" ref={headerRef}>
+            <div className="viewer-header-left">
+              <h1 className="viewer-title">{title}</h1>
+              <span className="viewer-category">{lecture.category}</span>
+            </div>
+            {!isPreview && (
+              <div className="viewer-header-right">
+                <div className="profile-topbar-user">
+                  <div className="profile-avatar">{initials}</div>
+                  <span className="profile-username">{username}</span>
+                </div>
+                <SettingsMenu />
+              </div>
+            )}
+          </div>
+
 
           {/* Section content */}
           {allDone && (
@@ -353,11 +360,11 @@ const LectureViewerPage = () => {
           <div className="viewer-nav">
             <button
               className="viewer-btn viewer-btn--secondary"
-              onClick={() => navigate("/lectures")}
+              onClick={() => navigate(isPreview ? "/admin/lectures" : "/lectures")}
               type="button"
-              aria-label={t.backToLectures}
+              aria-label={isPreview ? t.backToEditor : t.backToLectures}
             >
-              {t.backToLectures}
+              {isPreview ? t.backToEditor : t.backToLectures}
             </button>
 
             <div className="viewer-nav-center">
@@ -371,15 +378,17 @@ const LectureViewerPage = () => {
                 ← {t.prevSection}
               </button>
 
-              <button
-                className={`viewer-btn viewer-btn--primary${isSectionDone ? " viewer-btn--done" : ""}`}
-                onClick={handleMarkSection}
-                disabled={isSectionDone || marking || !canProceed}
-                type="button"
-                aria-label={t.markSectionComplete}
-              >
-                {isSectionDone ? `✓ ${t.read}` : marking ? t.loading : t.markSectionComplete}
-              </button>
+              {!isPreview && (
+                <button
+                  className={`viewer-btn viewer-btn--primary${isSectionDone ? " viewer-btn--done" : ""}`}
+                  onClick={handleMarkSection}
+                  disabled={isSectionDone || marking || !canProceed}
+                  type="button"
+                  aria-label={t.markSectionComplete}
+                >
+                  {isSectionDone ? `✓ ${t.read}` : marking ? t.loading : t.markSectionComplete}
+                </button>
+              )}
 
               <button
                 className="viewer-btn viewer-btn--outline"
@@ -394,16 +403,7 @@ const LectureViewerPage = () => {
           </div>
         </main>
 
-        {/* ── Right panel ── */}
-        <aside className="profile-right">
-          <div className="profile-topbar">
-            <div className="profile-topbar-user">
-              <div className="profile-avatar">{initials}</div>
-              <span className="profile-username">{username}</span>
-            </div>
-            <SettingsMenu />
-          </div>
-        </aside>
+
       </div>
     </div>
   );

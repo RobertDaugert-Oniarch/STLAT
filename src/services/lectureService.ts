@@ -9,6 +9,7 @@ import {
   orderBy,
   Timestamp,
   arrayUnion,
+  increment,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import {
@@ -20,11 +21,21 @@ import type { LectureDoc, UserLectureProgress } from "../types/lecture";
 import { isLectureComplete } from "../types/lecture";
 import type { TestCategory } from "../types/test";
 
-/** Fetch all lectures ordered by `order` field. */
+/** Fetch all published lectures ordered by `order` field. */
 export async function getAllLectures(): Promise<LectureDoc[]> {
-  const q = query(collection(db, LECTURES), orderBy("order", "asc"));
+  const q = query(
+    collection(db, LECTURES),
+    where("status", "==", "published"),
+    orderBy("order", "asc"),
+  );
   const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }) as LectureDoc);
+  const now = Date.now();
+  return (snap.docs.map((d) => ({ id: d.id, ...d.data() }) as LectureDoc))
+    .filter((l) => {
+      if (!l.publishAt) return true;
+      const publishTime = (l.publishAt as { seconds: number }).seconds * 1000;
+      return publishTime <= now;
+    });
 }
 
 /** Fetch a single lecture by id. */
@@ -95,7 +106,7 @@ export async function saveLectureProgress(
 }
 
 /**
- * Return unread lectures from the user's weakest test category.
+ * Return unread lectures from the user's two weakest test categories.
  * Falls back to all unread lectures if no quiz results exist.
  */
 export async function getRecommendedLectures(
@@ -110,8 +121,8 @@ export async function getRecommendedLectures(
       .map((l) => l.id),
   );
 
-  // Find weakest category from quiz results
-  let weakestCategory: string | null = null;
+  // Find two weakest categories from quiz results
+  const weakCategories: string[] = [];
   try {
     const resultSnap = await getDoc(doc(db, QUIZ_RESULTS, uid));
     if (resultSnap.exists()) {
@@ -120,12 +131,11 @@ export async function getRecommendedLectures(
         | Record<string, { percentage: number }>
         | undefined;
       if (catResults) {
-        let minPct = Infinity;
-        for (const [cat, stats] of Object.entries(catResults)) {
-          if (stats.percentage < minPct) {
-            minPct = stats.percentage;
-            weakestCategory = cat;
-          }
+        const sorted = Object.entries(catResults).sort(
+          (a, b) => a[1].percentage - b[1].percentage,
+        );
+        for (let i = 0; i < Math.min(2, sorted.length); i++) {
+          weakCategories.push(sorted[i][0]);
         }
       }
     }
@@ -135,10 +145,31 @@ export async function getRecommendedLectures(
 
   const unread = allLectures.filter((l) => !completedIds.has(l.id));
 
-  if (weakestCategory) {
-    const fromWeak = unread.filter((l) => l.category === weakestCategory);
+  if (weakCategories.length > 0) {
+    const fromWeak = unread.filter((l) => weakCategories.includes(l.category));
     if (fromWeak.length > 0) return fromWeak;
   }
 
   return unread;
+}
+
+/** Update accumulated reading time for a specific section. */
+export async function updateReadingTime(
+  uid: string,
+  lectureId: string,
+  sectionId: string,
+  seconds: number,
+): Promise<void> {
+  if (seconds <= 0) return;
+  const ref = doc(db, LECTURE_PROGRESS, uid, "items", lectureId);
+  await setDoc(
+    ref,
+    {
+      lectureId,
+      totalReadingTime: increment(seconds),
+      [`sectionReadingTime.${sectionId}`]: increment(seconds),
+      updatedAt: Timestamp.now(),
+    },
+    { merge: true },
+  );
 }

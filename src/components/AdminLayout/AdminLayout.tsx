@@ -8,7 +8,7 @@ import { useAdminGuard } from "../../hooks/useAdminGuard";
 import { useLang } from "../../context/LangContext";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import LangToggle from "../LangToggle/LangToggle";
-import { LayoutDashboard, TrendingUp, Users, ClipboardList, LogOut, Menu } from "lucide-react";
+import { LayoutDashboard, TrendingUp, Users, ClipboardList, LogOut, Menu, BookOpen } from "lucide-react";
 import "./AdminLayout.css";
 
 const AdminLayout = () => {
@@ -36,6 +36,7 @@ const AdminLayout = () => {
 
   const navItems = [
     { to: "/admin", icon: <LayoutDashboard size={18} />, label: t.adminDashboard, end: true },
+    { to: "/admin/lectures", icon: <BookOpen size={18} />, label: t.adminLectures, end: false },
     { to: "/admin/statistics", icon: <TrendingUp size={18} />, label: t.adminStatistics, end: false },
     { to: "/admin/users", icon: <Users size={18} />, label: t.adminUsers, end: false },
     { to: "/admin/audit", icon: <ClipboardList size={18} />, label: t.adminAuditLog, end: false },

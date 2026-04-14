@@ -1,5 +1,4 @@
 import type { LectureDoc, UserLectureProgress } from "../../types/lecture";
-import type { Language } from "../../translations";
 import "./LectureCard.css";
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -16,16 +15,20 @@ const CATEGORY_ICONS: Record<string, string> = {
   "Confidence in One's Judgement": "🧠",
 };
 
+const LANG_LABELS: Record<string, string> = {
+  en: "EN",
+  lv: "LV",
+};
+
 interface LectureCardProps {
   lecture: LectureDoc;
   progress?: UserLectureProgress;
-  lang: Language;
   onClick: () => void;
 }
 
-const LectureCard = ({ lecture, progress, lang, onClick }: LectureCardProps) => {
-  const title = lecture.title[lang] || lecture.title.en;
-  const description = lecture.description?.[lang] || lecture.description?.en || "";
+const LectureCard = ({ lecture, progress, onClick }: LectureCardProps) => {
+  const title = lecture.title;
+  const description = lecture.description ?? "";
   const color = CATEGORY_COLORS[lecture.category] ?? "#3c72c3";
   const icon = CATEGORY_ICONS[lecture.category] ?? "📄";
 
@@ -62,6 +65,10 @@ const LectureCard = ({ lecture, progress, lang, onClick }: LectureCardProps) => 
           {lecture.category}
         </span>
 
+        <span className="lecture-card-lang-badge">
+          {LANG_LABELS[lecture.language] ?? lecture.language}
+        </span>
+
         {isCompleted && <span className="lecture-card-check">✓</span>}
       </div>
 
@@ -69,6 +76,14 @@ const LectureCard = ({ lecture, progress, lang, onClick }: LectureCardProps) => 
         <span className="lecture-card-title">{title}</span>
         {description && (
           <span className="lecture-card-desc">{description}</span>
+        )}
+        {lecture.avgRating != null && lecture.ratingCount != null && lecture.ratingCount > 0 && (
+          <div className="lecture-card-rating">
+            <span className="lecture-card-rating-stars">
+              {"★".repeat(Math.round(lecture.avgRating))}{"☆".repeat(5 - Math.round(lecture.avgRating))}
+            </span>
+            <span className="lecture-card-rating-count">({lecture.ratingCount})</span>
+          </div>
         )}
         {totalSections > 0 && (
           <div className="lecture-card-progress">
