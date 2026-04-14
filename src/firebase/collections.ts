@@ -7,3 +7,5 @@ export const ADMIN_ACTIONS = "adminActions";
 export const GUEST_DEMOGRAPHICS = "guestDemographics";
 export const LECTURES = "lectures";
 export const LECTURE_PROGRESS = "lectureProgress";
+export const LECTURE_VERSIONS = "lectureVersions";
+export const LECTURE_RATINGS = "lectureRatings";

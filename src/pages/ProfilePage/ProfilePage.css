@@ -343,6 +343,48 @@
   opacity: 0.45;
 }
 
+.profile-module--summary {
+  margin-bottom: 0.25rem;
+}
+
+.profile-module--lecture {
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+}
+
+.profile-module--lecture .profile-module-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.profile-module-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.profile-module-continue:hover {
+  background: var(--accent);
+  transform: scale(1.02);
+}
+
+.profile-module-continue:active {
+  transform: scale(0.97);
+}
+
 /* ── Right panel ── */
 
 .profile-right {

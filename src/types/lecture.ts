@@ -1,20 +1,30 @@
-import type { LocalizedText, TestCategory } from "./test";
+import type { TestCategory } from "./test";
 
 export interface LectureSection {
   id: string;
-  title: LocalizedText;
-  content: LocalizedText;
+  title: string;
+  content: string;
 }
 
 export interface LectureDoc {
   id: string;
-  title: LocalizedText;
-  description: LocalizedText;
+  title: string;
+  description: string;
   category: TestCategory;
+  language: "en" | "lv";
+  status: "draft" | "published";
   coverImage?: string;
   sections: LectureSection[];
   order: number;
   createdAt: unknown;
+  updatedAt?: unknown;
+  createdBy?: string;
+  fileUrl?: string;
+  fileType?: "pdf" | "docx" | "manual";
+  publishAt?: unknown;
+  version: number;
+  avgRating?: number;
+  ratingCount?: number;
 }
 
 export interface UserLectureProgress {
@@ -22,6 +32,17 @@ export interface UserLectureProgress {
   completedSections: string[];
   lastSectionId?: string;
   updatedAt?: unknown;
+  totalReadingTime?: number;
+  sectionReadingTime?: Record<string, number>;
+  startedAt?: unknown;
+}
+
+export interface LectureRating {
+  uid: string;
+  lectureId: string;
+  rating: number;
+  comment?: string;
+  createdAt: unknown;
 }
 
 /** Check if all sections of a lecture have been completed. */

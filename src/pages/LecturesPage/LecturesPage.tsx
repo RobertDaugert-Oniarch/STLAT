@@ -227,24 +227,6 @@ const LecturesPage = () => {
         <main className="lectures-main">
           <h1 className="lectures-heading">{t.navLectures}</h1>
 
-          {/* Recommended */}
-          {recommended.length > 0 && (
-            <section className="lectures-section">
-              <h2 className="lectures-section-title">{t.recommended}</h2>
-              <div className="lectures-grid lectures-grid--row">
-                {recommended.slice(0, 4).map((lec) => (
-                  <LectureCard
-                    key={lec.id}
-                    lecture={lec}
-                    progress={progressMap.get(lec.id)}
-                    lang={lang}
-                    onClick={() => openLecture(lec.id)}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
           {/* Continue Reading */}
           {inProgressLectures.length > 0 && (
             <section className="lectures-section">
@@ -255,7 +237,23 @@ const LecturesPage = () => {
                     key={lec.id}
                     lecture={lec}
                     progress={progressMap.get(lec.id)}
-                    lang={lang}
+                    onClick={() => openLecture(lec.id)}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Recommended */}
+          {recommended.length > 0 && (
+            <section className="lectures-section">
+              <h2 className="lectures-section-title">{t.recommended}</h2>
+              <div className="lectures-grid lectures-grid--row">
+                {recommended.slice(0, 4).map((lec) => (
+                  <LectureCard
+                    key={lec.id}
+                    lecture={lec}
+                    progress={progressMap.get(lec.id)}
                     onClick={() => openLecture(lec.id)}
                   />
                 ))}
@@ -302,7 +300,6 @@ const LecturesPage = () => {
                     key={lec.id}
                     lecture={lec}
                     progress={progressMap.get(lec.id)}
-                    lang={lang}
                     onClick={() => openLecture(lec.id)}
                   />
                 ))}

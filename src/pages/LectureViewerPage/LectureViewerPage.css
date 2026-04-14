@@ -3,8 +3,37 @@
 .viewer-page {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
   background: var(--background);
+}
+
+/* ── Preview banner ── */
+.viewer-preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: #6c5ce7;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.viewer-preview-back {
+  padding: 4px 12px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 6px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.viewer-preview-back:hover {
+  background: rgba(255,255,255,0.15);
 }
 
 .viewer-bg-shape {
@@ -45,11 +74,31 @@
 .viewer-layout {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 240px 1fr 240px;
-  gap: 1.25rem;
+  display: block;
   min-height: 100vh;
   padding: 1.5rem;
+  padding-left: calc(260px + 2.5rem);
+}
+
+/* Left panel: fixed, independent of scroll */
+
+.viewer-left-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  z-index: 101;
+  background: var(--background);
+}
+
+.viewer-page--preview .viewer-left-panel {
+  top: 45px;
+  height: calc(100vh - 45px);
 }
 
 .viewer-main {
@@ -63,14 +112,16 @@
 .viewer-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--background);
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--card-border);
+}
+
+.viewer-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .viewer-header-left {
@@ -529,11 +580,12 @@
   .viewer-layout {
     grid-template-columns: 1fr;
     padding: 1rem;
+    padding-left: 1rem;
     padding-top: 4rem;
   }
 
-  .viewer-header {
-    top: 0;
+  .viewer-left-panel {
+    display: none;
   }
 
   .viewer-toc-toggle {
@@ -629,3 +681,98 @@
     font-size: 1.05rem;
   }
 }
+
+/* ── Left sidebar TOC ── */
+
+.viewer-sidebar-toc {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.viewer-sidebar-toc .sidebar-logo {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--primary);
+  padding: 0.25rem 0.85rem 0.5rem;
+  text-align: center;
+}
+
+.viewer-sidebar-toc .sidebar-divider {
+  height: 1px;
+  background: var(--card-border);
+  margin: 0 0 0.5rem;
+}
+
+.viewer-sidebar-toc .viewer-toc-title {
+  margin: 0 0 0.5rem;
+}
+
+.viewer-sidebar-toc .viewer-toc-list {
+  gap: 0.1rem;
+}
+
+.viewer-sidebar-toc .viewer-toc-item {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+}
+
+/* Fixed progress at bottom of sidebar */
+
+.viewer-sidebar-nav-btns {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.viewer-sidebar-nav-btn {
+  flex: 1;
+  padding: 0.5rem 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: center;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.viewer-sidebar-nav-btn:hover:not(:disabled) {
+  background: rgba(60, 114, 195, 0.08);
+}
+
+.viewer-sidebar-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.viewer-sidebar-progress {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  flex-shrink: 0;
+}
+
+.viewer-sidebar-progress .viewer-progress-bar {
+  margin-bottom: 0.3rem;
+  background: var(--card-border);
+}
+
+/* Preview mode layout tweak \u2013 hide sidebar on mobile, stack TOC above content */
+
+

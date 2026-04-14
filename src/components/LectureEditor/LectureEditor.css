@@ -1,0 +1,356 @@
+.lecture-editor {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lecture-editor h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* ── Form row ── */
+.le-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.le-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.le-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.le-field input,
+.le-field select,
+.le-field textarea {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+[data-theme="dark"] .le-field input,
+[data-theme="dark"] .le-field select,
+[data-theme="dark"] .le-field textarea {
+  border-color: var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.le-field input:focus,
+.le-field select:focus,
+.le-field textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.le-field textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* ── Tabs ── */
+.le-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--border);
+}
+
+.le-tab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.le-tab:hover {
+  color: var(--text);
+}
+
+.le-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Upload zone ── */
+.le-upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  color: var(--text-muted);
+}
+
+.le-upload-zone:hover,
+.le-upload-zone.dragging {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.le-upload-zone p {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
+
+.le-upload-progress {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.le-upload-error {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #d63031;
+  font-weight: 600;
+}
+
+/* ── Sections list ── */
+.le-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.le-section-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--bg);
+}
+
+.le-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.le-section-header input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .le-section-header input {
+  border-color: var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+.le-section-header input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.le-section-btn {
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.le-section-btn:hover {
+  background: var(--hover-bg);
+}
+
+.le-section-btn.danger {
+  color: #d63031;
+}
+
+.le-section-content {
+  width: 100%;
+  min-height: 120px;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a1a1a;
+  font-size: 0.85rem;
+  font-family: "Fira Code", "Consolas", monospace;
+  resize: vertical;
+}
+
+[data-theme="dark"] .le-section-content {
+  border-color: var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+}
+
+.le-section-content:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.le-add-section-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.le-add-section-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Version history ── */
+.le-versions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.le-version-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 0.85rem;
+}
+
+.le-version-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.le-version-num {
+  font-weight: 600;
+}
+
+.le-version-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.le-version-restore-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.le-version-restore-btn:hover {
+  background: var(--accent-bg);
+}
+
+/* ── Footer ── */
+.le-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.le-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.le-btn:hover {
+  background: var(--hover-bg);
+}
+
+.le-btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.le-btn.primary:hover {
+  opacity: 0.9;
+}
+
+.le-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.le-validation-error {
+  font-size: 0.85rem;
+  color: #d63031;
+  font-weight: 600;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .lecture-editor {
+    padding: 18px;
+    max-width: 100%;
+  }
+
+  .le-row {
+    flex-direction: column;
+  }
+
+  .le-field {
+    min-width: 0;
+  }
+}

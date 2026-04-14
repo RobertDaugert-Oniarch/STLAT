@@ -11,6 +11,7 @@ import { generateUniqueUsername, formatUsername } from "../../utils/generateUser
 import SettingsMenu from "../../components/SettingsMenu/SettingsMenu";
 import BgShapes from "../../components/BgShapes/BgShapes";
 import { getAllLectures, getUserProgress } from "../../services/lectureService";
+import { isLectureComplete } from "../../types/lecture";
 import "./ProfilePage.css";
 
 interface UserData {
@@ -28,10 +29,13 @@ interface TestResult {
   categoryResults?: Record<string, { total: number; correctCount: number; percentage: number }>;
 }
 
-// Placeholder modules until real data is available
-const MODULES = [
-  { id: "reading", nameKey: "moduleReading" as const, completed: 0, total: 0 },
-];
+interface LectureProgress {
+  lectureId: string;
+  title: string;
+  completed: number;
+  total: number;
+  isComplete: boolean;
+}
 
 const ProfilePage = () => {
   const { t, applyLang } = useLang();
@@ -40,7 +44,10 @@ const ProfilePage = () => {
   const { user, loading: authLoading } = useAuthGuard();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [testResult, setTestResult] = useState<TestResult | null>(null);
-  const [modules, setModules] = useState(MODULES);
+  const [lectureProgressList, setLectureProgressList] = useState<LectureProgress[]>([]);
+  const [totalSections, setTotalSections] = useState(0);
+  const [completedSections, setCompletedSections] = useState(0);
+  const [continueTarget, setContinueTarget] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -77,14 +84,39 @@ const ProfilePage = () => {
           getUserProgress(user.uid),
         ]);
         const progressMap = new Map(lectureProgress.map((p) => [p.lectureId, p]));
-        const totalSections = allLectures.reduce((sum, l) => sum + l.sections.length, 0);
-        const completedSections = allLectures.reduce((sum, l) => {
+        const totalSec = allLectures.reduce((sum, l) => sum + l.sections.length, 0);
+        const completedSec = allLectures.reduce((sum, l) => {
           const p = progressMap.get(l.id);
           return sum + (p?.completedSections?.length ?? 0);
         }, 0);
-        setModules([
-          { id: "reading", nameKey: "moduleReading" as const, completed: completedSections, total: totalSections },
-        ]);
+        setTotalSections(totalSec);
+        setCompletedSections(completedSec);
+
+        // Build per-lecture progress for started lectures
+        const perLecture: LectureProgress[] = allLectures
+          .map((l) => {
+            const p = progressMap.get(l.id);
+            return {
+              lectureId: l.id,
+              title: l.title,
+              completed: p?.completedSections?.length ?? 0,
+              total: l.sections.length,
+              isComplete: isLectureComplete(p, l),
+            };
+          })
+          .filter((lp) => lp.completed > 0 && !lp.isComplete);
+        setLectureProgressList(perLecture);
+
+        // Determine continue target: first in-progress, else first unstarted
+        const inProgress = allLectures.find((l) => {
+          const p = progressMap.get(l.id);
+          return p && p.completedSections?.length > 0 && !isLectureComplete(p, l);
+        });
+        const firstUnstarted = allLectures.find((l) => {
+          const p = progressMap.get(l.id);
+          return !p || !p.completedSections?.length;
+        });
+        setContinueTarget(inProgress?.id ?? firstUnstarted?.id ?? null);
       } catch (err) {
         console.warn("ProfilePage: Firestore read failed", err);
       } finally {
@@ -199,28 +231,42 @@ const ProfilePage = () => {
           {/* Lectures block */}
           <div className="profile-card profile-learning">
             <h2 className="profile-section-title">{t.learningProgress}</h2>
-            <div className="profile-modules">
-              {modules.map((mod) => {
-                const pct = mod.total > 0 ? Math.round((mod.completed / mod.total) * 100) : 0;
-                return (
-                  <div className="profile-module" key={mod.id}>
-                    <div className="profile-module-header">
-                      <span className="profile-module-name">{t[mod.nameKey]}</span>
-                      <span className="profile-module-pct">{pct}%</span>
+
+            {/* Per-lecture breakdown (in-progress only) */}
+            {lectureProgressList.length > 0 && (
+              <div className="profile-modules">
+                {lectureProgressList.map((lp) => {
+                  const pct = lp.total > 0 ? Math.round((lp.completed / lp.total) * 100) : 0;
+                  return (
+                    <div className="profile-module profile-module--lecture" key={lp.lectureId}>
+                      <div className="profile-module-header">
+                        <span className="profile-module-name">{lp.title}</span>
+                        <span className="profile-module-pct">{pct}%</span>
+                      </div>
+                      <div className="profile-progress-bar profile-progress-bar--small">
+                        <div
+                          className="profile-progress-fill"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <span className="profile-module-count">
+                        {lp.completed}/{lp.total} {t.completed}
+                      </span>
                     </div>
-                    <div className="profile-progress-bar profile-progress-bar--small">
-                      <div
-                        className="profile-progress-fill"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="profile-module-count">
-                      {mod.completed}/{mod.total} {t.completed}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Continue / Start Reading button */}
+            {continueTarget && (
+              <Link
+                to={`/lectures/${continueTarget}`}
+                className="profile-module-continue"
+              >
+                {lectureProgressList.length > 0 ? t.continueReading : t.startReading}
+              </Link>
+            )}
           </div>
         </main>
 
