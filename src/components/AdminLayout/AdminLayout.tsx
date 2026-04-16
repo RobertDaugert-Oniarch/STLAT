@@ -97,11 +97,11 @@ const AdminLayout = () => {
           <div className="admin-sidebar-controls">
             <ThemeToggle />
             <LangToggle />
-            <button className="admin-nav-item" onClick={handleSignOut}>
-              <span className="admin-nav-icon"><LogOut size={18} /></span>
-              {t.signOut}
-            </button>
           </div>
+          <button className="admin-nav-item admin-signout-btn" onClick={handleSignOut}>
+            <span className="admin-nav-icon"><LogOut size={18} /></span>
+            {t.signOut}
+          </button>
         </div>
       </aside>
 

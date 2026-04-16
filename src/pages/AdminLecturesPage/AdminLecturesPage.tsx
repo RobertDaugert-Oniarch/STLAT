@@ -146,11 +146,11 @@ const AdminLecturesPage = () => {
     <div className="admin-lectures">
       <div className="lectures-header">
         <h1>{t.adminLectures}</h1>
-        <button className="lectures-create-btn" onClick={handleCreate}>
-          <Plus size={16} />
-          {t.createLecture}
-        </button>
       </div>
+      <button className="lectures-create-btn" onClick={handleCreate}>
+        <Plus size={16} />
+        {t.createLecture}
+      </button>
 
       {/* Toolbar */}
       <div className="lectures-toolbar">
