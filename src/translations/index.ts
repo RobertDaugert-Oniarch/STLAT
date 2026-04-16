@@ -33,7 +33,7 @@ export const translations = {
     pwdSymbol: "One special character",
     // Username generation
     yourUsername: "Your username",
-    yourUsernameSub: "Remember it — this is how others will see you!",
+    yourUsernameSub: "Remember it — you can use it to log in!",
     continueBtn: "Continue",
     // Profile page -- greetings
     greetingMorning: "Good morning",
@@ -399,7 +399,7 @@ export const translations = {
     pwdSymbol: "Viens \u012Bpa\u0161ais simbols",
     // Username generation
     yourUsername: "Tavs lietot\u0101jv\u0101rds",
-    yourUsernameSub: "Iegaum\u0113 to \u2014 citi tevi redz\u0113s ar \u0161o v\u0101rdu!",
+    yourUsernameSub: "Iegaum\u0113 to \u2014 tu vari to izmantot, lai pieteiktos!",
     continueBtn: "Turpin\u0101t",
     // Profile page -- greetings
     greetingMorning: "Labr\u012Bt",

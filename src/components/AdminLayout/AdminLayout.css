@@ -106,6 +106,15 @@
   align-items: center;
 }
 
+.admin-sidebar-controls .theme-toggle,
+.admin-sidebar-controls .lang-toggle {
+  position: static;
+  z-index: auto;
+  box-shadow: none;
+  width: 36px;
+  height: 36px;
+}
+
 /* ── Main content ── */
 .admin-main {
   flex: 1;
