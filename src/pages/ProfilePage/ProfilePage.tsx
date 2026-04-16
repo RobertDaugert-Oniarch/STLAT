@@ -131,7 +131,28 @@ const ProfilePage = () => {
   if (authLoading || loading) {
     return (
       <div className="page-spinner-wrapper">
-        <div className="page-spinner" />
+        <div className="profile-skeleton">
+          <div className="skeleton skeleton--heading" style={{ width: "40%" }} />
+          <div className="skeleton skeleton--card">
+            <div className="skeleton skeleton--text" style={{ width: "50%" }} />
+            <div className="skeleton skeleton--text-short" />
+            <div className="skeleton skeleton--bar" />
+            <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
+              <div className="skeleton skeleton--text-xs" style={{ width: "60px" }} />
+              <div className="skeleton skeleton--text-xs" style={{ width: "80px" }} />
+              <div className="skeleton skeleton--text-xs" style={{ width: "60px" }} />
+            </div>
+          </div>
+          <div className="skeleton skeleton--card">
+            <div className="skeleton skeleton--text" style={{ width: "45%" }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <div className="skeleton skeleton--text" />
+              <div className="skeleton skeleton--bar" />
+              <div className="skeleton skeleton--text" />
+              <div className="skeleton skeleton--bar" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

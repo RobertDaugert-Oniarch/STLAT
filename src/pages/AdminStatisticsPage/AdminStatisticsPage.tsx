@@ -353,7 +353,39 @@ const AdminStatisticsPage = () => {
     });
   }, [filtered, t, demoLabel]);
 
-  if (loading) return <div className="stats-empty">{t.loading}</div>;
+  if (loading) return (
+    <div className="admin-statistics">
+      <div className="skeleton skeleton--heading" style={{ width: "30%", marginBottom: "1rem" }} />
+      <div className="skeleton-filters">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="skeleton skeleton-filter" />
+        ))}
+      </div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", margin: "1rem 0" }}>
+        <div className="skeleton skeleton--text" style={{ width: "40%" }} />
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="skeleton skeleton--btn" style={{ width: 80 }} />
+          <div className="skeleton skeleton--btn" style={{ width: 80 }} />
+        </div>
+      </div>
+      <div className="skeleton skeleton--card" style={{ padding: "1rem", borderRadius: 12 }}>
+        <div className="skeleton-table">
+          <div className="skeleton-table-header">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="skeleton-table-cell"><div className="skeleton skeleton--text" style={{ height: 14 }} /></div>
+            ))}
+          </div>
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="skeleton-table-row" style={{ "--row-index": i } as React.CSSProperties}>
+              {[1, 2, 3, 4, 5].map((j) => (
+                <div key={j} className="skeleton-table-cell"><div className="skeleton skeleton--text" style={{ height: 12, width: `${60 + (j * 7) % 30}%` }} /></div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="admin-statistics">

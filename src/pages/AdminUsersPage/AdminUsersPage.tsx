@@ -199,7 +199,34 @@ const AdminUsersPage = () => {
     }
   }, [modal, t.adminRoleChanged]);
 
-  if (loading) return <div className="users-empty">{t.loading}</div>;
+  if (loading) return (
+    <div className="admin-users">
+      <div className="skeleton skeleton--heading" style={{ width: "25%", marginBottom: "1rem" }} />
+      <div className="skeleton-toolbar">
+        <div className="skeleton" style={{ height: 36, flex: 1, maxWidth: 320, borderRadius: 8 }} />
+      </div>
+      <div className="skeleton skeleton--card" style={{ padding: "1rem", borderRadius: 12, marginTop: "1rem" }}>
+        <div className="skeleton-table">
+          <div className="skeleton-table-header">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="skeleton-table-cell"><div className="skeleton skeleton--text" style={{ height: 14 }} /></div>
+            ))}
+          </div>
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="skeleton-table-row" style={{ "--row-index": i } as React.CSSProperties}>
+              <div className="skeleton-table-cell" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <div className="skeleton skeleton--circle" style={{ width: 32, height: 32, flexShrink: 0 }} />
+                <div className="skeleton skeleton--text" style={{ height: 12, width: "70%" }} />
+              </div>
+              {[2, 3, 4, 5, 6].map((j) => (
+                <div key={j} className="skeleton-table-cell"><div className="skeleton skeleton--text" style={{ height: 12, width: `${50 + (j * 8) % 40}%` }} /></div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="admin-users">

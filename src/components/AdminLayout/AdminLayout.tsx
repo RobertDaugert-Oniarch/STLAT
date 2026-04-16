@@ -27,7 +27,23 @@ const AdminLayout = () => {
     });
   }, [user]);
 
-  if (loading) return <div className="admin-layout"><p>{t.loading}</p></div>;
+  if (loading) return (
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <div className="admin-skeleton-sidebar">
+          <div className="skeleton skeleton--heading" style={{ width: "60%" }} />
+          <div className="skeleton skeleton--text-xs" style={{ width: "40%" }} />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="skeleton skeleton--btn" style={{ width: "100%", height: 36 }} />
+          ))}
+        </div>
+      </aside>
+      <main style={{ flex: 1, padding: "1.5rem" }}>
+        <div className="skeleton skeleton--heading" style={{ width: "35%", marginBottom: "1rem" }} />
+        <div className="skeleton skeleton--card" style={{ height: 200, borderRadius: 12 }} />
+      </main>
+    </div>
+  );
 
   const handleSignOut = async () => {
     await signOut(auth);

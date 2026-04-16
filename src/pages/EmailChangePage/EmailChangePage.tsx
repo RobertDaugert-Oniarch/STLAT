@@ -53,7 +53,26 @@ const EmailChangePage = () => {
   if (loading) {
     return (
       <div className="echange-page">
-        <p className="echange-loading">{t.loading}</p>
+        <div className="form-skeleton">
+          <div className="skeleton skeleton--heading" style={{ width: "50%" }} />
+          <div className="skeleton skeleton--card form-skeleton-card">
+            <div className="form-skeleton-field">
+              <div className="skeleton skeleton--text-xs" style={{ width: "30%" }} />
+              <div className="skeleton skeleton--text" style={{ width: "70%" }} />
+            </div>
+            <div className="skeleton skeleton--divider" />
+            <div className="form-skeleton-field">
+              <div className="skeleton skeleton--text-xs" style={{ width: "35%" }} />
+              <div className="skeleton" style={{ height: 40, width: "100%", borderRadius: 12 }} />
+            </div>
+            <div className="skeleton skeleton--divider" />
+            <div className="form-skeleton-field">
+              <div className="skeleton skeleton--text-xs" style={{ width: "25%" }} />
+              <div className="skeleton" style={{ height: 40, width: "100%", borderRadius: 12 }} />
+            </div>
+          </div>
+          <div className="skeleton skeleton--btn" style={{ width: "100%", height: 44, borderRadius: 12 }} />
+        </div>
       </div>
     );
   }

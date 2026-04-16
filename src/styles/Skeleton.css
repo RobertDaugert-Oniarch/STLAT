@@ -1,0 +1,342 @@
+/* ── Shared skeleton loading utilities ── */
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+
+/* Base skeleton block */
+.skeleton {
+  background: var(--card-border);
+  border-radius: 8px;
+  animation: skeleton-pulse 1.2s ease-in-out infinite;
+}
+
+/* Text line: full width, 16px tall */
+.skeleton--text {
+  height: 16px;
+  width: 100%;
+}
+
+/* Short text line: 60% width */
+.skeleton--text-short {
+  height: 16px;
+  width: 60%;
+}
+
+/* Extra-small text: 12px tall */
+.skeleton--text-xs {
+  height: 12px;
+  width: 40%;
+}
+
+/* Heading: 28px tall, 50% width */
+.skeleton--heading {
+  height: 28px;
+  width: 50%;
+}
+
+/* Circle: e.g. avatar, icon */
+.skeleton--circle {
+  border-radius: 50%;
+}
+
+/* Card shape with glass background */
+.skeleton--card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+}
+
+/* Button shape */
+.skeleton--btn {
+  height: 40px;
+  width: 120px;
+  border-radius: 12px;
+}
+
+/* Progress bar shape */
+.skeleton--bar {
+  height: 6px;
+  width: 100%;
+  border-radius: 999px;
+}
+
+/* Large rectangular area (charts, covers) */
+.skeleton--cover {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+/* Divider line */
+.skeleton--divider {
+  height: 1px;
+  width: 100%;
+  opacity: 0.5;
+}
+
+/* ── Page-level skeleton wrappers ── */
+
+/* Profile page skeleton */
+.profile-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 640px;
+  padding: 2rem 1rem;
+}
+
+.profile-skeleton .skeleton--card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Settings page skeleton */
+.settings-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 640px;
+}
+
+.settings-skeleton-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-skeleton-card {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-skeleton-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Admin page skeletons */
+.admin-skeleton-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.admin-skeleton-stat {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-skeleton-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 1rem;
+}
+
+.admin-skeleton-chart {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 240px;
+}
+
+.admin-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.admin-skeleton-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+}
+
+/* Table skeleton */
+.skeleton-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.skeleton-table-header {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--card-border);
+}
+
+.skeleton-table-row {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--card-border);
+  align-items: center;
+}
+
+.skeleton-table-row .skeleton {
+  animation-delay: calc(var(--row-index, 0) * 0.05s);
+}
+
+.skeleton-table-cell {
+  flex: 1;
+}
+
+/* Filter row skeleton */
+.skeleton-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.skeleton-filter {
+  height: 36px;
+  width: 160px;
+  border-radius: 8px;
+}
+
+/* Toolbar skeleton */
+.skeleton-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Form card skeleton */
+.form-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 520px;
+}
+
+.form-skeleton-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-skeleton-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* Viewer page skeleton */
+.viewer-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 820px;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+}
+
+.viewer-skeleton-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.viewer-skeleton-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.viewer-skeleton-article {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.viewer-skeleton-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Verify email skeleton */
+.vep-skeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Admin layout skeleton */
+.admin-skeleton-layout {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.admin-skeleton-sidebar {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  flex-shrink: 0;
+}
+
+.admin-skeleton-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Login card skeleton (VerifyEmail, ProfileSetup) */
+.login-skeleton-card {
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 860px) {
+  .admin-skeleton-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-skeleton-sidebar {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-skeleton-cards {
+    grid-template-columns: 1fr;
+  }
+}

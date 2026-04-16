@@ -204,7 +204,34 @@ const LectureViewerPage = () => {
   if (authLoading || loading) {
     return (
       <div className="page-spinner-wrapper">
-        <div className="page-spinner" />
+        <div className="viewer-skeleton">
+          <div className="viewer-skeleton-header">
+            <div className="viewer-skeleton-header-left">
+              <div className="skeleton skeleton--heading" style={{ width: "70%" }} />
+              <div className="skeleton skeleton--text-xs" style={{ width: "100px" }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.35rem" }}>
+              <div className="skeleton skeleton--bar" style={{ width: 120 }} />
+              <div className="skeleton skeleton--text-xs" style={{ width: 80 }} />
+            </div>
+          </div>
+          <div className="skeleton skeleton--btn" style={{ width: "100%", height: 36, borderRadius: 8 }} />
+          <div className="viewer-skeleton-article">
+            <div className="skeleton skeleton--text" style={{ width: "55%", height: 22 }} />
+            {Array.from({ length: 8 }, (_, i) => (
+              <div key={i} className="skeleton skeleton--text" style={{ width: `${75 + (i * 7) % 25}%` }} />
+            ))}
+            <div className="skeleton skeleton--text-short" />
+          </div>
+          <div className="viewer-skeleton-nav">
+            <div className="skeleton skeleton--btn" />
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <div className="skeleton skeleton--btn" style={{ width: 100 }} />
+              <div className="skeleton skeleton--btn" style={{ width: 140 }} />
+              <div className="skeleton skeleton--btn" style={{ width: 100 }} />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
